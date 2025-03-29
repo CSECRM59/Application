@@ -151,7 +151,7 @@
             const baseUrl = 'https://csecrm59.github.io/Application/'; // Base de l'URL de ton application
             news.forEach(item => {
                 const imagePath = item['Lien_image'] || ''; // Changement ici
-                const imageUrl = imagePath ? `${baseUrl}${imagePath}` : ''; // Construire l'URL absolue
+                const imageUrl = imagePath; // Construire l'URL absolue
                 console.log(`Tentative de chargement de l'image: ${imageUrl}`); // Débogage
                 const newsItem = document.createElement('div');
                 newsItem.className = 'actu';
