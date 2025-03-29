@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de bord CSE - Ajouter une actualité</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f4f8;
+            color: #333;
+        }
+        header {
+            text-align: center;
+            padding: 20px;
+            background-color: #fff;
+            border-bottom: 1px solid #e0e0e0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        h1 {
+            color: #2c3e50;
+            font-size: 2em;
+            margin: 0;
+        }
+        main {
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .form-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        .form-container label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #34495e;
+        }
+        .form-container input,
+        .form-container textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .form-container button {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .form-container button:hover {
+            background-color: #2980b9;
+        }
+        .message {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        .success {
+            background-color: #2ecc71;
+            color: #fff;
+        }
+        .error {
+            background-color: #e74c3c;
+            color: #fff;
+        }
+        a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        footer {
+            text-align: center;
+            padding: 15px;
+            background-color: #fff;
+            border-top: 1px solid #e0e0e0;
+            font-size: 0.9em;
+            color: #7f8c8d;
+        }
+        @media (max-width: 600px) {
+            main {
+                padding: 15px;
+            }
+            h1 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Tableau de bord CSE</h1>
+    </header>
+    
+    <main>
+        <div class="form-container">
+            <h2>Ajouter une actualité</h2>
+            <form id="news-form">
+                <label for="titre">Titre :</label>
+                <input type="text" id="titre" name="titre" required>
+
+                <label for="date">Date (format JJ/MM/AAAA) :</label>
+                <input type="text" id="date" name="date" placeholder="ex: 29/03/2025" required>
+
+                <label for="description">Description :</label>
+                <textarea id="description" name="description" rows="4" required></textarea>
+
+                <label for="lien_image">Lien de l'image (chemin relatif, ex: images/nom-image.jpg) :</label>
+                <input type="text" id="lien_image" name="lien_image" placeholder="ex: images/nouvelle-image.jpg" required>
+
+                <button type="submit">Ajouter l'actualité</button>
+            </form>
+            <div id="message" class="message"></div>
+        </div>
+        <p><a href="index.html">Retour à la page d'accueil</a></p>
+    </main>
+    
+    <footer>
+        <p>© 2025 Entreprise. Tous droits réservés.</p>
+    </footer>
+
+    <script>
+        // URL du script Google Apps Script (à remplir après l'étape 3)
+        const scriptUrl = 'URL_DU_SCRIPT_APPS_SCRIPT';
+
+        document.getElementById('news-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const titre = document.getElementById('titre').value;
+            const date = document.getElementById('date').value;
+            const description = document.getElementById('description').value;
+            const lien_image = document.getElementById('lien_image').value;
+
+            const messageDiv = document.getElementById('message');
+
+            fetch(scriptUrl, {
+                method: 'POST',
+                body: JSON.stringify({ titre, date, description, lien_image }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    messageDiv.className = 'message success';
+                    messageDiv.textContent = 'Actualité ajoutée avec succès !';
+                    messageDiv.style.display = 'block';
+                    document.getElementById('news-form').reset();
+                } else {
+                    messageDiv.className = 'message error';
+                    messageDiv.textContent = 'Erreur lors de l\'ajout de l\'actualité : ' + data.message;
+                    messageDiv.style.display = 'block';
+                }
+            })
+            .catch(error => {
+                messageDiv.className = 'message error';
+                messageDiv.textContent = 'Erreur lors de l\'envoi : ' + error.message;
+                messageDiv.style.display = 'block';
+            });
+        });
+    </script>
+</body>
+</html>
