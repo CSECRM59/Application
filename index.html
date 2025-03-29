@@ -150,7 +150,7 @@
             const container = document.getElementById('news-container');
             const baseUrl = 'https://csecrm59.github.io/Application/'; // Base de l'URL de ton application
             news.forEach(item => {
-                //const imagePath = item['Lien_image'] || ''; // Changement ici
+                const imageUrl = item['Lien_image'] || ''; // Changement ici
                 //const imageUrl = imagePath; // Construire l'URL absolue
                 console.log(`Tentative de chargement de l'image: ${imageUrl}`); // Débogage
                 const newsItem = document.createElement('div');
@@ -159,7 +159,7 @@
                     <h3>${item.Titre || 'Sans titre'}</h3>
                     <p><strong>Date :</strong> ${item.Date || 'Non spécifiée'}</p>
                     <p>${item.Description || 'Aucune description'}</p>
-                    ${item.Lien_image ? `<img src="${imageUrl}" alt="${item.Titre || 'Image actualité'}" onerror="this.style.display='none'; this.nextSibling.style.display='block';">
+                    ${imageUrl ? `<img src="${imageUrl}" alt="${item.Titre || 'Image actualité'}" onerror="this.style.display='none'; this.nextSibling.style.display='block';">
                                   <p class="error-message" style="display: none;">Impossible de charger l'image.</p>` : ''}
                 `;
                 container.appendChild(newsItem);
