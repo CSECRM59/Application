@@ -111,6 +111,11 @@
         <section id="actualites">
             <h2>Dernières Actualités</h2>
             <div id="news-container"></div>
+            <div class="actu">
+                <h3>Test d'image statique</h3>
+                <p>Ceci est un test pour vérifier que les images locales fonctionnent.</p>
+                <img src="images/ViniPro.jpg" alt="Test image">
+            </div>
         </section>
         
         <section id="formulaires">
@@ -135,6 +140,7 @@
             .then(response => response.text())
             .then(data => {
                 const parsedData = Papa.parse(data, { header: true }).data;
+                console.log('Données brutes du CSV:', parsedData); // Débogage
                 displayNews(parsedData);
             })
             .catch(error => {
@@ -147,7 +153,7 @@
             const container = document.getElementById('news-container');
             const baseUrl = 'https://csecrm59.github.io/Application/'; // Base de l'URL de ton application
             news.forEach(item => {
-                const imagePath = item['Lien image'] || '';
+                const imagePath = item['Lien_image'] || ''; // Changement ici
                 const imageUrl = imagePath ? `${baseUrl}${imagePath}` : ''; // Construire l'URL absolue
                 console.log(`Tentative de chargement de l'image: ${imageUrl}`); // Débogage
                 const newsItem = document.createElement('div');
