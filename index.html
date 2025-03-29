@@ -4,7 +4,100 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Application Salariés</title>
-    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f4f8;
+            color: #333;
+        }
+        header {
+            text-align: center;
+            padding: 20px;
+            background-color: #fff;
+            border-bottom: 1px solid #e0e0e0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        h1 {
+            color: #2c3e50;
+            font-size: 2em;
+            margin: 0;
+        }
+        h2 {
+            color: #34495e;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+        main {
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        section {
+            margin-bottom: 40px;
+        }
+        .actu {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        .actu h3 {
+            color: #2c3e50;
+            font-size: 1.3em;
+            margin-top: 0;
+        }
+        .actu p {
+            margin: 5px 0;
+        }
+        .actu img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        ul li {
+            margin-bottom: 10px;
+        }
+        a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        footer {
+            text-align: center;
+            padding: 15px;
+            background-color: #fff;
+            border-top: 1px solid #e0e0e0;
+            font-size: 0.9em;
+            color: #7f8c8d;
+        }
+        /* Responsive design */
+        @media (max-width: 600px) {
+            main {
+                padding: 15px;
+            }
+            h1 {
+                font-size: 1.5em;
+            }
+            h2 {
+                font-size: 1.3em;
+            }
+            .actu {
+                padding: 15px;
+            }
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -14,16 +107,7 @@
     <main>
         <section id="actualites">
             <h2>Dernières Actualités</h2>
-            <div class="actu">
-                <h3>Nouvelle machine à café installée</h3>
-                <p><strong>Date :</strong> 10/10/2024</p>
-                <p>Une nouvelle machine à café est disponible au 3e étage !</p>
-            </div>
-            <div class="actu">
-                <h3>Réunion CSE</h3>
-                <p><strong>Date :</strong> 09/10/2024</p>
-                <p>Prochaine réunion le 15/10 à 14h, salle 2B.</p>
-            </div>
+            <div id="news-container"></div>
         </section>
         
         <section id="formulaires">
@@ -36,7 +120,55 @@
     </main>
     
     <footer>
-        <p>&copy; 2024 Entreprise. Tous droits réservés.</p>
+        <p>© 2025 Entreprise. Tous droits réservés.</p>
     </footer>
+
+    <script>
+        // URL du CSV publié depuis Google Sheets
+        const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQcKo9WOqdnefe5z7QpaM5XtdkGs7pBeWNFrcy1crwW18Jn_KkR1IxV_KMhatedR5lmaASfeIlEsUF9/pub?gid=0&single=true&output=csv';
+
+        // Fonction pour transformer un lien Google Drive en URL directe
+        function transformGoogleDriveLink(link) {
+            if (!link) return ''; // Si le lien est vide, retourner une chaîne vide
+            const fileIdMatch = link.match(/\/d\/(.+?)\//);
+            if (fileIdMatch && fileIdMatch[1]) {
+                const fileId = fileIdMatch[1];
+                return `https://drive.google.com/uc?id=${fileId}`;
+            }
+            return link; // Si le lien n'est pas au format attendu, le retourner tel quel
+        }
+
+        // Récupérer et parser le CSV
+        fetch(csvUrl)
+            .then(response => response.text())
+            .then(data => {
+                const parsedData = Papa.parse(data, { header: true }).data;
+                displayNews(parsedData);
+            })
+            .catch(error => {
+                console.error('Erreur lors de la récupération des actualités:', error);
+                document.getElementById('news-container').innerHTML = '<p>Erreur lors du chargement des actualités.</p>';
+            });
+
+        // Afficher les actualités
+        function displayNews(news) {
+            const container = document.getElementById('news-container');
+            news.forEach(item => {
+                // Transformer le lien de l'image
+                const imageUrl = transformGoogleDriveLink(item['Lien image']);
+                
+                // Créer un élément pour chaque actualité
+                const newsItem = document.createElement('div');
+                newsItem.className = 'actu';
+                newsItem.innerHTML = `
+                    <h3>${item.Titre || 'Sans titre'}</h3>
+                    <p><strong>Date :</strong> ${item.Date || 'Non spécifiée'}</p>
+                    <p>${item.Description || 'Aucune description'}</p>
+                    ${imageUrl ? `<img src="${imageUrl}" alt="${item.Titre || 'Image actualité'}">` : ''}
+                `;
+                container.appendChild(newsItem);
+            });
+        }
+    </script>
 </body>
 </html>
