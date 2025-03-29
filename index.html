@@ -111,11 +111,6 @@
         <section id="actualites">
             <h2>Dernières Actualités</h2>
             <div id="news-container"></div>
-        <div class="actu">
-    <h3>Test d'image statique</h3>
-    <p>Ceci est un test pour vérifier que les images locales fonctionnent.</p>
-    <img src="images/ViniPro.jpg" alt="Test image">
-</div>
         </section>
         
         <section id="formulaires">
@@ -133,7 +128,7 @@
 
     <script>
         // URL du CSV publié depuis Google Sheets
-        const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQcKo9WOqdnefe5z7QpaM5XtdkGs7pBeWNFrcy1crwW18Jn_KkR1IxV_KMhatedR5lmaASfeIlEsUF9/pub?gid=0&single=true&output=csv';
+        const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQcKo9WOqdnefe5z7QpaM5XtdkGs7pBeWNFrcy1crwW18Jn_KkR1IxV_KMhatedR5lmaASfeIlEsUF9/pub?gid=0&single=true&output=csv&cachebust=' + new Date().getTime();
 
         // Récupérer et parser le CSV
         fetch(csvUrl)
@@ -150,8 +145,11 @@
         // Afficher les actualités
         function displayNews(news) {
             const container = document.getElementById('news-container');
+            const baseUrl = 'https://csecrm59.github.io/Application/'; // Base de l'URL de ton application
             news.forEach(item => {
-                const imageUrl = item['Lien image'] || ''; // Utiliser directement le chemin relatif (ex: images/actualite1.jpg)
+                const imagePath = item['Lien image'] || '';
+                const imageUrl = imagePath ? `${baseUrl}${imagePath}` : ''; // Construire l'URL absolue
+                console.log(`Tentative de chargement de l'image: ${imageUrl}`); // Débogage
                 const newsItem = document.createElement('div');
                 newsItem.className = 'actu';
                 newsItem.innerHTML = `
