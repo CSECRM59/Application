@@ -82,6 +82,10 @@
             font-size: 0.9em;
             color: #7f8c8d;
         }
+        .error-message {
+            color: #e74c3c;
+            font-style: italic;
+        }
         /* Responsive design */
         @media (max-width: 600px) {
             main {
@@ -130,11 +134,14 @@
         // Fonction pour transformer un lien Google Drive en URL directe
         function transformGoogleDriveLink(link) {
             if (!link) return ''; // Si le lien est vide, retourner une chaîne vide
-            const fileIdMatch = link.match(/\/d\/(.+?)\//);
+            // Recherche de l'ID dans différents formats de lien Google Drive
+            const fileIdMatch = link.match(/(?:\/d\/|id=)([a-zA-Z0-9_-]+)/);
             if (fileIdMatch && fileIdMatch[1]) {
                 const fileId = fileIdMatch[1];
-                return `https://drive.google.com/uc?id=${fileId}`;
+                console.log(`Lien original: ${link}, ID extrait: ${fileId}, URL transformée: https://drive.google.com/uc?export=view&id=${fileId}`);
+                return `https://drive.google.com/uc?export=view&id=${fileId}`;
             }
+            console.log(`Impossible de transformer le lien: ${link}`);
             return link; // Si le lien n'est pas au format attendu, le retourner tel quel
         }
 
@@ -164,7 +171,8 @@
                     <h3>${item.Titre || 'Sans titre'}</h3>
                     <p><strong>Date :</strong> ${item.Date || 'Non spécifiée'}</p>
                     <p>${item.Description || 'Aucune description'}</p>
-                    ${imageUrl ? `<img src="${imageUrl}" alt="${item.Titre || 'Image actualité'}">` : ''}
+                    ${imageUrl ? `<img src="${imageUrl}" alt="${item.Titre || 'Image actualité'}" onerror="this.style.display='none'; this.nextSibling.style.display='block';">
+                                  <p class="error-message" style="display: none;">Impossible de charger l'image.</p>` : ''}
                 `;
                 container.appendChild(newsItem);
             });
