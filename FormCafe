@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signalement Problème Machine à Café</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        .form-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        select, input, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 100px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .confirmation {
+            display: none;
+            background-color: #2ecc71;
+            color: white;
+            padding: 15px;
+            border-radius: 4px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .required:after {
+            content: " *";
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Signalement Problème Machine à Café</h1>
+        
+        <form id="reportForm" action="https://docs.google.com/forms/d/e/1FAIpQLSfw2H0lzEAvt7niVxRhpkPQTLOaOfXz3SoI3IC9NfNxnY33Ag/formResponse" method="POST" target="hidden_iframe">
+            <div class="form-group">
+                <label for="email" class="required">Email</label>
+                <input type="email" id="email" name="entry.1494559432" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="name" class="required">Nom & Prénom</label>
+                <input type="text" id="name" name="entry.36162321" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="operation" class="required">Opération</label>
+                <input type="text" id="operation" name="entry.1034050778" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="machine" class="required">Machine concernée</label>
+                <select id="machine" name="entry.212638394" required>
+                    <option value="">Sélectionnez une machine</option>
+                    <option value="RJ">RJ</option>              
+                    <option value="R0">R0</option>
+                    <option value="R1">R1</option>
+                    <option value="R2">R2</option>
+                    <option value="R3">R3</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="problem" class="required">Type de problème</label>
+                <select id="problem" name="entry.1333521310" required>
+                    <option value="">Sélectionnez un problème</option>
+                    <option value="Pas de gobelet">Pas de gobelet</option>
+                    <option value="Gobelet vide">Gobelet vide</option>
+                    <option value="Pb de rechargement">Pb de rechargement</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="comment">Commentaire (optionnel)</label>
+                <textarea id="comment" name="entry.1120842974"></textarea>
+            </div>
+            
+            <button type="submit">Envoyer le signalement</button>
+        </form>
+        
+        <div id="confirmation" class="confirmation">
+            Merci pour votre signalement ! Il a bien été enregistré.
+        </div>
+    </div>
+
+    <!-- Iframe caché pour gérer la soumission -->
+    <iframe name="hidden_iframe" style="display: none;" onload="onFormSubmit()"></iframe>
+
+    <script>
+        function onFormSubmit() {
+            // Afficher le message de confirmation après la soumission
+            document.getElementById("reportForm").style.display = "none";
+            document.getElementById("confirmation").style.display = "block";
+            
+            // Réinitialiser le formulaire après 3 secondes
+            setTimeout(() => {
+                document.getElementById("reportForm").reset();
+                document.getElementById("reportForm").style.display = "block";
+                document.getElementById("confirmation").style.display = "none";
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
