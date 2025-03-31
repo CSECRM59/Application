@@ -92,6 +92,11 @@
             content: " *";
             color: #e74c3c;
         }
+        .note {
+            font-size: 0.9em;
+            color: #555;
+            margin-bottom: 10px;
+        }
         @media (max-width: 480px) {
             body {
                 padding: 15px;
@@ -115,7 +120,7 @@
 <body>
     <div class="form-container">
         <img src="logo.png" alt="Logo de l'entreprise" class="logo">
-        <h1>Signalement Problème Machine à Café V2</h1>
+        <h1>Signalement Problème Machine à Café</h1>
         
         <form id="reportForm" action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSfw2H0lzEAvt7niVxRhpkPQTLOaOfXz3SoI3IC9NfNxnY33Ag/formResponse" method="POST" target="hidden_iframe">
             <div class="form-group">
@@ -137,11 +142,15 @@
                 <label for="machine" class="required">Machine concernée</label>
                 <select id="machine" name="entry.212638394" required>
                     <option value="">Sélectionnez une machine</option>
-                    <option value="RJ">RJ</option>
-                    <option value="R0">R0</option>
-                    <option value="R1">R1</option>
-                    <option value="R2">R2</option>
-                    <option value="R3">R3</option>
+                    <option value="DEV125543 (E-1)">DEV125543 (E-1)</option>
+                    <option value="BBRD0152 (E-1)">BBRD0152 (E-1)</option>
+                    <option value="DEV16567 (E-1)">DEV16567 (E-1)</option>
+                    <option value="BBRDL0196 (E-1)">BBRDL0196 (E-1)</option>
+                    <option value="DBIC799 (E0)">DBIC799 (E0)</option>
+                    <option value="B72ES1979 (E1)">B72ES1979 (E1)</option>
+                    <option value="B72ES1903 (E2)">B72ES1903 (E2)</option>
+                    <option value="DEV95042 (E2)">DEV95042 (E2)</option>
+                    <option value="B72ES1977 (E3)">B72ES1977 (E3)</option>
                 </select>
             </div>
             
@@ -151,7 +160,30 @@
                     <option value="">Sélectionnez un problème</option>
                     <option value="Pas de gobelet">Pas de gobelet</option>
                     <option value="Gobelet vide">Gobelet vide</option>
-                    <option value="Pb de rechargement">Pb de rechargement</option>
+                    <option value="Produit non conforme à la demande">Produit non conforme à la demande</option>
+                    <option value="Problème de rechargement">Problème de rechargement</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <p class="note">Si il s'agit d'un problème de rechargement, merci d'indiquer la date, heure et moyen de paiement.</p>
+                <label for="date" class="required">Date</label>
+                <input type="date" id="date" name="entry.789458747" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="time" class="required">Heure</label>
+                <input type="time" id="time" name="entry.1519520523" required>
+            </div>
+
+            <div class="form-group">
+                <label for="payment" class="required">Moyen de paiement</label>
+                <select id="payment" name="entry.1578764886" required>
+                    <option value="">Sélectionnez un moyen de paiement</option>
+                    <option value="CB">CB</option>
+                    <option value="Pluxee">Pluxee</option>
+                    <option value="Espece">Espèce</option>
+                    <option value="Badge">Badge</option>
                 </select>
             </div>
             
