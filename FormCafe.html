@@ -22,7 +22,7 @@
         .logo {
             display: block;
             margin: 0 auto 20px;
-            max-width: 150px; /* Ajuste la taille du logo selon tes besoins */
+            max-width: 150px;
             height: auto;
         }
         .form-container {
@@ -92,7 +92,6 @@
             content: " *";
             color: #e74c3c;
         }
-        /* Responsive design */
         @media (max-width: 480px) {
             body {
                 padding: 15px;
@@ -169,10 +168,19 @@
         </div>
     </div>
 
-    <!-- Iframe caché pour gérer la soumission -->
     <iframe name="hidden_iframe" style="display: none;" onload="onFormSubmit()"></iframe>
 
     <script>
+        const form = document.getElementById("reportForm");
+        
+        form.addEventListener("submit", function(event) {
+            const commentField = document.getElementById("comment");
+            // Si le commentaire est vide, on s'assure qu'une valeur vide est envoyée
+            if (!commentField.value) {
+                commentField.value = "";
+            }
+        });
+
         function onFormSubmit() {
             // Afficher le message de confirmation après la soumission
             document.getElementById("reportForm").style.display = "none";
