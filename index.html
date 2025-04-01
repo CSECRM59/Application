@@ -24,6 +24,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            max-width: 600px; /* Harmonisé avec les formulaires */
+            margin: 0 auto;
         }
         header img.logo {
             max-width: 120px;
@@ -63,7 +65,7 @@
         }
         main {
             padding: 30px;
-            max-width: 900px;
+            max-width: 600px; /* Harmonisé avec les formulaires */
             margin: 0 auto;
         }
         h2 {
@@ -113,6 +115,8 @@
             color: #fff;
             font-size: 0.9em;
             box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.2);
+            max-width: 600px; /* Harmonisé avec les formulaires */
+            margin: 0 auto;
         }
         .error-message {
             color: #e74c3c;
@@ -180,21 +184,29 @@
 
         // Récupérer et parser le CSV
         fetch(csvUrl)
-            .then(response => response.text())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erreur réseau : ' + response.status);
+                }
+                return response.text();
+            })
             .then(data => {
                 const parsedData = Papa.parse(data, { header: true }).data;
                 console.log('Données brutes du CSV:', parsedData);
+                if (parsedData.length === 0) {
+                    throw new Error('Aucune donnée trouvée dans le CSV');
+                }
                 displayNews(parsedData);
             })
             .catch(error => {
                 console.error('Erreur lors de la récupération des actualités:', error);
-                document.getElementById('news-container').innerHTML = '<p class="error-message">Erreur lors du chargement des actualités.</p>';
+                document.getElementById('news-container').innerHTML = '<p class="error-message">Erreur lors du chargement des actualités : ' + error.message + '</p>';
             });
 
         // Afficher les actualités
         function displayNews(news) {
             const container = document.getElementById('news-container');
-            const baseUrl = 'https://csecrm59.github.io/Application/';
+            container.innerHTML = ''; // Réinitialiser le conteneur
             news.forEach(item => {
                 const imageUrl = item['Lien_image'] || '';
                 console.log(`Tentative de chargement de l'image: ${imageUrl}`);
