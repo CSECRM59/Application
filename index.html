@@ -179,42 +179,51 @@
     </footer>
 
     <script>
-        // URL du CSV publié depuis Google Sheets
-        const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQcKo9WOqdnefe5z7QpaM5XtdkGs7pBeWNFrcy1crwW18Jn_KkR1IxV_KMhatedR5lmaASfeIlEsUF9/pub?gid=0&single=true&output=csv' + new Date().getTime();
+    // URL du CSV
+    const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQcKo9WOqdnefe5z7QpaM5XtdkGs7pBeWNFrcy1crwW18Jn_KkR1IxV_KMhatedR5lmaASfeIlEsUF9/pub?gid=0&single=true&output=csv' + new Date().getTime();
 
-        // Récupérer et parser le CSV
-        fetch(csvUrl)
-            .then(response => response.text())
-            .then(data => {
-                const parsedData = Papa.parse(data, { header: true }).data;
-                console.log('Données brutes du CSV:', parsedData); // Débogage
-                displayNews(parsedData);
-            })
-            .catch(error => {
-                console.error('Erreur lors de la récupération des actualités:', error);
-                document.getElementById('news-container').innerHTML = '<p>Erreur lors du chargement des actualités.</p>';
-            });
+    // Récupérer et parser le CSV
+    fetch(csvUrl)
+        .then(response => {
+            console.log('Statut de la réponse:', response.status);
+            if (!response.ok) {
+                throw new Error('Erreur réseau : ' + response.status);
+            }
+            return response.text();
+        })
+        .then(data => {
+            console.log('Contenu brut du CSV:', data);
+            const parsedData = Papa.parse(data, { header: true }).data;
+            console.log('Données parsées:', parsedData);
+            if (parsedData.length === 0) {
+                throw new Error('Aucune donnée trouvée dans le CSV');
+            }
+            displayNews(parsedData);
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+            document.getElementById('news-container').innerHTML = '<p class="error-message">Erreur lors du chargement des actualités : ' + error.message + '</p>';
+        });
 
-        // Afficher les actualités
-        function displayNews(news) {
-            const container = document.getElementById('news-container');
-            const baseUrl = 'https://csecrm59.github.io/Application/'; // Base de l'URL de ton application
-            news.forEach(item => {
-                const imageUrl = item['Lien_image'] || ''; // Changement ici
-                //const imageUrl = imagePath; // Construire l'URL absolue
-                console.log(`Tentative de chargement de l'image: ${imageUrl}`); // Débogage
-                const newsItem = document.createElement('div');
-                newsItem.className = 'actu';
-                newsItem.innerHTML = `
-                    <h3>${item.Titre || 'Sans titre'}</h3>
-                    <p><strong>Date :</strong> ${item.Date || 'Non spécifiée'}</p>
-                    <p>${item.Description || 'Aucune description'}</p>
-                    ${imageUrl ? `<img src="${imageUrl}" alt="${item.Titre || 'Image actualité'}" onerror="this.style.display='none'; this.nextSibling.style.display='block';">
-                                  <p class="error-message" style="display: none;">Impossible de charger l'image.</p>` : ''}
-                `;
-                container.appendChild(newsItem);
-            });
-        }
-    </script>
+    // Afficher les actualités
+    function displayNews(news) {
+        const container = document.getElementById('news-container');
+        container.innerHTML = '';
+        news.forEach(item => {
+            const imageUrl = item['Lien_image'] || '';
+            console.log(`Tentative de chargement de l'image: ${imageUrl}`);
+            const newsItem = document.createElement('div');
+            newsItem.className = 'actu';
+            newsItem.innerHTML = `
+                <h3>${item.Titre || 'Sans titre'}</h3>
+                <p><strong>Date :</strong> ${item.Date || 'Non spécifiée'}</p>
+                <p>${item.Description || 'Aucune description'}</p>
+                ${imageUrl ? `<img src="${imageUrl}" alt="${item.Titre || 'Image actualité'}" onerror="this.style.display='none'; this.nextSibling.style.display='block';">
+                              <p class="error-message" style="display: none;">Impossible de charger l'image.</p>` : ''}
+            `;
+            container.appendChild(newsItem);
+        });
+    }
+</script>
 </body>
 </html>
