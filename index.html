@@ -3,91 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <img src="logo.png" alt="Logo Entreprise" style="max-width: 150px;">
-    <title>Application CSE CRM59</title>
+    <title>Application CSE CRM59 - Fun Edition</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <style>
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
+            font-family: 'Comic Sans MS', 'Segoe UI', Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f0f4f8;
+            background: linear-gradient(135deg, #ffeb3b, #ff5722);
             color: #333;
+            overflow-x: hidden;
         }
         header {
-            text-align: center;
-            padding: 20px;
-            background-color: #fff;
-            border-bottom: 1px solid #e0e0e0;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            background: #2196f3;
+            padding: 15px 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header img.logo {
+            max-width: 120px;
+            height: auto;
+            transition: transform 0.3s ease;
+        }
+        header img.logo:hover {
+            transform: rotate(10deg) scale(1.1);
         }
         h1 {
-            color: #2c3e50;
+            color: #fff;
             font-size: 2em;
             margin: 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
-        h2 {
-            color: #34495e;
-            font-size: 1.5em;
-            margin-bottom: 15px;
+        nav {
+            display: flex;
+            gap: 15px;
+        }
+        nav button {
+            background: #ffeb3b;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: bold;
+            color: #e91e63;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        nav button:hover {
+            background: #e91e63;
+            color: #fff;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
         main {
-            padding: 20px;
-            max-width: 800px;
+            padding: 30px;
+            max-width: 900px;
             margin: 0 auto;
         }
+        h2 {
+            color: #2196f3;
+            font-size: 1.8em;
+            text-align: center;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            animation: bounce 2s infinite;
+        }
         section {
-            margin-bottom: 40px;
+            margin-bottom: 50px;
         }
         .actu {
-            background-color: #fff;
+            background: #fff;
             padding: 20px;
             margin-bottom: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+        .actu:hover {
+            transform: scale(1.03);
         }
         .actu h3 {
-            color: #2c3e50;
-            font-size: 1.3em;
+            color: #e91e63;
+            font-size: 1.4em;
             margin-top: 0;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
         }
         .actu p {
-            margin: 5px 0;
+            margin: 8px 0;
+            font-size: 1.1em;
         }
         .actu img {
             max-width: 100%;
             height: auto;
-            border-radius: 5px;
-            margin-top: 10px;
-        }
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        ul li {
-            margin-bottom: 10px;
-        }
-        a {
-            color: #3498db;
-            text-decoration: none;
-            font-weight: 500;
-        }
-        a:hover {
-            text-decoration: underline;
+            border-radius: 10px;
+            margin-top: 15px;
+            border: 3px solid #ffeb3b;
         }
         footer {
             text-align: center;
-            padding: 15px;
-            background-color: #fff;
-            border-top: 1px solid #e0e0e0;
+            padding: 20px;
+            background: #2196f3;
+            color: #fff;
             font-size: 0.9em;
-            color: #7f8c8d;
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.2);
         }
         .error-message {
             color: #e74c3c;
             font-style: italic;
+            font-size: 0.9em;
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
         }
         @media (max-width: 600px) {
+            header {
+                flex-direction: column;
+                padding: 10px;
+            }
+            nav {
+                margin-top: 10px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            nav button {
+                padding: 8px 15px;
+                font-size: 0.9em;
+            }
             main {
                 padding: 15px;
             }
@@ -95,7 +145,7 @@
                 font-size: 1.5em;
             }
             h2 {
-                font-size: 1.3em;
+                font-size: 1.4em;
             }
             .actu {
                 padding: 15px;
@@ -105,22 +155,18 @@
 </head>
 <body>
     <header>
-        <h1>Application CSE</h1>
+        <img src="logo.png" alt="Logo Entreprise" class="logo">
+        <h1>Application CSE CRM59</h1>
+        <nav>
+            <button onclick="window.location.href='forms/machine-a-cafe.html'">Machine à Café</button>
+            <button onclick="window.location.href='forms/contact.html'">Contact</button>
+        </nav>
     </header>
     
     <main>
         <section id="actualites">
             <h2>Dernières Actualités</h2>
             <div id="news-container"></div>
-            
-        </section>
-        
-        <section id="formulaires">
-            <h2>Formulaires</h2>
-            <ul>
-                <li><a href="forms/machine-a-cafe.html">Signaler un problème avec la machine à café</a></li>
-                <li><a href="forms/contact.html">Formulaire de contact</a></li>
-            </ul>
         </section>
     </main>
     
@@ -137,22 +183,21 @@
             .then(response => response.text())
             .then(data => {
                 const parsedData = Papa.parse(data, { header: true }).data;
-                console.log('Données brutes du CSV:', parsedData); // Débogage
+                console.log('Données brutes du CSV:', parsedData);
                 displayNews(parsedData);
             })
             .catch(error => {
                 console.error('Erreur lors de la récupération des actualités:', error);
-                document.getElementById('news-container').innerHTML = '<p>Erreur lors du chargement des actualités.</p>';
+                document.getElementById('news-container').innerHTML = '<p class="error-message">Erreur lors du chargement des actualités.</p>';
             });
 
         // Afficher les actualités
         function displayNews(news) {
             const container = document.getElementById('news-container');
-            const baseUrl = 'https://csecrm59.github.io/Application/'; // Base de l'URL de ton application
+            const baseUrl = 'https://csecrm59.github.io/Application/';
             news.forEach(item => {
-                const imageUrl = item['Lien_image'] || ''; // Changement ici
-                //const imageUrl = imagePath; // Construire l'URL absolue
-                console.log(`Tentative de chargement de l'image: ${imageUrl}`); // Débogage
+                const imageUrl = item['Lien_image'] || '';
+                console.log(`Tentative de chargement de l'image: ${imageUrl}`);
                 const newsItem = document.createElement('div');
                 newsItem.className = 'actu';
                 newsItem.innerHTML = `
