@@ -184,32 +184,25 @@
 
         // Récupérer et parser le CSV
         fetch(csvUrl)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Erreur réseau : ' + response.status);
-                }
-                return response.text();
-            })
+            .then(response => response.text())
             .then(data => {
                 const parsedData = Papa.parse(data, { header: true }).data;
-                console.log('Données brutes du CSV:', parsedData);
-                if (parsedData.length === 0) {
-                    throw new Error('Aucune donnée trouvée dans le CSV');
-                }
+                console.log('Données brutes du CSV:', parsedData); // Débogage
                 displayNews(parsedData);
             })
             .catch(error => {
                 console.error('Erreur lors de la récupération des actualités:', error);
-                document.getElementById('news-container').innerHTML = '<p class="error-message">Erreur lors du chargement des actualités : ' + error.message + '</p>';
+                document.getElementById('news-container').innerHTML = '<p>Erreur lors du chargement des actualités.</p>';
             });
 
         // Afficher les actualités
         function displayNews(news) {
             const container = document.getElementById('news-container');
-            container.innerHTML = ''; // Réinitialiser le conteneur
+            const baseUrl = 'https://csecrm59.github.io/Application/'; // Base de l'URL de ton application
             news.forEach(item => {
-                const imageUrl = item['Lien_image'] || '';
-                console.log(`Tentative de chargement de l'image: ${imageUrl}`);
+                const imageUrl = item['Lien_image'] || ''; // Changement ici
+                //const imageUrl = imagePath; // Construire l'URL absolue
+                console.log(`Tentative de chargement de l'image: ${imageUrl}`); // Débogage
                 const newsItem = document.createElement('div');
                 newsItem.className = 'actu';
                 newsItem.innerHTML = `
