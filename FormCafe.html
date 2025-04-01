@@ -166,19 +166,19 @@
             </div>
 
             <div class="form-group">
-                <p class="note">Si il s'agit d'un problème de rechargement, merci d'indiquer la date, heure et moyen de paiement.</p>
-                <label for="date">Date</label>
-                <input type="date" id="date" name="entry.789458747" required>
+                <p class="note">S’il s'agit d'un problème de rechargement, merci d'indiquer la date, heure et moyen de paiement.</p>
+                <label for="date">Date</label> <!-- "required" supprimé -->
+                <input type="date" id="date" name="entry.789458747">
             </div>
             
             <div class="form-group">
-                <label for="time">Heure</label>
-                <input type="time" id="time" name="entry.1519520523" required>
+                <label for="time">Heure</label> <!-- "required" supprimé -->
+                <input type="time" id="time" name="entry.1519520523">
             </div>
 
             <div class="form-group">
-                <label for="payment">Moyen de paiement</label>
-                <select id="payment" name="entry.1578764886" required>
+                <label for="payment">Moyen de paiement</label> <!-- "required" supprimé -->
+                <select id="payment" name="entry.1578764886">
                     <option value="">Sélectionnez un moyen de paiement</option>
                     <option value="CB">CB</option>
                     <option value="Pluxee">Pluxee</option>
@@ -207,18 +207,15 @@
         
         form.addEventListener("submit", function(event) {
             const commentField = document.getElementById("comment");
-            // Si le commentaire est vide, on s'assure qu'une valeur vide est envoyée
             if (!commentField.value) {
                 commentField.value = "";
             }
         });
 
         function onFormSubmit() {
-            // Afficher le message de confirmation après la soumission
             document.getElementById("reportForm").style.display = "none";
             document.getElementById("confirmation").style.display = "block";
             
-            // Réinitialiser le formulaire après 3 secondes
             setTimeout(() => {
                 document.getElementById("reportForm").reset();
                 document.getElementById("reportForm").style.display = "block";
