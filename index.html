@@ -21,11 +21,9 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             max-width: 600px;
             margin: 0 auto;
+            text-align: center; /* Centrer le contenu */
         }
         header img.logo {
             max-width: 120px;
@@ -42,7 +40,9 @@
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
         nav {
+            margin-top: 15px; /* Espace entre le titre et les boutons */
             display: flex;
+            justify-content: center; /* Centrer les boutons */
             gap: 15px;
         }
         nav button {
@@ -130,13 +130,12 @@
         }
         @media (max-width: 600px) {
             header {
-                flex-direction: column;
                 padding: 10px;
             }
             nav {
                 margin-top: 10px;
                 flex-wrap: wrap;
-                justify-content: center;
+                gap: 10px;
             }
             nav button {
                 padding: 8px 15px;
@@ -179,8 +178,8 @@
     </footer>
 
     <script>
-        // URL du CSV (à remplacer par la nouvelle URL correcte)
-        const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQcKo9WOqdnefe5z7QpaM5XtdkGs7pBeWNFrcy1crwW18Jn_KkR1IxV_KMhatedR5lmaASfeIlEsUF9/pub?gid=0&single=true&output=csv'; // Remplace par l'URL obtenue après republication
+        // URL du CSV corrigée
+        const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQcKo9WOqdnefe5z7QpaM5XtdkGs7pBeWNFrcy1crwW18Jn_KkR1IxV_KMhatedR5lmaASfeIlEsUF9/pub?output=csv';
 
         // Récupérer et parser le CSV
         fetch(csvUrl)
