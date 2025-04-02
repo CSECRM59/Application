@@ -75,7 +75,7 @@ h1 {
 .sidebar {
     position: fixed;
     top: 0;
-    left: -250px; /* Assure que le menu est fermé par défaut */
+    left: -250px !important; /* Forcer la fermeture par défaut */
     width: 250px;
     height: 100%;
     background: linear-gradient(135deg, #e91e63, #2196f3);
@@ -85,7 +85,7 @@ h1 {
 }
 
 .sidebar.active {
-    left: 0;
+    left: 0 !important;
 }
 
 .sidebar ul {
