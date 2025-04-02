@@ -1,8 +1,14 @@
 // URL du CSV
 const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQcKo9WOqdnefe5z7QpaM5XtdkGs7pBeWNFrcy1crwW18Jn_KkR1IxV_KMhatedR5lmaASfeIlEsUF9/pub?output=csv';
 
-// Charger les actualités par défaut au démarrage
-loadPage('actualites');
+// S'assurer que le menu est fermé au démarrage
+document.addEventListener('DOMContentLoaded', () => {
+    const sidebar = document.getElementById('sidebar');
+    const hamburger = document.querySelector('.hamburger');
+    sidebar.classList.remove('active');
+    hamburger.classList.remove('active');
+    loadPage('actualites'); // Charger les actualités par défaut
+});
 
 // Fonction pour ouvrir/fermer le menu hamburger
 function toggleMenu() {
