@@ -8,18 +8,11 @@ function closeMenu() {
     if (sidebar && hamburger) {
         sidebar.classList.remove('active');
         hamburger.classList.remove('active');
-        console.log('Menu fermé au démarrage');
+        console.log('Menu fermé');
     } else {
         console.error('Erreur : sidebar ou hamburger non trouvé');
     }
 }
-
-// S'assurer que le menu est fermé au démarrage
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOMContentLoaded déclenché');
-    closeMenu(); // Forcer la fermeture du menu
-    loadPage('actualites'); // Charger les actualités par défaut
-});
 
 // Fonction pour ouvrir/fermer le menu hamburger
 function toggleMenu() {
@@ -30,10 +23,19 @@ function toggleMenu() {
     console.log('Menu toggled, état actif :', sidebar.classList.contains('active'));
 }
 
+// S'assurer que le menu est fermé au démarrage
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOMContentLoaded déclenché');
+    closeMenu(); // Forcer la fermeture du menu
+    loadPage('actualites', false); // Charger les actualités par défaut sans fermer le menu
+});
+
 // Fonction pour charger une page dynamiquement
-function loadPage(page) {
+function loadPage(page, fromMenuClick = false) {
     const mainContent = document.getElementById('main-content');
-    toggleMenu(); // Ferme le menu après un clic
+    if (fromMenuClick) {
+        toggleMenu(); // Ferme le menu uniquement si l'appel provient d'un clic sur un bouton du menu
+    }
 
     if (page === 'actualites') {
         mainContent.innerHTML = `
