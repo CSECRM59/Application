@@ -4,273 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Application CSE CRM59 - Fun Édition</title>
+    <link rel="stylesheet" href="styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
-    <style>
-        body {
-            font-family: 'Comic Sans MS', 'Segoe UI', Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(135deg, #ffeb3b, #ff5722);
-            color: #333;
-            overflow-x: hidden;
-        }
-        header {
-            background: #2196f3;
-            padding: 15px 20px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            position: fixed; /* Changé en fixed pour que l'en-tête reste en haut */
-            top: 0;
-            width: 100%; /* Prend toute la largeur */
-            z-index: 100;
-            max-width: 600px;
-            margin: 0 auto;
-            left: 0;
-            right: 0;
-            text-align: center;
-        }
-        header img.logo {
-            max-width: 120px;
-            height: auto;
-            transition: transform 0.3s ease;
-        }
-        header img.logo:hover {
-            transform: rotate(10deg) scale(1.1);
-        }
-        h1 {
-            color: #fff;
-            font-size: 2em;
-            margin: 0;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
-        nav {
-            margin-top: 15px;
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-        }
-        nav button {
-            background: #ffeb3b;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-size: 1em;
-            font-weight: bold;
-            color: #e91e63;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        }
-        nav button:hover {
-            background: #e91e63;
-            color: #fff;
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        }
-        main {
-            padding: 30px;
-            max-width: 600px;
-            margin: 150px auto 30px auto; /* Ajouté margin-top pour éviter que le contenu ne soit caché sous l'en-tête fixe */
-            min-height: calc(100vh - 300px); /* Assure que le main prend assez de place */
-        }
-        h2 {
-            color: #2196f3;
-            font-size: 1.8em;
-            text-align: center;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            animation: bounce 2s infinite;
-        }
-        section {
-            margin-bottom: 50px;
-        }
-        .actu {
-            background: #fff;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s ease;
-        }
-        .actu:hover {
-            transform: scale(1.03);
-        }
-        .actu h3 {
-            color: #e91e63;
-            font-size: 1.4em;
-            margin-top: 0;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-        }
-        .actu p {
-            margin: 8px 0;
-            font-size: 1.1em;
-        }
-        .actu img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 10px;
-            margin-top: 15px;
-            border: 3px solid #ffeb3b;
-        }
-        footer {
-            text-align: center;
-            padding: 20px;
-            background: #2196f3;
-            color: #fff;
-            font-size: 0.9em;
-            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.2);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        .error-message {
-            color: #e74c3c;
-            font-style: italic;
-            font-size: 0.9em;
-        }
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-10px); }
-            60% { transform: translateY(-5px); }
-        }
-        @media (max-width: 600px) {
-            header {
-                padding: 10px;
-            }
-            nav {
-                margin-top: 10px;
-                flex-wrap: wrap;
-                gap: 10px;
-            }
-            nav button {
-                padding: 8px 15px;
-                font-size: 0.9em;
-            }
-            main {
-                padding: 15px;
-                margin-top: 120px; /* Ajusté pour les petits écrans */
-            }
-            h1 {
-                font-size: 1.5em;
-            }
-            h2 {
-                font-size: 1.4em;
-            }
-            .actu {
-                padding: 15px;
-            }
-        }
-    </style>
 </head>
 <body>
     <header>
+        <div class="hamburger" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
         <img src="logo.png" alt="Logo Entreprise" class="logo">
         <h1>Application CSE CRM59</h1>
-        <nav>
-            <button onclick="loadPage('actualites')">Actualités</button>
-            <button onclick="loadPage('form/FormCafe')">Machine à Café</button>
-            <button onclick="loadPage('form/Contact')">Contact</button>
-        </nav>
     </header>
-    
+
+    <nav id="sidebar" class="sidebar">
+        <ul>
+            <li><button onclick="loadPage('actualites')">Actualités</button></li>
+            <li><button onclick="loadPage('formulaire-cafe')">Formulaire Café</button></li>
+            <li><button onclick="loadPage('formulaire-contact')">Formulaire Contact</button></li>
+            <li><button onclick="loadPage('partenaires')">Partenaires</button></li>
+        </ul>
+    </nav>
+
     <main id="main-content">
         <section id="actualites">
             <h2>Dernières Actualités</h2>
             <div id="news-container"></div>
         </section>
     </main>
-    
+
     <footer>
         <p>© 2025 CSE CRM59. Tous droits réservés.</p>
     </footer>
 
-    <script>
-        // URL du CSV
-        const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQcKo9WOqdnefe5z7QpaM5XtdkGs7pBeWNFrcy1crwW18Jn_KkR1IxV_KMhatedR5lmaASfeIlEsUF9/pub?output=csv';
-
-        // Charger les actualités par défaut au démarrage
-        loadNews();
-
-        // Fonction pour charger une page dynamiquement
-        function loadPage(page) {
-            const mainContent = document.getElementById('main-content');
-            if (page === 'actualites') {
-                // Charger les actualités
-                mainContent.innerHTML = `
-                    <section id="actualites">
-                        <h2>Dernières Actualités</h2>
-                        <div id="news-container"></div>
-                    </section>
-                `;
-                loadNews();
-            } else {
-                // Charger une page HTML (ex. formulaire)
-                fetch(page)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Erreur lors du chargement de la page : ' + response.status);
-                        }
-                        return response.text();
-                    })
-                    .then(data => {
-                        mainContent.innerHTML = data;
-                        // Réinitialiser les scripts si nécessaire (pour les formulaires)
-                        const scripts = mainContent.getElementsByTagName('script');
-                        for (let script of scripts) {
-                            const newScript = document.createElement('script');
-                            newScript.textContent = script.textContent;
-                            mainContent.appendChild(newScript);
-                        }
-                    })
-                    .catch(error => {
-                        mainContent.innerHTML = `<p class="error-message">Erreur lors du chargement de la page : ${error.message}</p>`;
-                    });
-            }
-        }
-
-        // Fonction pour charger les actualités
-        function loadNews() {
-            fetch(csvUrl)
-                .then(response => {
-                    console.log('Statut de la réponse:', response.status);
-                    if (!response.ok) {
-                        throw new Error('Erreur réseau : ' + response.status);
-                    }
-                    return response.text();
-                })
-                .then(data => {
-                    console.log('Contenu brut du CSV:', data);
-                    const parsedData = Papa.parse(data, { header: true }).data;
-                    console.log('Données parsées:', parsedData);
-                    if (parsedData.length === 0) {
-                        throw new Error('Aucune donnée trouvée dans le CSV');
-                    }
-                    displayNews(parsedData);
-                })
-                .catch(error => {
-                    console.error('Erreur:', error);
-                    document.getElementById('news-container').innerHTML = '<p class="error-message">Erreur lors du chargement des actualités : ' + error.message + '</p>';
-                });
-        }
-
-        // Afficher les actualités
-        function displayNews(news) {
-            const container = document.getElementById('news-container');
-            container.innerHTML = '';
-            news.forEach(item => {
-                const imageUrl = item['Lien_image'] || '';
-                console.log(`Tentative de chargement de l'image: ${imageUrl}`);
-                const newsItem = document.createElement('div');
-                newsItem.className = 'actu';
-                newsItem.innerHTML = `
-                    <h3>${item.Titre || 'Sans titre'}</h3>
-                    <p><strong>Date :</strong> ${item.Date || 'Non spécifiée'}</p>
-                    <p>${item.Description || 'Aucune description'}</p>
-                    ${imageUrl ? `<img src="${imageUrl}" alt="${item.Titre || 'Image actualité'}" onerror="this.style.display='none'; this.nextSibling.style.display='block';">
-                                  <p class="error-message" style="display: none;">Impossible de charger l'image.</p>` : ''}
-                `;
-                container.appendChild(newsItem);
-            });
-        }
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
