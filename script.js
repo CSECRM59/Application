@@ -27,14 +27,20 @@ function closeMenu() {
 
 // Fonction pour ouvrir/fermer le menu hamburger
 function toggleMenu() {
+    console.log('toggleMenu function CALLED!'); // <-- Vérifie si elle est appelée
     const sidebar = document.getElementById('sidebar');
     const hamburger = document.querySelector('.hamburger');
+    
     if (sidebar && hamburger) {
+        console.log('Elements found, toggling active class...'); // <-- Vérifie si les éléments sont trouvés
         sidebar.classList.toggle('active');
         hamburger.classList.toggle('active');
-        // console.log('Menu toggled, état actif :', sidebar.classList.contains('active')); // Décommenter pour débugger
+        console.log('Sidebar active state now:', sidebar.classList.contains('active')); // <-- Vérifie l'état après
     } else {
-         console.error('Erreur : sidebar ou hamburger non trouvé pour toggleMenu');
+        // Si un des éléments n'est pas trouvé, l'indiquer clairement
+        console.error('Error in toggleMenu: Could not find sidebar or hamburger element.');
+        if (!sidebar) console.error('Sidebar element NOT FOUND (check ID)');
+        if (!hamburger) console.error('Hamburger element NOT FOUND (check class)');
     }
 }
 
