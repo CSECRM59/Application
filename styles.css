@@ -346,3 +346,12 @@ button:active {
         padding: 10px;
     }
 }
+.form-status-sending {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #eaf2f8; /* Bleu clair */
+    color: #2c3e50; /* Bleu foncé */
+    border: 1px solid #aed6f1; /* Bordure bleue */
+    border-radius: 5px;
+    text-align: center;
+}
