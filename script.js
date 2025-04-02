@@ -1,16 +1,27 @@
-// URL du CSV
+// ==================================================
+//              SCRIPT COMPLET POUR AppliCSE
+// ==================================================
+
+// --- CONSTANTES ET VARIABLES GLOBALES ---
+
+// URL du Google Sheet publié au format CSV pour les actualités
 const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQcKo9WOqdnefe5z7QpaM5XtdkGs7pBeWNFrcy1crwW18Jn_KkR1IxV_KMhatedR5lmaASfeIlEsUF9/pub?output=csv';
 
-// Fonction pour fermer le menu
+// Drapeau pour gérer l'état de soumission des formulaires (évite le message prématuré)
+let isFormSubmitting = false; 
+
+// --- GESTION DU MENU SIDEBAR ---
+
+// Fonction pour fermer le menu explicitement
 function closeMenu() {
     const sidebar = document.getElementById('sidebar');
     const hamburger = document.querySelector('.hamburger');
     if (sidebar && hamburger) {
         sidebar.classList.remove('active');
         hamburger.classList.remove('active');
-        console.log('Menu fermé');
+        // console.log('Menu fermé'); // Décommenter pour débugger
     } else {
-        console.error('Erreur : sidebar ou hamburger non trouvé');
+        console.error('Erreur : sidebar ou hamburger non trouvé pour closeMenu');
     }
 }
 
@@ -18,39 +29,50 @@ function closeMenu() {
 function toggleMenu() {
     const sidebar = document.getElementById('sidebar');
     const hamburger = document.querySelector('.hamburger');
-    sidebar.classList.toggle('active');
-    hamburger.classList.toggle('active');
-    console.log('Menu toggled, état actif :', sidebar.classList.contains('active'));
+    if (sidebar && hamburger) {
+        sidebar.classList.toggle('active');
+        hamburger.classList.toggle('active');
+        // console.log('Menu toggled, état actif :', sidebar.classList.contains('active')); // Décommenter pour débugger
+    } else {
+         console.error('Erreur : sidebar ou hamburger non trouvé pour toggleMenu');
+    }
 }
 
-// S'assurer que le menu est fermé au démarrage
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOMContentLoaded déclenché');
-    closeMenu(); // Forcer la fermeture du menu
-    loadPage('actualites', false); // Charger les actualités par défaut sans fermer le menu
-});
+// --- CHARGEMENT DU CONTENU DES PAGES ---
 
-// Fonction pour charger une page dynamiquement
+// Fonction pour charger une page dynamiquement dans main-content
 function loadPage(page, fromMenuClick = false) {
     const mainContent = document.getElementById('main-content');
-    if (fromMenuClick) {
-        toggleMenu(); // Ferme le menu uniquement si l'appel provient d'un clic sur un bouton du menu
+    
+    if (!mainContent) {
+        console.error("Erreur critique : main-content n'existe pas.");
+        return;
     }
 
+    // Ferme le menu SI l'appel vient d'un clic dans le menu
+    if (fromMenuClick) {
+        closeMenu(); // Utiliser closeMenu pour être sûr de le fermer
+    }
+
+    // Réinitialiser le drapeau de soumission au changement de page
+    isFormSubmitting = false; 
+
+    // Injecter le HTML correspondant à la page demandée
     if (page === 'actualites') {
         mainContent.innerHTML = `
             <section id="actualites">
                 <h2>Dernières Actualités</h2>
-                <div id="news-container"></div>
+                <div id="news-container"><p>Chargement des actualités...</p></div>
             </section>
         `;
-        loadNews();
+        loadNews(); // Lancer le chargement des news
     } else if (page === 'formulaire-cafe') {
         mainContent.innerHTML = `
             <section id="formulaire-cafe">
                 <div class="form-container">
                     <h2>Signalement Problème Machine à Café</h2>
                     <form id="reportForm" action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSfw2H0lzEAvt7niVxRhpkPQTLOaOfXz3SoI3IC9NfNxnY33Ag/formResponse" method="POST" target="hidden_iframe">
+                        <!-- Champs du formulaire café -->
                         <div class="form-group">
                             <label for="email" class="required">Email</label>
                             <input type="email" id="email" name="entry.1494559432" required>
@@ -113,20 +135,25 @@ function loadPage(page, fromMenuClick = false) {
                         </div>
                         <button type="submit">Envoyer le signalement</button>
                     </form>
-                    <div id="confirmation" class="confirmation">
+                    <!-- Div pour le message d'envoi (optionnel) -->
+                    <div class="form-status-sending" style="display: none;">Envoi en cours...</div> 
+                    <!-- Div pour la confirmation -->
+                    <div id="confirmation" class="confirmation" style="display: none;"> 
                         Merci pour votre signalement ! Il a bien été enregistré.
                     </div>
+                    <!-- Iframe cachée -->
+                    <iframe name="hidden_iframe" style="display: none;" onload="onFormSubmit()"></iframe>
                 </div>
-                <iframe name="hidden_iframe" style="display: none;" onload="onFormSubmit()"></iframe>
             </section>
         `;
-        attachFormEvents('reportForm');
+        attachFormEvents('reportForm'); // Attacher les écouteurs à ce formulaire
     } else if (page === 'formulaire-contact') {
         mainContent.innerHTML = `
             <section id="formulaire-contact">
                 <div class="form-container">
                     <h2>Formulaire de Contact</h2>
-                    <form id="contactForm" action="URL_GOOGLE_FORM" method="POST" target="hidden_iframe">
+                    <!-- !!! REMPLACEZ URL_GOOGLE_FORM ET LES entry.XXXX !!! -->
+                    <form id="contactForm" action="URL_GOOGLE_FORM" method="POST" target="hidden_iframe"> 
                         <div class="form-group">
                             <label for="name" class="required">Nom</label>
                             <input type="text" id="name" name="entry.XXXXXXXXXX1" required>
@@ -145,18 +172,23 @@ function loadPage(page, fromMenuClick = false) {
                         </div>
                         <button type="submit">Envoyer le message</button>
                     </form>
-                    <div id="confirmation" class="confirmation">
+                     <!-- Div pour le message d'envoi (optionnel) -->
+                    <div class="form-status-sending" style="display: none;">Envoi en cours...</div> 
+                    <!-- Div pour la confirmation -->
+                    <div id="confirmation" class="confirmation" style="display: none;">
                         Merci pour votre message ! Il a bien été envoyé.
                     </div>
+                     <!-- Iframe cachée -->
+                    <iframe name="hidden_iframe" style="display: none;" onload="onFormSubmit()"></iframe>
                 </div>
-                <iframe name="hidden_iframe" style="display: none;" onload="onFormSubmit()"></iframe>
             </section>
         `;
-        attachFormEvents('contactForm');
+        attachFormEvents('contactForm'); // Attacher les écouteurs à ce formulaire
     } else if (page === 'partenaires') {
         mainContent.innerHTML = `
             <section id="partenaires">
                 <h2>Nos Partenaires</h2>
+                <!-- Contenu statique des partenaires -->
                 <div class="partner">
                     <h3>Partenaire 1</h3>
                     <p>Un super partenaire qui propose des réductions sur les loisirs.</p>
@@ -167,77 +199,245 @@ function loadPage(page, fromMenuClick = false) {
                     <p>Partenaire spécialisé dans les voyages à prix réduit.</p>
                     <p><a href="https://exemple.com" target="_blank">Visiter leur site</a></p>
                 </div>
+                <!-- Ajoutez d'autres partenaires ici -->
             </section>
         `;
+    } else {
+        // Page inconnue ou page d'accueil par défaut
+        mainContent.innerHTML = '<p>Contenu non trouvé.</p>';
+        // Charger les actualités par défaut si aucune page n'est spécifiée
+        if (!page) loadPage('actualites'); 
     }
 }
 
-// Fonction pour attacher les événements aux formulaires
+// --- GESTION DES FORMULAIRES ---
+
+// Fonction pour attacher les événements aux formulaires (levée du drapeau)
 function attachFormEvents(formId) {
     const form = document.getElementById(formId);
+    
+    if (!form) {
+        console.error("Formulaire non trouvé avec l'ID:", formId);
+        return; // Sortir si le formulaire n'existe pas
+    }
+
+    const submitButton = form.querySelector('button[type="submit"]');
+    // Trouver les divs de statut et confirmation relatives à ce formulaire
+    const statusDiv = form.parentNode.querySelector('.form-status-sending');
+    const confirmationDiv = form.parentNode.querySelector('#confirmation'); 
+
     form.addEventListener("submit", function(event) {
-        const commentField = form.querySelector('textarea');
-        if (commentField && !commentField.value) {
-            commentField.value = "";
-        }
+        // On ne fait PAS event.preventDefault() pour laisser la soumission vers l'iframe
+
+        // Mettre à jour le drapeau pour indiquer une soumission en cours
+        isFormSubmitting = true; 
+        // console.log("Formulaire soumis, isFormSubmitting mis à true"); // Débug
+
+        // Afficher "Envoi en cours..." et gérer les états visuels
+        if(submitButton) submitButton.disabled = true;
+        if(statusDiv) statusDiv.style.display = 'block'; 
+        if(confirmationDiv) confirmationDiv.style.display = 'none'; // Cacher l'ancienne confirmation
+
     });
 }
 
-// Fonction pour gérer l'événement onload de l'iframe
+// Fonction appelée par l'attribut 'onload' de l'iframe cachée
 function onFormSubmit() {
-    const form = document.querySelector('form');
-    const confirmation = document.getElementById("confirmation");
-    form.style.display = "none";
-    confirmation.style.display = "block";
-    
-    setTimeout(() => {
-        form.reset();
-        form.style.display = "block";
-        confirmation.style.display = "none";
-    }, 3000);
+    // console.log("onFormSubmit déclenché. isFormSubmitting:", isFormSubmitting); // Débug
+
+    // NE RIEN FAIRE si le drapeau n'est pas levé (chargement initial)
+    if (!isFormSubmitting) {
+        // console.log("Chargement initial de l'iframe ignoré."); // Débug
+        return; 
+    }
+
+    // Le formulaire a été soumis et la réponse de Google est chargée dans l'iframe
+
+    // Cibler les éléments du formulaire ACTUELLEMENT affiché
+    const currentForm = document.querySelector('#main-content form'); 
+    const confirmationDiv = currentForm ? currentForm.parentNode.querySelector('#confirmation') : null; 
+    const statusDiv = currentForm ? currentForm.parentNode.querySelector('.form-status-sending') : null;
+    const submitButton = currentForm ? currentForm.querySelector('button[type="submit"]') : null;
+
+    if (currentForm && confirmationDiv) {
+        // Cacher le formulaire et le message "Envoi..."
+        currentForm.style.display = "none";
+        if (statusDiv) statusDiv.style.display = 'none';
+
+        // Afficher le message de confirmation
+        confirmationDiv.style.display = "block";
+        
+        // Réinitialiser après un délai
+        setTimeout(() => {
+            if(currentForm) currentForm.reset(); // Vider les champs
+            if(currentForm) currentForm.style.display = "block"; // Réafficher
+            if(confirmationDiv) confirmationDiv.style.display = "none"; // Cacher
+            if(submitButton) submitButton.disabled = false; // Réactiver
+            
+            // Réinitialiser le drapeau !
+            isFormSubmitting = false; 
+            // console.log("Fin du timeout, isFormSubmitting réinitialisé à false"); // Débug
+
+        }, 3000); // Délai de 3 secondes
+
+    } else {
+        console.error("Impossible de trouver le formulaire courant ou la div de confirmation dans onFormSubmit.");
+         // Réinitialiser le drapeau même en cas d'erreur pour éviter de bloquer
+         isFormSubmitting = false;
+    }
 }
 
-// Fonction pour charger les actualités
+
+// --- CHARGEMENT ET AFFICHAGE DES ACTUALITÉS ---
+
+// Fonction pour charger les actualités depuis le CSV Google Sheet
 function loadNews() {
+    const container = document.getElementById('news-container');
+    if (!container) {
+        console.error("Conteneur de news introuvable.");
+        return;
+    }
+    container.innerHTML = '<p>Chargement des actualités...</p>'; // Message pendant le chargement
+
     fetch(csvUrl)
         .then(response => {
-            console.log('Statut de la réponse:', response.status);
+            // console.log('Statut de la réponse fetch:', response.status); // Débug
             if (!response.ok) {
-                throw new Error('Erreur réseau : ' + response.status);
+                throw new Error(`Erreur réseau ${response.status} : ${response.statusText}`);
             }
             return response.text();
         })
-        .then(data => {
-            console.log('Contenu brut du CSV:', data);
-            const parsedData = Papa.parse(data, { header: true }).data;
-            console.log('Données parsées:', parsedData);
-            if (parsedData.length === 0) {
-                throw new Error('Aucune donnée trouvée dans le CSV');
-            }
-            displayNews(parsedData);
+        .then(csvText => {
+            // console.log('Contenu brut du CSV:', csvText); // Débug
+            // Utiliser PapaParse pour parser le CSV
+            Papa.parse(csvText, {
+                header: true,       // La première ligne contient les en-têtes
+                skipEmptyLines: true, // Ignorer les lignes vides
+                complete: function(results) {
+                    // console.log('Données parsées par PapaParse:', results.data); // Débug
+                    if (results.errors.length > 0) {
+                         console.warn("Erreurs de parsing PapaParse:", results.errors);
+                    }
+                    if (results.data && results.data.length > 0) {
+                        displayNews(results.data); // Afficher les news si données valides
+                    } else {
+                         container.innerHTML = '<p class="error-message">Aucune actualité trouvée dans le fichier.</p>';
+                    }
+                },
+                error: function(error) {
+                     console.error('Erreur PapaParse:', error);
+                     container.innerHTML = `<p class="error-message">Erreur lors du traitement des actualités : ${error.message}</p>`;
+                }
+            });
         })
         .catch(error => {
-            console.error('Erreur:', error);
-            document.getElementById('news-container').innerHTML = '<p class="error-message">Erreur lors du chargement des actualités : ' + error.message + '</p>';
+            console.error('Erreur lors du fetch des actualités:', error);
+            container.innerHTML = `<p class="error-message">Impossible de charger les actualités : ${error.message}. Vérifiez l'URL et le partage du Google Sheet.</p>`;
         });
 }
 
-// Afficher les actualités
+// Fonction pour afficher les actualités dans le DOM
 function displayNews(news) {
     const container = document.getElementById('news-container');
-    container.innerHTML = '';
+    if (!container) return; // Sécurité
+    
+    container.innerHTML = ''; // Vider le conteneur
+
+    if (!Array.isArray(news) || news.length === 0) {
+         container.innerHTML = '<p>Aucune actualité à afficher pour le moment.</p>';
+         return;
+    }
+
+    // Trier les news par date (la plus récente d'abord) si une colonne 'Date' existe
+    // et est dans un format comparable (ex: YYYY-MM-DD ou DD/MM/YYYY)
+    if (news[0].Date) {
+        news.sort((a, b) => {
+            // Tenter de parser les dates - adapter le format si nécessaire
+            // Ceci suppose un format comme DD/MM/YYYY ou YYYY-MM-DD
+            const dateA = parseDate(a.Date);
+            const dateB = parseDate(b.Date);
+            // Comparer en timestamp (descendant)
+            return (dateB ? dateB.getTime() : 0) - (dateA ? dateA.getTime() : 0); 
+        });
+    }
+
+
     news.forEach(item => {
-        const imageUrl = item['Lien_image'] || '';
-        console.log(`Tentative de chargement de l'image: ${imageUrl}`);
+        // Vérifier que les colonnes existent bien (robustesse)
+        const title = item.Titre || 'Actualité sans titre';
+        const date = item.Date || 'Date non spécifiée';
+        const description = item.Description || 'Pas de description.';
+        const imageUrl = item.Lien_image || item['Lien image'] || ''; // Tester plusieurs noms de colonnes courants
+
         const newsItem = document.createElement('div');
-        newsItem.className = 'actu';
+        newsItem.className = 'actu'; // Classe CSS pour le style
+
+        // Construire le HTML de l'actualité
+        let imageHtml = '';
+        if (imageUrl) {
+            // Gérer l'erreur de chargement d'image directement dans l'HTML
+            imageHtml = `
+                <img src="${imageUrl}" 
+                     alt="Image pour ${title}" 
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" 
+                     loading="lazy"> 
+                <p class="error-message image-error" style="display: none;">Impossible de charger l'image (${imageUrl})</p>
+            `;
+        }
+        
         newsItem.innerHTML = `
-            <h3>${item.Titre || 'Sans titre'}</h3>
-            <p><strong>Date :</strong> ${item.Date || 'Non spécifiée'}</p>
-            <p>${item.Description || 'Aucune description'}</p>
-            ${imageUrl ? `<img src="${imageUrl}" alt="${item.Titre || 'Image actualité'}" onerror="this.style.display='none'; this.nextSibling.style.display='block';">
-                          <p class="error-message" style="display: none;">Impossible de charger l'image.</p>` : ''}
+            <h3>${title}</h3>
+            <p><strong>Date :</strong> ${date}</p>
+            <p>${description}</p>
+            ${imageHtml} 
         `;
         container.appendChild(newsItem);
     });
 }
+
+// Fonction utilitaire pour parser les dates (simple exemple, à adapter)
+function parseDate(dateString) {
+    if (!dateString) return null;
+    // Tente DD/MM/YYYY
+    let parts = dateString.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if (parts) {
+        // Attention: Mois est 0-indexé en JS (0 = Janvier)
+        return new Date(parts[3], parts[2] - 1, parts[1]);
+    }
+    // Tente YYYY-MM-DD (plus fiable car format ISO partiel)
+    parts = dateString.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+     if (parts) {
+        return new Date(parts[1], parts[2] - 1, parts[3]);
+    }
+    // Tente de laisser JS faire avec Date.parse ou new Date()
+    const parsed = new Date(dateString);
+    if (!isNaN(parsed.getTime())) {
+        return parsed;
+    }
+    return null; // Format non reconnu
+}
+
+// --- INITIALISATION AU CHARGEMENT DE LA PAGE ---
+
+document.addEventListener('DOMContentLoaded', () => {
+    // console.log('DOM entièrement chargé et analysé'); // Débug
+    
+    // S'assurer que le menu est fermé au démarrage
+    closeMenu(); 
+    
+    // Charger la page d'actualités par défaut sans déclencher la fermeture du menu
+    loadPage('actualites', false); 
+    
+    // Attacher le listener au bouton hamburger (même si déjà fait dans l'HTML, sécurité)
+    const hamburger = document.querySelector('.hamburger');
+    if (hamburger) {
+        hamburger.removeEventListener('click', toggleMenu); // Eviter doublons si rechargement partiel
+        hamburger.addEventListener('click', toggleMenu);
+    } else {
+        console.error("Bouton hamburger non trouvé à l'initialisation.");
+    }
+});
+
+// ==================================================
+//              FIN DU SCRIPT
+// ==================================================
