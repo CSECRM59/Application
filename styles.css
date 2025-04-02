@@ -19,17 +19,15 @@ header {
     margin: 0 auto;
     left: 0;
     right: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    text-align: center;
 }
 
 header img.logo {
     max-width: 120px;
     height: auto;
     transition: transform 0.3s ease;
-    position: absolute;
-    left: 20px;
+    display: block;
+    margin: 0 auto 10px; /* Centré avec un espace en dessous */
 }
 
 header img.logo:hover {
@@ -48,20 +46,22 @@ h1 {
     cursor: pointer;
     position: absolute;
     left: 20px;
+    top: 20px;
     z-index: 101;
 }
 
 .hamburger span {
     display: block;
-    width: 25px;
-    height: 3px;
-    background: #fff;
-    margin: 5px 0;
+    width: 30px;
+    height: 4px;
+    background: #ffeb3b; /* Couleur plus vive */
+    margin: 6px 0;
+    border-radius: 2px;
     transition: all 0.3s ease;
 }
 
 .hamburger.active span:nth-child(1) {
-    transform: rotate(45deg) translate(5px, 5px);
+    transform: rotate(45deg) translate(8px, 8px);
 }
 
 .hamburger.active span:nth-child(2) {
@@ -69,7 +69,7 @@ h1 {
 }
 
 .hamburger.active span:nth-child(3) {
-    transform: rotate(-45deg) translate(7px, -7px);
+    transform: rotate(-45deg) translate(8px, -8px);
 }
 
 .sidebar {
@@ -78,8 +78,8 @@ h1 {
     left: -250px;
     width: 250px;
     height: 100%;
-    background: #2196f3;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(135deg, #e91e63, #2196f3); /* Dégradé pour un look fun */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
     transition: left 0.3s ease;
     z-index: 99;
 }
@@ -95,35 +95,43 @@ h1 {
 }
 
 .sidebar ul li {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 .sidebar ul li button {
     background: #ffeb3b;
     border: none;
-    padding: 10px 20px;
-    border-radius: 25px;
-    font-size: 1em;
+    padding: 12px 20px;
+    border-radius: 30px;
+    font-size: 1.1em;
     font-weight: bold;
     color: #e91e63;
     cursor: pointer;
     transition: all 0.3s ease;
     width: 100%;
     text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .sidebar ul li button:hover {
-    background: #e91e63;
-    color: #fff;
-    transform: translateY(-3px);
+    background: #fff;
+    color: #e91e63;
+    transform: translateX(5px);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.sidebar ul li button .icon {
+    font-size: 1.2em;
 }
 
 main {
     padding: 30px;
     max-width: 600px;
-    margin: 100px auto 30px auto;
-    min-height: calc(100vh - 200px);
+    margin: 150px auto 30px auto; /* Ajusté pour le logo centré */
+    min-height: calc(100vh - 250px);
 }
 
 h2 {
@@ -190,7 +198,7 @@ footer {
     font-size: 0.9em;
 }
 
-/* Styles des formulaires (réutilisés) */
+/* Styles des formulaires */
 .form-container {
     background-color: #ffffff;
     padding: 25px;
@@ -315,13 +323,11 @@ button:active {
     }
     .hamburger {
         left: 15px;
-    }
-    header img.logo {
-        left: 15px;
+        top: 15px;
     }
     main {
         padding: 15px;
-        margin-top: 80px;
+        margin-top: 120px;
     }
     h1 {
         font-size: 1.5em;
