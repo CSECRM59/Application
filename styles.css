@@ -27,7 +27,7 @@ header img.logo {
     height: auto;
     transition: transform 0.3s ease;
     display: block;
-    margin: 0 auto 10px; /* Centré avec un espace en dessous */
+    margin: 0 auto 10px;
 }
 
 header img.logo:hover {
@@ -54,7 +54,7 @@ h1 {
     display: block;
     width: 30px;
     height: 4px;
-    background: #ffeb3b; /* Couleur plus vive */
+    background: #ffeb3b;
     margin: 6px 0;
     border-radius: 2px;
     transition: all 0.3s ease;
@@ -75,10 +75,10 @@ h1 {
 .sidebar {
     position: fixed;
     top: 0;
-    left: -250px;
+    left: -250px; /* Assure que le menu est fermé par défaut */
     width: 250px;
     height: 100%;
-    background: linear-gradient(135deg, #e91e63, #2196f3); /* Dégradé pour un look fun */
+    background: linear-gradient(135deg, #e91e63, #2196f3);
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
     transition: left 0.3s ease;
     z-index: 99;
@@ -130,7 +130,7 @@ h1 {
 main {
     padding: 30px;
     max-width: 600px;
-    margin: 150px auto 30px auto; /* Ajusté pour le logo centré */
+    margin: 150px auto 30px auto;
     min-height: calc(100vh - 250px);
 }
 
