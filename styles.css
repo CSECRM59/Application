@@ -465,61 +465,76 @@ footer {
 
 /* ======================================== */
 /*          STYLE THEME SWITCHER           */
+/*      (Boutons côte à côte)             */
 /* ======================================== */
 
-/* Placé dans le li de la sidebar */
-.sidebar ul li .theme-switcher {
-    padding: 15px 0 0 0; /* Padding haut seulement */
+/* Conteneur général dans le li de la sidebar */
+.sidebar ul li .theme-switcher-container { /* Ajout d'un conteneur pour le titre et les boutons */
+    padding: 15px 15px 5px 15px; /* Padding global */
     margin-top: 20px;
     border-top: 1px solid color-mix(in srgb, var(--sidebar-text) 15%, transparent); /* Ligne séparation */
 }
 
-.theme-switcher h4 {
+.theme-switcher-container h4 {
     font-family: var(--font-heading);
     color: var(--sidebar-icon); /* Couleur icône pour titre */
     font-size: 0.85em;
-    margin-bottom: 10px;
-    padding-left: 15px; /* Aligner avec padding boutons */
+    margin-bottom: 10px; /* Espace sous le titre */
     text-transform: uppercase;
     font-weight: 500;
     letter-spacing: 0.5px;
+    width: 100%; /* Assure que le titre prend toute la largeur */
 }
 
-.theme-switcher button.theme-button { /* Cibler spécifiquement les boutons de thème */
+/* Le conteneur spécifique pour les boutons, en ligne */
+.theme-buttons-wrapper {
+    display: flex; /* Aligne les boutons horizontalement */
+    flex-wrap: wrap; /* Permet aux boutons de passer à la ligne si pas assez de place */
+    gap: 8px; /* Espace entre les boutons (horizontal et vertical si wrap) */
+    align-items: center; /* Centre les boutons verticalement s'ils wrappent */
+}
+
+/* Style des boutons de thème */
+.theme-switcher-container button.theme-button {
     background: color-mix(in srgb, var(--sidebar-text) 10%, transparent);
     color: var(--sidebar-text);
     border: 1px solid transparent;
     border-radius: 5px;
-    padding: 5px 12px;
-    margin-left: 15px; /* Aligner */
-    margin-right: 5px; /* Espacement entre boutons */
-    margin-bottom: 10px;
+    padding: 5px 12px; /* Padding intérieur du bouton */
+     /* Pas de marges externes spécifiques, gérées par 'gap' */
     cursor: pointer;
     font-size: 0.9em;
     font-family: var(--font-body);
     transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-    width: auto; /* Largeur auto */
-    display: inline-block; /* Afficher en ligne */
+    /* Assurer que le bouton ne prend pas toute la largeur */
+    width: auto;
+    display: inline-block; /* Comportement naturel, mais bon à spécifier */
+    flex-grow: 0; /* Ne pas laisser les boutons s'étirer */
+    flex-shrink: 0; /* Ne pas laisser les boutons rétrécir */
 }
 
-.theme-switcher button.theme-button:hover {
+.theme-switcher-container button.theme-button:hover {
     background: color-mix(in srgb, var(--sidebar-text) 20%, transparent);
 }
 
-.theme-switcher button.theme-button.active-theme {
-    /* Style du bouton actif - Utilise l'accent du thème ACTUEL */
+/* Style du bouton de thème actif */
+.theme-switcher-container button.theme-button.active-theme {
     background-color: var(--color-accent);
     /* Déterminer la couleur du texte sur l'accent */
-    /* C'est complexe dynamiquement, on peut choisir une couleur fixe */
-    /* Ou utiliser une logique JS/CSS plus avancée si nécessaire */
-    /* Ici, on essaie une couleur contrastée simple */
-    color: var(--color-text); /* Ou forcer #000 / #fff selon l'accent */
+    /* Essayer de contraster (peut nécessiter ajustement selon l'accent) */
+    color: var(--color-text); /* Hypothèse: texte standard contraste bien */
     border-color: var(--color-accent);
     font-weight: bold;
 }
-/* Ajustement pour thème sombre où l'accent est clair */
-body.theme-dark .theme-switcher button.theme-button.active-theme {
+
+/* Ajustement spécifique pour le thème sombre si l'accent est clair */
+body.theme-dark .theme-switcher-container button.theme-button.active-theme {
     color: var(--color-background); /* Texte foncé sur accent clair */
+}
+
+/* Ajustement spécifique pour le thème fun si l'accent est clair */
+body.theme-fun .theme-switcher-container button.theme-button.active-theme {
+    color: #333; /* Texte foncé sur accent jaune */
 }
 
 
