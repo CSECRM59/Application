@@ -1,15 +1,24 @@
 // URL du CSV
 const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQcKo9WOqdnefe5z7QpaM5XtdkGs7pBeWNFrcy1crwW18Jn_KkR1IxV_KMhatedR5lmaASfeIlEsUF9/pub?output=csv';
 
-// S'assurer que le menu est fermé au démarrage
-document.addEventListener('DOMContentLoaded', () => {
+// Fonction pour fermer le menu
+function closeMenu() {
     const sidebar = document.getElementById('sidebar');
     const hamburger = document.querySelector('.hamburger');
-    // Forcer la fermeture du menu au démarrage
-    sidebar.classList.remove('active');
-    hamburger.classList.remove('active');
-    // Charger les actualités par défaut
-    loadPage('actualites');
+    if (sidebar && hamburger) {
+        sidebar.classList.remove('active');
+        hamburger.classList.remove('active');
+        console.log('Menu fermé au démarrage');
+    } else {
+        console.error('Erreur : sidebar ou hamburger non trouvé');
+    }
+}
+
+// S'assurer que le menu est fermé au démarrage
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOMContentLoaded déclenché');
+    closeMenu(); // Forcer la fermeture du menu
+    loadPage('actualites'); // Charger les actualités par défaut
 });
 
 // Fonction pour ouvrir/fermer le menu hamburger
@@ -18,6 +27,7 @@ function toggleMenu() {
     const hamburger = document.querySelector('.hamburger');
     sidebar.classList.toggle('active');
     hamburger.classList.toggle('active');
+    console.log('Menu toggled, état actif :', sidebar.classList.contains('active'));
 }
 
 // Fonction pour charger une page dynamiquement
