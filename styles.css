@@ -1,563 +1,615 @@
-/* ================================================== */
-/*          STYLESHEET COMPLET AppliCSE             */
-/*             (Multi-Thèmes)                     */
-/* ================================================== */
+// ==================================================
+//              SCRIPT COMPLET POUR AppliCSE
+//        (Multi-Thèmes, News, Formulaires, Menu)
+// ==================================================
 
-/* --- Import Google Fonts (Exemple: Montserrat pour titres, Lato pour texte) --- */
-@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Montserrat:wght@500;700&display=swap');
-/* Note: Comic Sans MS est une police système, pas besoin d'import */
+// --- CONSTANTES ET VARIABLES GLOBALES ---
 
-/* ======================================== */
-/*          VARIABLES CSS GLOBALES         */
-/* ======================================== */
+// URL du Google Sheet publié au format CSV pour les actualités
+const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQcKo9WOqdnefe5z7QpaM5XtdkGs7pBeWNFrcy1crwW18Jn_KkR1IxV_KMhatedR5lmaASfeIlEsUF9/pub?output=csv';
 
-/* --- Thème par Défaut (Clair / Moderne) --- */
-body, body.theme-default {
-    --font-heading: 'Montserrat', sans-serif;
-    --font-body: 'Lato', sans-serif;
-    --color-primary: #005A9C;         /* Bleu Pro */
-    --color-secondary: #e8f0f7;      /* Bleu très clair */
-    --color-accent: #F39C12;         /* Orange */
-    --color-background: #FFFFFF;     /* Fond Blanc */
-    --color-surface: #FFFFFF;        /* Fond des cartes/formulaires */
-    --color-text: #333333;           /* Texte Foncé */
-    --color-text-muted: #6c757d;    /* Texte Gris */
-    --color-text-on-primary: #FFFFFF; /* Texte sur fond primaire */
-    --color-border: #dee2e6;         /* Bordure Grise Claire */
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 10px rgba(0, 0, 0, 0.08);
-    --border-radius: 8px;
-    --sidebar-bg: #2C3E50;            /* Fond fixe pour sidebar */
-    --sidebar-text: #ecf0f1;          /* Texte clair dans sidebar */
-    --sidebar-icon: rgba(236, 240, 241, 0.8); /* Icônes atténuées sidebar */
-    --sidebar-hover-bg: rgba(255, 255, 255, 0.1); /* Survol bouton sidebar */
-}
+// Drapeau pour gérer l'état de soumission des formulaires (évite le message prématuré)
+let isFormSubmitting = false;
 
-/* --- Thème Sombre --- */
-body.theme-dark {
-    --font-heading: 'Montserrat', sans-serif;
-    --font-body: 'Lato', sans-serif;
-    --color-primary: #5dade2;         /* Bleu plus clair pour contraste */
-    --color-secondary: #3a4a5a;      /* Gris foncé léger */
-    --color-accent: #f1c40f;         /* Jaune/Or */
-    --color-background: #2c3e50;     /* Fond Gris/Bleu très foncé */
-    --color-surface: #34495e;        /* Fond cartes/form. un peu plus clair */
-    --color-text: #ecf0f1;           /* Texte Clair (presque blanc) */
-    --color-text-muted: #bdc3c7;    /* Texte Gris clair */
-    --color-text-on-primary: #2c3e50; /* Texte foncé sur fond primaire clair */
-    --color-border: #4e5d6c;         /* Bordure Grise foncée */
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
-    --shadow-md: 0 4px 10px rgba(0, 0, 0, 0.3);
-    --border-radius: 8px;
-    /* Sidebar reste la même pour cet exemple */
-    /* --sidebar-bg: #1f2933; */ /* Option: Sidebar encore plus foncée */
-}
+// Constantes pour la gestion des thèmes et localStorage
+const THEME_STORAGE_KEY = 'cse-app-selected-theme'; // Clé unique pour localStorage
+const DEFAULT_THEME = 'theme-default'; // Thème par défaut si rien n'est sauvegardé
+const KNOWN_THEMES = ['theme-default', 'theme-dark', 'theme-fun']; // Liste des thèmes valides
 
-/* --- Thème "Fun" --- */
-body.theme-fun {
-    --font-heading: 'Comic Sans MS', cursive; /* Police Fun */
-    --font-body: 'Comic Sans MS', cursive;   /* Gardons la cohérence fun */
-    --color-primary: #2196f3;         /* Bleu vif */
-    --color-secondary: #bbdefb;      /* Bleu très clair fun */
-    --color-accent: #ffeb3b;         /* Jaune vif */
-    --color-background: linear-gradient(135deg, #ffeb3b, #ff9800); /* Gradient Orange/Jaune */
-    --color-surface: #ffffff;        /* Cartes blanches */
-    --color-text: #444444;           /* Texte foncé */
-    --color-text-muted: #777777;
-    --color-text-on-primary: #FFFFFF;
-    --color-border: #bdbdbd;
-    --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.2);
-    --shadow-md: 0 5px 15px rgba(0, 0, 0, 0.3);
-    --border-radius: 15px; /* Plus arrondi */
-     /* Sidebar reste la même pour cet exemple */
-}
+// --- GESTION DES THÈMES ---
 
+/**
+ * Applique un thème en ajoutant/retirant la classe du body
+ * et sauvegarde le choix dans localStorage.
+ * @param {string} themeName - Le nom de la classe du thème (ex: 'theme-dark')
+ */
+function applyTheme(themeName) {
+    // Vérifier si le thème demandé est valide
+    const validThemeName = KNOWN_THEMES.includes(themeName) ? themeName : DEFAULT_THEME;
 
-/* ======================================== */
-/*          STYLES STRUCTURELS             */
-/* (Utilisent les variables définies)     */
-/* ======================================== */
+    // Nettoyer les anciennes classes de thème du body
+    document.body.classList.remove(...KNOWN_THEMES);
 
-/* --- Reset & Base --- */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+    // Ajouter la nouvelle classe de thème
+    document.body.classList.add(validThemeName);
 
-body {
-    font-family: var(--font-body);
-    font-size: 16px;
-    line-height: 1.6;
-    background: var(--color-background); /* Applique le fond du thème */
-    color: var(--color-text);
-    overflow-x: hidden; /* Empêche le défilement horizontal */
-    -webkit-font-smoothing: antialiased; /* Améliore le rendu des polices */
-    -moz-osx-font-smoothing: grayscale;
-    transition: background 0.4s ease, color 0.3s ease; /* Transition douce */
-}
-
-/* --- Header --- */
-header {
-    background-color: var(--color-primary); /* Utilise la variable */
-    padding: 12px 20px; /* Un peu moins haut */
-    box-shadow: var(--shadow-md);
-    position: fixed;
-    top: 0;
-    width: 100%; /* Prend toute la largeur */
-    z-index: 1000; /* Assurer qu'il est au-dessus */
-    display: flex; /* Utiliser flex pour aligner */
-    align-items: center;
-    transition: background-color 0.3s ease;
-}
-
-header .hamburger {
-    cursor: pointer;
-    padding: 10px; /* Zone de clic plus grande */
-    margin-right: 15px; /* Espace entre burger et logo/titre */
-    z-index: 1001; /* Au-dessus du header */
-}
-
-header .hamburger span {
-    display: block;
-    width: 25px; /* Lignes plus fines */
-    height: 3px;
-    background: var(--color-text-on-primary); /* Couleur texte sur fond primaire */
-    margin: 5px 0;
-    border-radius: 3px;
-    transition: all 0.3s ease-in-out;
-}
-
-/* Animation du hamburger (moderne) */
-header .hamburger.active span:nth-child(1) {
-    transform: translateY(8px) rotate(45deg);
-}
-header .hamburger.active span:nth-child(2) {
-    opacity: 0;
-}
-header .hamburger.active span:nth-child(3) {
-    transform: translateY(-8px) rotate(-45deg);
-}
-
-header img.logo {
-    height: 40px; /* Hauteur fixe pour le logo */
-    width: auto;
-    margin-right: 15px; /* Espace après le logo */
-    transition: transform 0.3s ease; /* Garder une petite animation discrète */
-}
-
-header h1 {
-    font-family: var(--font-heading);
-    color: var(--color-text-on-primary);
-    font-size: 1.4em; /* Taille raisonnable */
-    font-weight: 500; /* Moins gras */
-    margin: 0;
-    text-shadow: none; /* Pas d'ombre */
-    white-space: nowrap; /* Eviter retour à la ligne */
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-/* --- Sidebar --- */
-.sidebar {
-    position: fixed;
-    top: 0;
-    left: -280px; /* Caché par défaut */
-    width: 280px;
-    height: 100%;
-    background-color: var(--sidebar-bg); /* Fond fixe (ou variable si besoin) */
-    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
-    transition: left 0.3s ease-in-out;
-    z-index: 999; /* Juste en dessous du header */
-    padding-top: 80px; /* Espace pour le header */
-    display: flex; /* Permet de pousser le switcher en bas */
-    flex-direction: column; /* Empilement vertical */
-}
-
-.sidebar.active {
-    left: 0;
-}
-
-.sidebar ul {
-    list-style: none;
-    padding: 20px;
-    margin: 0;
-    flex-grow: 1; /* Fait que la liste prenne l'espace dispo */
-}
-
-.sidebar ul li:not(:last-child) { /* Ne pas appliquer la marge au switcher */
-    margin-bottom: 10px;
-}
-
-.sidebar ul li button:not(.theme-button) { /* Style pour les boutons de navigation */
-    background: none;
-    border: none;
-    padding: 12px 15px;
-    border-radius: var(--border-radius);
-    font-size: 1.1em;
-    font-weight: 500;
-    font-family: var(--font-heading);
-    color: var(--sidebar-text);
-    cursor: pointer;
-    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
-    width: 100%;
-    text-align: left;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    box-shadow: none;
-}
-
-.sidebar ul li button:not(.theme-button):hover {
-    background-color: var(--sidebar-hover-bg);
-}
-
-.sidebar ul li button:not(.theme-button) .icon {
-    font-size: 1.2em;
-    width: 20px;
-    text-align: center;
-    color: var(--sidebar-icon);
-    transition: color 0.2s ease-in-out;
-}
-.sidebar ul li button:not(.theme-button):hover .icon {
-    color: var(--sidebar-text);
-}
-
-/* --- Main Content --- */
-main {
-    padding: 20px; /* Padding standard */
-    max-width: 800px; /* Limite de largeur pour lisibilité sur grand écran */
-    margin: 80px auto 80px auto; /* Espace pour header/footer fixes, centré */
-    min-height: calc(100vh - 140px); /* Hauteur min (ajuster selon hauteur footer réel) */
-}
-
-h2 {
-    font-family: var(--font-heading);
-    color: var(--color-primary);
-    font-size: 1.8em;
-    font-weight: 700;
-    text-align: center;
-    margin-bottom: 30px;
-    text-transform: none;
-    letter-spacing: 0;
-    animation: none;
-}
-
-section {
-    margin-bottom: 40px; /* Espace entre sections */
-}
-
-/* --- Card Style (.actu, .partner) --- */
-.actu, .partner {
-    background: var(--color-surface);
-    padding: 20px;
-    margin-bottom: 25px;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow-md);
-    border: 1px solid var(--color-border);
-    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.2s ease-in-out;
-}
-
-.actu:hover, .partner:hover {
-    box-shadow: 0 6px 15px color-mix(in srgb, var(--color-text) 10%, transparent); /* Ombre dynamique */
-}
-
-.actu h3, .partner h3 {
-    font-family: var(--font-heading);
-    color: var(--color-primary);
-    font-size: 1.3em;
-    font-weight: 700;
-    margin-top: 0;
-    margin-bottom: 10px;
-    text-shadow: none;
-}
-
-.actu p, .partner p {
-    margin-bottom: 10px;
-    font-size: 1em;
-    color: var(--color-text);
-}
-.actu p:last-child, .partner p:last-child {
-    margin-bottom: 0;
-}
-
-.actu p strong, .partner p strong {
-    color: var(--color-text);
-    font-weight: 700;
-}
-
-.actu img {
-    max-width: 100%;
-    height: auto;
-    border-radius: calc(var(--border-radius) / 2);
-    margin-top: 15px;
-    border: none;
-    display: block;
-}
-
-.partner a {
-    color: var(--color-accent);
-    text-decoration: none;
-    font-weight: bold;
-    transition: color 0.2s ease;
-}
-.partner a:hover {
-    color: color-mix(in srgb, var(--color-accent) 85%, black); /* Assombrir dynamiquement */
-    text-decoration: underline;
-}
-
-/* --- Formulaires --- */
-.form-container {
-    background-color: var(--color-surface);
-    padding: 25px 30px;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--color-border);
-    transition: background-color 0.3s ease, border-color 0.3s ease;
-}
-
-.form-group {
-    margin-bottom: 20px;
-}
-
-label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 700;
-    font-size: 0.95em;
-    color: var(--color-text);
-}
-
-label.required:after {
-    content: " *";
-    color: #e74c3c;
-    font-weight: normal;
-}
-
-select, input[type="text"], input[type="email"], input[type="date"], input[type="time"], textarea {
-    width: 100%;
-    padding: 12px 15px;
-    border: 1px solid var(--color-border);
-    border-radius: var(--border-radius);
-    box-sizing: border-box;
-    font-size: 1em;
-    font-family: var(--font-body);
-    background-color: var(--color-background); /* Input sur fond général */
-    color: var(--color-text); /* Texte de l'input */
-    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease, color 0.3s ease;
-}
-/* Style placeholder */
-select::placeholder, input::placeholder, textarea::placeholder {
-    color: var(--color-text-muted);
-    opacity: 0.8;
-}
-
-select:focus, input:focus, textarea:focus {
-    outline: none;
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 15%, transparent); /* Ombre focus dynamique */
-}
-
-textarea {
-    min-height: 120px;
-    resize: vertical;
-}
-
-/* Style du bouton principal */
-button[type="submit"] {
-    background-color: var(--color-primary);
-    color: var(--color-text-on-primary);
-    border: none;
-    padding: 12px 25px;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    font-size: 1.1em;
-    font-weight: 700;
-    font-family: var(--font-heading);
-    width: 100%;
-    transition: background-color 0.2s ease, transform 0.1s ease;
-    margin-top: 10px;
-}
-
-button[type="submit"]:hover:not(:disabled) {
-    background-color: color-mix(in srgb, var(--color-primary) 85%, black); /* Assombrir dynamiquement */
-}
-button[type="submit"]:active:not(:disabled) {
-    transform: translateY(1px); /* Effet enfoncé */
-}
-button[type="submit"]:disabled {
-    background-color: color-mix(in srgb, var(--color-text-muted) 50%, transparent); /* Grisé dynamique */
-    cursor: not-allowed;
-    color: color-mix(in srgb, var(--color-text) 70%, transparent);
-}
-
-/* --- Messages de statut/confirmation --- */
-.confirmation, .form-status-sending, .error-message {
-    padding: 15px;
-    border-radius: var(--border-radius);
-    text-align: center;
-    margin-top: 20px;
-    font-weight: 500;
-    display: none; /* Caché par défaut */
-    border: 1px solid transparent; /* Base border */
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-}
-.confirmation {
-    /* Utiliser des couleurs fixes ou les dériver des variables ? Fixe est plus simple. */
-    background-color: #d1e7dd;
-    color: #0f5132;
-    border-color: #badbcc;
-}
-body.theme-dark .confirmation {
-    background-color: #198754; /* Vert plus saturé sur fond sombre */
-    color: #ffffff;
-    border-color: #198754;
-}
-.form-status-sending {
-    background-color: var(--color-secondary);
-    color: var(--color-primary);
-    border-color: color-mix(in srgb, var(--color-border) 80%, var(--color-primary) 20%);
-}
-.error-message {
-    /* Couleurs fixes pour les erreurs */
-    background-color: #f8d7da;
-    color: #842029;
-    border-color: #f5c2c7;
-    display: block; /* Afficher les erreurs par défaut */
-    font-style: normal;
-    font-size: 1em;
-}
-body.theme-dark .error-message {
-     background-color: #dc3545; /* Rouge plus saturé sur fond sombre */
-     color: #ffffff;
-     border-color: #dc3545;
-}
-.error-message.image-error {
-    display: none; /* Cacher l'erreur image par défaut */
-    margin-top: 5px;
-    font-size: 0.9em;
-}
-
-.note {
-    font-size: 0.9em;
-    color: var(--color-text-muted);
-    margin-bottom: 15px;
-    padding: 10px 15px;
-    background-color: var(--color-secondary);
-    border-radius: calc(var(--border-radius) / 2);
-    border-left: 4px solid var(--color-accent);
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-}
-
-/* --- Footer --- */
-footer {
-    text-align: center;
-    padding: 15px;
-    background: var(--color-surface); /* Footer sur fond surface */
-    color: var(--color-text-muted);
-    font-size: 0.9em;
-    box-shadow: none;
-    border-top: 1px solid var(--color-border);
-    width: 100%;
-    /* position: fixed; bottom: 0; left: 0; */ /* Décommenter si besoin d'un footer fixe */
-    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
-}
-
-/* ======================================== */
-/*          STYLE THEME SWITCHER           */
-/* ======================================== */
-
-/* Placé dans le li de la sidebar */
-.sidebar ul li .theme-switcher {
-    padding: 15px 0 0 0; /* Padding haut seulement */
-    margin-top: 20px;
-    border-top: 1px solid color-mix(in srgb, var(--sidebar-text) 15%, transparent); /* Ligne séparation */
-}
-
-.theme-switcher h4 {
-    font-family: var(--font-heading);
-    color: var(--sidebar-icon); /* Couleur icône pour titre */
-    font-size: 0.85em;
-    margin-bottom: 10px;
-    padding-left: 15px; /* Aligner avec padding boutons */
-    text-transform: uppercase;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-}
-
-.theme-switcher button.theme-button { /* Cibler spécifiquement les boutons de thème */
-    background: color-mix(in srgb, var(--sidebar-text) 10%, transparent);
-    color: var(--sidebar-text);
-    border: 1px solid transparent;
-    border-radius: 5px;
-    padding: 5px 12px;
-    margin-left: 15px; /* Aligner */
-    margin-right: 5px; /* Espacement entre boutons */
-    margin-bottom: 10px;
-    cursor: pointer;
-    font-size: 0.9em;
-    font-family: var(--font-body);
-    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-    width: auto; /* Largeur auto */
-    display: inline-block; /* Afficher en ligne */
-}
-
-.theme-switcher button.theme-button:hover {
-    background: color-mix(in srgb, var(--sidebar-text) 20%, transparent);
-}
-
-.theme-switcher button.theme-button.active-theme {
-    /* Style du bouton actif - Utilise l'accent du thème ACTUEL */
-    background-color: var(--color-accent);
-    /* Déterminer la couleur du texte sur l'accent */
-    /* C'est complexe dynamiquement, on peut choisir une couleur fixe */
-    /* Ou utiliser une logique JS/CSS plus avancée si nécessaire */
-    /* Ici, on essaie une couleur contrastée simple */
-    color: var(--color-text); /* Ou forcer #000 / #fff selon l'accent */
-    border-color: var(--color-accent);
-    font-weight: bold;
-}
-/* Ajustement pour thème sombre où l'accent est clair */
-body.theme-dark .theme-switcher button.theme-button.active-theme {
-    color: var(--color-background); /* Texte foncé sur accent clair */
-}
-
-
-/* ======================================== */
-/*              RESPONSIVE                */
-/* ======================================== */
-
-@media (max-width: 768px) {
-    header h1 {
-        font-size: 1.2em; /* Titre plus petit sur mobile */
+    // Sauvegarder le choix dans localStorage
+    try {
+        localStorage.setItem(THEME_STORAGE_KEY, validThemeName);
+    } catch (e) {
+        console.warn("Impossible de sauvegarder le thème dans localStorage:", e);
     }
-    main {
-        padding: 15px;
-        margin-top: 70px; /* Ajuster si hauteur header change */
-        margin-bottom: 60px; /* Ajuster si hauteur footer change */
-        min-height: calc(100vh - 130px); /* Ajuster si header/footer fixe */
-    }
-    h2 {
-        font-size: 1.5em;
-        margin-bottom: 20px;
-    }
-    .actu, .partner, .form-container {
-        padding: 15px;
-    }
-    button[type="submit"] {
-        font-size: 1em;
-        padding: 12px 20px;
-    }
-    .sidebar {
-        width: 250px; /* Sidebar un peu moins large sur mobile */
-        left: -250px;
-    }
-    /* Ajuster padding du switcher sur mobile si besoin */
-    .theme-switcher button.theme-button {
-        margin-left: 10px;
-        padding: 4px 10px;
-    }
-     .theme-switcher h4 {
-         padding-left: 10px;
-     }
+
+    // Mettre à jour l'état visuel des boutons du sélecteur de thème
+    updateThemeButtonStates(validThemeName);
+
+    // console.log(`Thème appliqué : ${validThemeName}`); // Décommenter pour débug
 }
+
+/**
+ * Charge le thème sauvegardé depuis localStorage ou applique le thème par défaut.
+ */
+function loadSavedTheme() {
+    let savedTheme = DEFAULT_THEME;
+    try {
+        // Récupérer le thème sauvegardé, ou utiliser le défaut s'il n'y en a pas
+        savedTheme = localStorage.getItem(THEME_STORAGE_KEY) || DEFAULT_THEME;
+    } catch (e) {
+        console.warn("Impossible de lire le thème depuis localStorage:", e);
+        // Garder le thème par défaut en cas d'erreur
+        savedTheme = DEFAULT_THEME;
+    }
+
+    // Vérifier si le thème sauvegardé est toujours valide (au cas où on supprime un thème)
+    if (!KNOWN_THEMES.includes(savedTheme)) {
+        savedTheme = DEFAULT_THEME;
+    }
+
+    applyTheme(savedTheme); // Appliquer le thème déterminé
+}
+
+/**
+ * Met à jour l'apparence des boutons du sélecteur pour indiquer le thème actif.
+ * @param {string} activeTheme - Le nom de la classe du thème actuellement actif.
+ */
+function updateThemeButtonStates(activeTheme) {
+    const themeButtons = document.querySelectorAll('.theme-switcher button[data-theme]');
+    themeButtons.forEach(button => {
+        if (button.dataset.theme === activeTheme) {
+            button.classList.add('active-theme'); // Ajoute la classe pour le style CSS
+        } else {
+            button.classList.remove('active-theme');
+        }
+    });
+}
+
+
+// --- GESTION DU MENU SIDEBAR ---
+
+/**
+ * Ferme le menu latéral.
+ */
+function closeMenu() {
+    const sidebar = document.getElementById('sidebar');
+    const hamburger = document.querySelector('.hamburger');
+    if (sidebar && hamburger) {
+        sidebar.classList.remove('active');
+        hamburger.classList.remove('active');
+    } else {
+        console.error('Erreur : sidebar ou hamburger non trouvé pour closeMenu');
+    }
+}
+
+/**
+ * Ouvre ou ferme le menu latéral (toggle).
+ */
+function toggleMenu() {
+    const sidebar = document.getElementById('sidebar');
+    const hamburger = document.querySelector('.hamburger');
+    if (sidebar && hamburger) {
+        sidebar.classList.toggle('active');
+        hamburger.classList.toggle('active');
+    } else {
+         console.error('Erreur : sidebar ou hamburger non trouvé pour toggleMenu');
+    }
+}
+
+// --- CHARGEMENT DU CONTENU DES PAGES ---
+
+/**
+ * Charge le contenu HTML d'une section spécifique dans la zone principale.
+ * @param {string} page - L'identifiant de la page à charger (ex: 'actualites').
+ * @param {boolean} [fromMenuClick=false] - Indique si l'appel provient d'un clic menu.
+ */
+function loadPage(page, fromMenuClick = false) {
+    const mainContent = document.getElementById('main-content');
+
+    if (!mainContent) {
+        console.error("Erreur critique : élément 'main-content' introuvable.");
+        return;
+    }
+
+    // Ferme le menu SI l'appel vient d'un clic dans le menu
+    if (fromMenuClick) {
+        closeMenu();
+    }
+
+    // Réinitialiser le drapeau de soumission de formulaire au changement de page
+    isFormSubmitting = false;
+
+    let pageHTML = ''; // Variable pour stocker le HTML à injecter
+
+    // Construire le HTML basé sur la page demandée
+    switch (page) {
+        case 'actualites':
+            pageHTML = `
+                <section id="actualites">
+                    <h2>Dernières Actualités</h2>
+                    <div id="news-container"><p>Chargement des actualités...</p></div>
+                </section>
+            `;
+            // Lancer le chargement des news après l'injection HTML
+            deferExecution(loadNews);
+            break;
+
+        case 'formulaire-cafe':
+            pageHTML = `
+                <section id="formulaire-cafe">
+                    <div class="form-container">
+                        <h2>Signalement Problème Machine à Café</h2>
+                        <form id="reportForm" action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSfw2H0lzEAvt7niVxRhpkPQTLOaOfXz3SoI3IC9NfNxnY33Ag/formResponse" method="POST" target="hidden_iframe">
+                            <!-- Champs du formulaire café -->
+                             <div class="form-group">
+                                <label for="email" class="required">Email</label>
+                                <input type="email" id="email" name="entry.1494559432" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="name" class="required">Nom & Prénom</label>
+                                <input type="text" id="name" name="entry.36162321" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="operation" class="required">Opération</label>
+                                <input type="text" id="operation" name="entry.1034050778" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="machine" class="required">Machine concernée</label>
+                                <select id="machine" name="entry.212638394" required>
+                                    <option value="">Sélectionnez une machine</option>
+                                    <option value="DEV125543 (E-1)">DEV125543 (E-1)</option>
+                                    <option value="BBRD0152 (E-1)">BBRD0152 (E-1)</option>
+                                    <option value="DEV16567 (E-1)">DEV16567 (E-1)</option>
+                                    <option value="BBRDL0196 (E-1)">BBRDL0196 (E-1)</option>
+                                    <option value="DBIC799 (E0)">DBIC799 (E0)</option>
+                                    <option value="B72ES1979 (E1)">B72ES1979 (E1)</option>
+                                    <option value="B72ES1903 (E2)">B72ES1903 (E2)</option>
+                                    <option value="DEV95042 (E2)">DEV95042 (E2)</option>
+                                    <option value="B72ES1977 (E3)">B72ES1977 (E3)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="problem" class="required">Type de problème</label>
+                                <select id="problem" name="entry.1333521310" required>
+                                    <option value="">Sélectionnez un problème</option>
+                                    <option value="Pas de gobelet">Pas de gobelet</option>
+                                    <option value="Gobelet vide">Gobelet vide</option>
+                                    <option value="Produit non conforme à la demande">Produit non conforme à la demande</option>
+                                    <option value="Problème de rechargement">Problème de rechargement</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <p class="note">S’il s'agit d'un problème de rechargement, merci d'indiquer la date, heure et moyen de paiement.</p>
+                                <label for="date">Date</label>
+                                <input type="date" id="date" name="entry.789458747">
+                            </div>
+                            <div class="form-group">
+                                <label for="time">Heure</label>
+                                <input type="time" id="time" name="entry.1519520523">
+                            </div>
+                            <div class="form-group">
+                                <label for="payment">Moyen de paiement</label>
+                                <select id="payment" name="entry.1578764886">
+                                    <option value="">Sélectionnez un moyen de paiement</option>
+                                    <option value="CB">CB</option>
+                                    <option value="Pluxee">Pluxee</option>
+                                    <option value="Espece">Espèce</option>
+                                    <option value="Badge">Badge</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="comment">Commentaire (optionnel)</label>
+                                <textarea id="comment" name="entry.1120842974"></textarea>
+                            </div>
+                            <button type="submit">Envoyer le signalement</button>
+                        </form>
+                        <div class="form-status-sending" style="display: none;">Envoi en cours...</div>
+                        <div id="confirmation" class="confirmation" style="display: none;">
+                            Merci pour votre signalement ! Il a bien été enregistré.
+                        </div>
+                        <iframe name="hidden_iframe" style="display: none;" onload="onFormSubmit()"></iframe>
+                    </div>
+                </section>
+            `;
+             // Attacher les événements après l'injection HTML
+            deferExecution(() => attachFormEvents('reportForm'));
+            break;
+
+        case 'formulaire-contact':
+            pageHTML = `
+                <section id="formulaire-contact">
+                    <div class="form-container">
+                        <h2>Formulaire de Contact</h2>
+                        <!-- !!! REMPLACEZ URL_GOOGLE_FORM ET LES entry.XXXX !!! -->
+                        <form id="contactForm" action="URL_VOTRE_GOOGLE_FORM_CONTACT_RESPONSE" method="POST" target="hidden_iframe">
+                            <div class="form-group">
+                                <label for="name" class="required">Nom</label>
+                                <input type="text" id="name" name="ENTRY_ID_NOM" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email" class="required">Email</label>
+                                <input type="email" id="email" name="ENTRY_ID_EMAIL" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="subject" class="required">Sujet</label>
+                                <input type="text" id="subject" name="ENTRY_ID_SUJET" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="message" class="required">Message</label>
+                                <textarea id="message" name="ENTRY_ID_MESSAGE" required></textarea>
+                            </div>
+                            <button type="submit">Envoyer le message</button>
+                        </form>
+                        <div class="form-status-sending" style="display: none;">Envoi en cours...</div>
+                        <div id="confirmation" class="confirmation" style="display: none;">
+                            Merci pour votre message ! Il a bien été envoyé.
+                        </div>
+                        <iframe name="hidden_iframe" style="display: none;" onload="onFormSubmit()"></iframe>
+                    </div>
+                </section>
+            `;
+            // Attacher les événements après l'injection HTML
+            deferExecution(() => attachFormEvents('contactForm'));
+            break;
+
+        case 'partenaires':
+            pageHTML = `
+                <section id="partenaires">
+                    <h2>Nos Partenaires</h2>
+                    <!-- Contenu statique des partenaires -->
+                    <div class="partner">
+                        <h3>Partenaire 1</h3>
+                        <p>Un super partenaire qui propose des réductions sur les loisirs.</p>
+                        <p><a href="https://exemple.com" target="_blank">Visiter leur site</a></p>
+                    </div>
+                    <div class="partner">
+                        <h3>Partenaire 2</h3>
+                        <p>Partenaire spécialisé dans les voyages à prix réduit.</p>
+                        <p><a href="https://exemple.com" target="_blank">Visiter leur site</a></p>
+                    </div>
+                    <!-- Ajoutez d'autres partenaires ici -->
+                </section>
+            `;
+            break;
+
+        default:
+            console.warn(`Page inconnue demandée : ${page}. Affichage des actualités.`);
+            // Rediriger vers les actualités si page inconnue
+            // Utiliser setTimeout pour éviter appel récursif immédiat si 'actualites' échoue aussi
+            setTimeout(() => loadPage('actualites', fromMenuClick), 0); 
+            return; // Sortir pour éviter d'injecter du HTML vide
+    }
+
+    // Injecter le HTML dans la page
+    mainContent.innerHTML = pageHTML;
+}
+
+/**
+ * Diffère l'exécution d'une fonction après la mise à jour du DOM.
+ * Utile pour s'assurer que les éléments HTML sont présents avant d'y attacher des événements.
+ * @param {Function} callback - La fonction à exécuter.
+ */
+function deferExecution(callback) {
+    // Utilise setTimeout avec 0ms pour placer l'exécution à la fin de la file d'attente des événements
+    setTimeout(callback, 0);
+}
+
+
+// --- GESTION DES FORMULAIRES ---
+
+/**
+ * Attache les écouteurs d'événements nécessaires à un formulaire spécifique.
+ * @param {string} formId - L'ID du formulaire auquel attacher les événements.
+ */
+function attachFormEvents(formId) {
+    const form = document.getElementById(formId);
+
+    if (!form) {
+        console.error(`Formulaire non trouvé avec l'ID: ${formId} dans attachFormEvents.`);
+        return; // Sortir si le formulaire n'existe pas
+    }
+
+    const submitButton = form.querySelector('button[type="submit"]');
+    // Trouver les divs de statut et confirmation relatives à CE formulaire
+    const statusDiv = form.parentNode.querySelector('.form-status-sending');
+    const confirmationDiv = form.parentNode.querySelector('#confirmation');
+
+    form.addEventListener("submit", function(event) {
+        // On ne fait PAS event.preventDefault() pour laisser la soumission vers l'iframe
+
+        // Mettre à jour le drapeau pour indiquer une soumission en cours
+        isFormSubmitting = true;
+        // console.log("Formulaire soumis, isFormSubmitting mis à true"); // Débug
+
+        // Afficher "Envoi en cours..." et gérer les états visuels
+        if(submitButton) submitButton.disabled = true;
+        if(statusDiv) statusDiv.style.display = 'block';
+        if(confirmationDiv) confirmationDiv.style.display = 'none'; // Cacher l'ancienne confirmation
+
+    });
+}
+
+/**
+ * Fonction appelée par l'attribut 'onload' de l'iframe cachée après soumission.
+ */
+function onFormSubmit() {
+    // console.log("onFormSubmit déclenché. isFormSubmitting:", isFormSubmitting); // Débug
+
+    // NE RIEN FAIRE si le drapeau n'est pas levé (chargement initial de l'iframe)
+    if (!isFormSubmitting) {
+        // console.log("Chargement initial de l'iframe ignoré."); // Débug
+        return;
+    }
+
+    // Le formulaire a été soumis et la réponse de Google est chargée dans l'iframe
+
+    // Cibler les éléments du formulaire ACTUELLEMENT affiché dans main-content
+    const currentForm = document.querySelector('#main-content form');
+    const confirmationDiv = currentForm ? currentForm.parentNode.querySelector('#confirmation') : null;
+    const statusDiv = currentForm ? currentForm.parentNode.querySelector('.form-status-sending') : null;
+    const submitButton = currentForm ? currentForm.querySelector('button[type="submit"]') : null;
+
+    if (currentForm && confirmationDiv) {
+        // Cacher le formulaire et le message "Envoi..."
+        currentForm.style.display = "none";
+        if (statusDiv) statusDiv.style.display = 'none';
+
+        // Afficher le message de confirmation
+        confirmationDiv.style.display = "block";
+
+        // Réinitialiser après un délai
+        setTimeout(() => {
+            if(currentForm) currentForm.reset(); // Vider les champs
+            if(currentForm) currentForm.style.display = "block"; // Réafficher
+            if(confirmationDiv) confirmationDiv.style.display = "none"; // Cacher
+            if(submitButton) submitButton.disabled = false; // Réactiver
+
+            // Réinitialiser le drapeau !
+            isFormSubmitting = false;
+            // console.log("Fin du timeout, isFormSubmitting réinitialisé à false"); // Débug
+
+        }, 3000); // Délai de 3 secondes
+
+    } else {
+        console.error("Impossible de trouver le formulaire courant ou la div de confirmation dans onFormSubmit.");
+         // Réinitialiser le drapeau même en cas d'erreur pour éviter de bloquer
+         isFormSubmitting = false;
+    }
+}
+
+
+// --- CHARGEMENT ET AFFICHAGE DES ACTUALITÉS ---
+
+/**
+ * Charge les actualités depuis le fichier CSV Google Sheet.
+ */
+function loadNews() {
+    const container = document.getElementById('news-container');
+    if (!container) {
+        console.error("Conteneur de news 'news-container' introuvable.");
+        return;
+    }
+    // Afficher un message pendant le chargement (sera remplacé par les news ou un message d'erreur)
+    // container.innerHTML = '<p>Chargement des actualités...</p>';
+
+    fetch(csvUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Erreur réseau ${response.status} : ${response.statusText}. Vérifiez l'URL et les autorisations de partage du Google Sheet.`);
+            }
+            return response.text();
+        })
+        .then(csvText => {
+            // Utiliser PapaParse pour parser le CSV
+            Papa.parse(csvText, {
+                header: true,       // La première ligne contient les en-têtes
+                skipEmptyLines: true, // Ignorer les lignes vides
+                complete: function(results) {
+                    // console.log('Données parsées par PapaParse:', results.data); // Débug
+                    if (results.errors.length > 0) {
+                         console.warn("Erreurs de parsing PapaParse:", results.errors);
+                         // Afficher un message d'erreur partiel si possible
+                         container.innerHTML = `<p class="error-message">Certaines lignes du fichier d'actualités n'ont pas pu être lues correctement.</p>`;
+                    }
+                    if (results.data && results.data.length > 0) {
+                        displayNews(results.data); // Afficher les news
+                    } else {
+                         container.innerHTML = '<p>Aucune actualité trouvée pour le moment.</p>';
+                    }
+                },
+                error: function(error) {
+                     console.error('Erreur PapaParse:', error);
+                     container.innerHTML = `<p class="error-message">Erreur lors du traitement du fichier d'actualités : ${error.message}</p>`;
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Erreur lors du fetch des actualités:', error);
+            container.innerHTML = `<p class="error-message">Impossible de charger les actualités. ${error.message}</p>`;
+        });
+}
+
+/**
+ * Affiche les actualités formatées dans le conteneur HTML.
+ * @param {Array<Object>} news - Un tableau d'objets représentant les actualités.
+ */
+function displayNews(news) {
+    const container = document.getElementById('news-container');
+    if (!container) return;
+
+    container.innerHTML = ''; // Vider le conteneur avant d'ajouter
+
+    if (!Array.isArray(news) || news.length === 0) {
+         container.innerHTML = '<p>Aucune actualité à afficher pour le moment.</p>';
+         return;
+    }
+
+    // Trier les news par date (la plus récente d'abord)
+    news.sort((a, b) => {
+        const dateA = parseDate(a.Date);
+        const dateB = parseDate(b.Date);
+        // Gérer les dates nulles : les mettre à la fin
+        if (!dateB) return -1;
+        if (!dateA) return 1;
+        // Comparer par timestamp (descendant)
+        return dateB.getTime() - dateA.getTime();
+    });
+
+
+    news.forEach(item => {
+        // Vérifier et utiliser les noms de colonnes potentiels (gestion des variations)
+        const title = item.Titre || item.titre || 'Actualité sans titre';
+        const date = item.Date || item.date || 'Date non spécifiée';
+        const description = item.Description || item.description || 'Pas de description.';
+        const imageUrl = item.Lien_image || item['Lien image'] || item.Image || item.image || '';
+
+        const newsItem = document.createElement('div');
+        newsItem.className = 'actu'; // Classe CSS pour le style
+
+        let imageHtml = '';
+        if (imageUrl) {
+            // Gestion de l'erreur de chargement d'image directement dans l'HTML
+            imageHtml = `
+                <img src="${imageUrl}"
+                     alt="Image pour ${title}"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+                     loading="lazy">
+                <p class="error-message image-error" style="display: none;">Impossible de charger l'image.</p>
+            `;
+        }
+
+        newsItem.innerHTML = `
+            <h3>${title}</h3>
+            <p><strong>Date :</strong> ${date}</p>
+            <p>${description}</p>
+            ${imageHtml}
+        `;
+        container.appendChild(newsItem);
+    });
+}
+
+/**
+ * Tente de parser une chaîne de caractères en objet Date.
+ * Gère les formats DD/MM/YYYY et YYYY-MM-DD.
+ * @param {string} dateString - La chaîne de date à parser.
+ * @returns {Date|null} L'objet Date si le parsing réussit, sinon null.
+ */
+function parseDate(dateString) {
+    if (!dateString || typeof dateString !== 'string') return null;
+
+    dateString = dateString.trim();
+    let parts;
+
+    // Tente DD/MM/YYYY
+    parts = dateString.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if (parts) {
+        // Attention: Mois est 0-indexé en JS (0 = Janvier)
+        const day = parseInt(parts[1], 10);
+        const month = parseInt(parts[2], 10) - 1;
+        const year = parseInt(parts[3], 10);
+        // Vérification simple de validité
+        if (month >= 0 && month < 12 && day > 0 && day <= 31) {
+            const date = new Date(year, month, day);
+            // Vérifier si la date construite correspond (évite ex: 31/02/2024)
+            if (date.getFullYear() === year && date.getMonth() === month && date.getDate() === day) {
+                 return date;
+            }
+        }
+    }
+
+    // Tente YYYY-MM-DD (plus fiable car format ISO partiel)
+    parts = dateString.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+     if (parts) {
+        const year = parseInt(parts[1], 10);
+        const month = parseInt(parts[2], 10) - 1;
+        const day = parseInt(parts[3], 10);
+         if (month >= 0 && month < 12 && day > 0 && day <= 31) {
+            const date = new Date(Date.UTC(year, month, day)); // Utiliser UTC pour éviter fuseau horaire
+             // Vérifier si la date construite correspond
+             if (date.getUTCFullYear() === year && date.getUTCMonth() === month && date.getUTCDate() === day) {
+                 return date;
+             }
+         }
+    }
+
+    // Tente de laisser JS faire avec new Date() en dernier recours
+    // Attention : très dépendant du format et du navigateur/locale
+    try {
+         const parsed = new Date(dateString);
+         if (!isNaN(parsed.getTime())) {
+            return parsed;
+         }
+    } catch(e) {
+        // Ignorer l'erreur si new Date() échoue
+    }
+
+    console.warn("Format de date non reconnu :", dateString);
+    return null; // Format non reconnu ou date invalide
+}
+
+
+// --- INITIALISATION AU CHARGEMENT DE LA PAGE ---
+
+document.addEventListener('DOMContentLoaded', () => {
+    // --- CHARGER LE THÈME EN PREMIER ---
+    loadSavedTheme();
+    // -----------------------------------
+
+    // console.log('DOM entièrement chargé et analysé'); // Débug
+
+    // Fermer le menu au démarrage (sécurité)
+    closeMenu();
+
+    // Charger la page d'actualités par défaut
+    loadPage('actualites', false);
+
+    // Attacher l'écouteur au bouton hamburger
+    const hamburger = document.querySelector('.hamburger');
+    if (hamburger) {
+        // Utiliser une fonction anonyme pour éviter les problèmes de `this`
+        // et s'assurer qu'un seul listener est actif
+        hamburger.removeEventListener('click', toggleMenu); // Précaution si rechargement partiel
+        hamburger.addEventListener('click', () => toggleMenu());
+    } else {
+        console.error("CRITICAL: Bouton hamburger '.hamburger' introuvable à l'initialisation.");
+    }
+
+    // Attacher l'écouteur pour le sélecteur de thème (délégation d'événement)
+    const sidebarElement = document.getElementById('sidebar'); // Utiliser l'élément sidebar
+    if (sidebarElement) {
+        sidebarElement.addEventListener('click', (event) => {
+            // Vérifier si le clic vient bien d'un bouton de thème DANS le switcher
+            const themeButton = event.target.closest('.theme-switcher button[data-theme]');
+            if (themeButton) {
+                const themeToApply = themeButton.dataset.theme;
+                applyTheme(themeToApply);
+                // Optionnel : Fermer le menu si le sélecteur est dedans et qu'on veut le fermer après choix
+                // closeMenu();
+            }
+        });
+    } else {
+        console.error("CRITICAL: Élément sidebar '#sidebar' introuvable pour attacher le listener du theme switcher.");
+    }
+});
+
+// ==================================================
+//              FIN DU SCRIPT
+// ==================================================
