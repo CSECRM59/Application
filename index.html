@@ -18,12 +18,15 @@
             background: #2196f3;
             padding: 15px 20px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            position: sticky;
+            position: fixed; /* Changé en fixed pour que l'en-tête reste en haut */
             top: 0;
+            width: 100%; /* Prend toute la largeur */
             z-index: 100;
             max-width: 600px;
             margin: 0 auto;
-            text-align: center; /* Centrer le contenu */
+            left: 0;
+            right: 0;
+            text-align: center;
         }
         header img.logo {
             max-width: 120px;
@@ -40,9 +43,9 @@
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
         nav {
-            margin-top: 15px; /* Espace entre le titre et les boutons */
+            margin-top: 15px;
             display: flex;
-            justify-content: center; /* Centrer les boutons */
+            justify-content: center;
             gap: 15px;
         }
         nav button {
@@ -66,7 +69,8 @@
         main {
             padding: 30px;
             max-width: 600px;
-            margin: 0 auto;
+            margin: 150px auto 30px auto; /* Ajouté margin-top pour éviter que le contenu ne soit caché sous l'en-tête fixe */
+            min-height: calc(100vh - 300px); /* Assure que le main prend assez de place */
         }
         h2 {
             color: #2196f3;
@@ -143,6 +147,7 @@
             }
             main {
                 padding: 15px;
+                margin-top: 120px; /* Ajusté pour les petits écrans */
             }
             h1 {
                 font-size: 1.5em;
@@ -161,12 +166,13 @@
         <img src="logo.png" alt="Logo Entreprise" class="logo">
         <h1>Application CSE CRM59</h1>
         <nav>
-            <button onclick="window.location.href='FormCafe'">Un problème sur une machine à café</button>
-            <button onclick="window.location.href='Contact.html'">Contact</button>
+            <button onclick="loadPage('actualites')">Actualités</button>
+            <button onclick="loadPage('forms/machine-a-cafe.html')">Machine à Café</button>
+            <button onclick="loadPage('forms/contact.html')">Contact</button>
         </nav>
     </header>
     
-    <main>
+    <main id="main-content">
         <section id="actualites">
             <h2>Dernières Actualités</h2>
             <div id="news-container"></div>
@@ -178,31 +184,73 @@
     </footer>
 
     <script>
-        // URL du CSV corrigée
+        // URL du CSV
         const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQcKo9WOqdnefe5z7QpaM5XtdkGs7pBeWNFrcy1crwW18Jn_KkR1IxV_KMhatedR5lmaASfeIlEsUF9/pub?output=csv';
 
-        // Récupérer et parser le CSV
-        fetch(csvUrl)
-            .then(response => {
-                console.log('Statut de la réponse:', response.status);
-                if (!response.ok) {
-                    throw new Error('Erreur réseau : ' + response.status);
-                }
-                return response.text();
-            })
-            .then(data => {
-                console.log('Contenu brut du CSV:', data);
-                const parsedData = Papa.parse(data, { header: true }).data;
-                console.log('Données parsées:', parsedData);
-                if (parsedData.length === 0) {
-                    throw new Error('Aucune donnée trouvée dans le CSV');
-                }
-                displayNews(parsedData);
-            })
-            .catch(error => {
-                console.error('Erreur:', error);
-                document.getElementById('news-container').innerHTML = '<p class="error-message">Erreur lors du chargement des actualités : ' + error.message + '</p>';
-            });
+        // Charger les actualités par défaut au démarrage
+        loadNews();
+
+        // Fonction pour charger une page dynamiquement
+        function loadPage(page) {
+            const mainContent = document.getElementById('main-content');
+            if (page === 'actualites') {
+                // Charger les actualités
+                mainContent.innerHTML = `
+                    <section id="actualites">
+                        <h2>Dernières Actualités</h2>
+                        <div id="news-container"></div>
+                    </section>
+                `;
+                loadNews();
+            } else {
+                // Charger une page HTML (ex. formulaire)
+                fetch(page)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Erreur lors du chargement de la page : ' + response.status);
+                        }
+                        return response.text();
+                    })
+                    .then(data => {
+                        mainContent.innerHTML = data;
+                        // Réinitialiser les scripts si nécessaire (pour les formulaires)
+                        const scripts = mainContent.getElementsByTagName('script');
+                        for (let script of scripts) {
+                            const newScript = document.createElement('script');
+                            newScript.textContent = script.textContent;
+                            mainContent.appendChild(newScript);
+                        }
+                    })
+                    .catch(error => {
+                        mainContent.innerHTML = `<p class="error-message">Erreur lors du chargement de la page : ${error.message}</p>`;
+                    });
+            }
+        }
+
+        // Fonction pour charger les actualités
+        function loadNews() {
+            fetch(csvUrl)
+                .then(response => {
+                    console.log('Statut de la réponse:', response.status);
+                    if (!response.ok) {
+                        throw new Error('Erreur réseau : ' + response.status);
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    console.log('Contenu brut du CSV:', data);
+                    const parsedData = Papa.parse(data, { header: true }).data;
+                    console.log('Données parsées:', parsedData);
+                    if (parsedData.length === 0) {
+                        throw new Error('Aucune donnée trouvée dans le CSV');
+                    }
+                    displayNews(parsedData);
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    document.getElementById('news-container').innerHTML = '<p class="error-message">Erreur lors du chargement des actualités : ' + error.message + '</p>';
+                });
+        }
 
         // Afficher les actualités
         function displayNews(news) {
