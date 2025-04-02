@@ -5,9 +5,11 @@ const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQcKo9WOqdnefe5z
 document.addEventListener('DOMContentLoaded', () => {
     const sidebar = document.getElementById('sidebar');
     const hamburger = document.querySelector('.hamburger');
+    // Forcer la fermeture du menu au démarrage
     sidebar.classList.remove('active');
     hamburger.classList.remove('active');
-    loadPage('actualites'); // Charger les actualités par défaut
+    // Charger les actualités par défaut
+    loadPage('actualites');
 });
 
 // Fonction pour ouvrir/fermer le menu hamburger
