@@ -161,8 +161,8 @@ function loadPage(pageId, fromMenuClick = false) {
                             <option value="IRP Auto">IRP Auto</option>
                             <option value="Abeille">Abeille</option>
                             <option value="EHS">EHS</option>
-                            <option value="DCP">EHS</option>
-                            <option value="Enedis">EHS</option>
+                            <option value="DCP">DCP</option>
+                            <option value="Enedis">Enedis</option>
 
                         </select>
                     </div>
@@ -170,14 +170,12 @@ function loadPage(pageId, fromMenuClick = false) {
                     <div class="form-group">
                         <label class="required">Nature de la Demande (cochez ce qui s'applique)</label>
                         <div class="checkbox-group">
-                                // IMPORTANT: Chaque checkbox ci-dessous doit avoir :
-                              //  1) Le MEME attribut name="ENTRY_ID_DEMANDE"
-                                //  2) Un attribut value="..." EXACTEMENT identique au texte de l'option dans Google Forms */}
+                                
                             <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="Clé"> Clé café</label>
-                            <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="CarteCE"> Carte AccésCE</label>
-                            <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="Carte naissance"> Carte cadeau naissance</label>
-                            <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="Carte mariage"> Carte mariage / pacs</label>
-                            <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="Carte retraite"> Carte cadeau retraite</label>
+                            <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="Carte AccèsCE"> Carte AccèsCE</label>
+                            <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="Carte cadeau naissance"> Carte cadeau naissance</label>
+                            <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="Carte carte mariage mariage"> Carte mariage / pacs</label>
+                            <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="Carte carte retraite"> Carte cadeau retraite</label>
                             <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="Autre"> Autre...</label>
                             
                         </div>
