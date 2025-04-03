@@ -190,7 +190,7 @@ function loadPage(pageId, fromMenuClick = false) {
                 </form>
                 <div class="form-status-sending" style="display: none;">Envoi en cours...</div>
                 <div id="confirmation" class="confirmation" style="display: none;">Merci, message envoyé ! Nous vous répondrons bientôt.</div>
-                <iframe name="hidden_iframe" style="display: none;" onload="onFormSubmit()"></iframe>
+                <iframe name="hidden_iframe" style="display: block; width: 100%; height: 400px; border: 1px solid red;" onload="onFormSubmit()"></iframe>
                 </div></section>`;
              deferredAction = () => attachFormEvents('contactForm'); // Utilise toujours la méthode iframe
              break;
