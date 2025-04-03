@@ -394,6 +394,20 @@ document.addEventListener('DOMContentLoaded', () => {
             // }
         });
     } else { console.error("CRITICAL: Sidebar not found for listeners."); }
+
+/ --- ENREGISTREMENT DU SERVICE WORKER ---
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/service-worker.js') // Chemin vers votre fichier SW
+            .then(registration => {
+                console.log('[App] Service Worker enregistré avec succès ! Scope:', registration.scope);
+            })
+            .catch(error => {
+                console.error('[App] Échec de l\'enregistrement du Service Worker:', error);
+            });
+    } else {
+        console.log('[App] Service Worker non supporté par ce navigateur.');
+    }
+    // --- FIN ENREGISTREMENT SW ---
 });
 
 // ==================================================
