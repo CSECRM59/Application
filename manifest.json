@@ -1,26 +1,24 @@
 {
-  "name": "Application CSE CRM59", // Nom complet de l'application
-  "short_name": "CSE CRM59",      // Nom court (pour l'icône sur l'écran d'accueil)
-  "description": "Application d'information et de services du CSE CRM59 pour les salariés.", // Description
-  "start_url": "/Application/",               // Page de démarrage quand on lance l'app (votre index.html)
-  "display": "standalone",        // Mode d'affichage (comme une app native, sans barre d'URL navigateur)
-                                  // Autres options: "fullscreen", "minimal-ui", "browser"
-  "background_color": "#FFFFFF",  // Couleur de fond de l'écran de démarrage (splash screen) - Utilisez une variable CSS ou une couleur fixe
-  "theme_color": "#005A9C",       // Couleur de la barre d'outils/thème de l'app - Utilisez votre --color-primary
-  "orientation": "portrait-primary", // Orientation préférée
+  "name": "Application CSE CRM59",
+  "short_name": "CSE CRM59",
+  "description": "Application d'information et de services du CSE CRM59 pour les salariés.",
+  "start_url": "/Application/",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#005A9C",
+  "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "icons/icon-192x192.png",  // Chemin vers votre icône
+      "src": "icons/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable" // "maskable" permet une meilleure intégration sur Android
+      "purpose": "any maskable"
     },
     {
-      "src": "icons/icon-512x512.png",  // Chemin vers votre icône plus grande
+      "src": "icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
-       "purpose": "any maskable"
+      "purpose": "any maskable"
     }
-    // Ajoutez d'autres tailles si nécessaire (ex: 72x72, 96x96, 128x128, 144x144)
   ]
 }
