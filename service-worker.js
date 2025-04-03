@@ -1,20 +1,21 @@
 // service-worker.js
 
-const CACHE_NAME = 'cse-app-cache-v1'; // Changez 'v1' si vous modifiez les fichiers mis en cache
+const CACHE_NAME = 'cse-app-cache-v2'; // Incrémentez la version ! v1 -> v2
 
-// Fichiers essentiels de l'application à mettre en cache lors de l'installation
 const urlsToCache = [
-  '/', // La page d'accueil (index.html)
-  '/index.html',
-  '/styles.css',
-  '/script.js',
-  '/manifest.json',
-  '/logo.png', // Votre logo principal
-  '/icons/icon-192x192.png', // Vos icônes PWA
-  '/icons/icon-512x512.png',
-  // Ajoutez ici d'autres ressources statiques importantes (polices, autres images...)
-  // 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css', // Attention avec les CDN, le cache peut être complexe
-  // 'https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js' // Idem
+  // Chemins relatifs au Service Worker (qui est dans /Application/)
+  './',                     // La racine de l'application (/Application/)
+  './index.html',           // La page principale
+  './styles.css',
+  './script.js',
+  './manifest.json',
+  './logo.png',
+  './icons/icon-192x192.png',
+  './icons/icon-512x512.png',
+  // Mettre les URLs complètes pour les CDN externes est plus sûr
+  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css',
+  'https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js'
+  // Ajoutez d'autres ressources locales avec './' ou chemin relatif
 ];
 
 // Événement 'install' : le Service Worker est installé
@@ -59,50 +60,31 @@ self.addEventListener('activate', event => {
 
 // Événement 'fetch' : Intercepte toutes les requêtes réseau de la page
 self.addEventListener('fetch', event => {
-  const requestUrl = new URL(event.request.url);
+    const requestUrl = new URL(event.request.url);
 
-  // Stratégie "Cache First" pour les fichiers mis en cache lors de l'installation
-  // Pour les autres requêtes (ex: API Google Sheets), on va au réseau directement pour l'instant.
-  if (urlsToCache.includes(requestUrl.pathname) || requestUrl.origin === self.location.origin && requestUrl.pathname === '/') {
-     // console.log('[Service Worker] Fetch (Cache First):', event.request.url);
-      event.respondWith(
-        caches.match(event.request)
-          .then(response => {
-            // Si trouvé dans le cache, renvoyer la réponse du cache
-            if (response) {
-              // console.log('[Service Worker] Réponse trouvée dans le cache:', event.request.url);
-              return response;
-            }
-            // Sinon, effectuer la requête réseau
-            // console.log('[Service Worker] Non trouvé dans le cache, requête réseau:', event.request.url);
-            return fetch(event.request)
-                // Optionnel: Mettre en cache la nouvelle réponse pour la prochaine fois ?
-                // Attention, cela peut cacher des mises à jour si mal géré.
-                /* .then(networkResponse => {
-                    if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
-                        return networkResponse;
-                    }
-                    const responseToCache = networkResponse.clone();
-                    caches.open(CACHE_NAME)
-                        .then(cache => {
-                            cache.put(event.request, responseToCache);
-                        });
-                    return networkResponse;
-                }) */
-                ;
-          })
-          .catch(error => {
-              console.error('[Service Worker] Erreur lors du fetch:', error);
-              // Optionnel: Renvoyer une page hors ligne générique si le cache et le réseau échouent
-              // return caches.match('/offline.html');
-          })
-      );
-  } else {
-      // Pour les requêtes non mises en cache (API, etc.), laisser passer vers le réseau
-      // console.log('[Service Worker] Fetch (Network Only):', event.request.url);
-      // Aucune action spécifique ici, le navigateur gère la requête normalement.
-      // On pourrait implémenter ici des stratégies plus complexes (NetworkFirst, StaleWhileRevalidate)
-      // pour les données dynamiques (newsCsvUrl, partnersCsvUrl).
-      return; // Laisse le navigateur faire la requête normalement.
-  }
+    // Adapter la condition pour correspondre aux URLs mises en cache
+    // Vérifie si l'URL demandée (chemin relatif depuis l'origine) fait partie des URLs à cacher
+    const requestedPath = requestUrl.origin === self.location.origin ? requestUrl.pathname.substring('/Application'.length) || '/' : null;
+    // Correction : Construire le chemin relatif attendu dans urlsToCache
+    const expectedCachePath = requestedPath === '/' ? './' : '.' + requestedPath; 
+    
+    // OU plus simple : comparer les URLs complètes pour les CDN
+    const isExternalCachable = urlsToCache.includes(event.request.url);
+
+    if (isExternalCachable || (requestedPath !== null && urlsToCache.includes(expectedCachePath))) {
+       // console.log('[SW] Fetch (Cache First):', event.request.url, "Expected Cache Path:", expectedCachePath);
+         event.respondWith(
+            caches.match(event.request)
+              .then(response => {
+                  if (response) {
+                      return response;
+                  }
+                  return fetch(event.request); // Pas de mise en cache dynamique pour l'instant
+              })
+        );
+    } else {
+        // console.log('[SW] Fetch (Network Only):', event.request.url);
+         return; // Laisse le navigateur gérer
+    }
 });
+
