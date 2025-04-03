@@ -2,7 +2,7 @@
   "name": "Application CSE CRM59",
   "short_name": "CSE CRM59",
   "description": "Application d'information et de services du CSE CRM59 pour les salariés.",
-  "start_url": "/Application/",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#FFFFFF",
   "theme_color": "#005A9C",
