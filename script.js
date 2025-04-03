@@ -235,6 +235,7 @@ function attachFormEvents(formId) {
 }
 
 /** Gère réponse iframe après soumission (pour formulaires simples). */
+/** Gère réponse iframe après soumission (pour formulaires simples). */
 function onFormSubmit() { // Déclenché par l'iframe APRÈS que Google Forms ait répondu
     if (!isFormSubmitting) return; // Ne rien faire si pas une vraie soumission
 
@@ -250,16 +251,15 @@ function onFormSubmit() { // Déclenché par l'iframe APRÈS que Google Forms ai
     if (statusDiv) statusDiv.style.display = 'none'; // Cacher "Envoi..."
     if (confirmationDiv) confirmationDiv.style.display = "block"; // Afficher confirmation
 
-    // Réinitialiser après 3 secondes
+    // Réinitialiser après 3 secondes - MAIS SANS RE-AFFICHER LE FORMULAIRE
     setTimeout(() => {
-        if(currentForm) currentForm.reset();             // Vider champs
-        if(currentForm) currentForm.style.display = "block"; // Réafficher formulaire
-        if(confirmationDiv) confirmationDiv.style.display = "none"; // Cacher confirmation
-        if(submitButton) submitButton.disabled = false;     // Réactiver bouton
-        isFormSubmitting = false; // Permettre une nouvelle soumission
-    }, 3000);
+        if(currentForm) currentForm.reset();             // Vider champs (toujours utile)
+        // LIGNE SUPPRIMÉE : if(currentForm) currentForm.style.display = "block";
+        // LIGNE SUPPRIMÉE : if(confirmationDiv) confirmationDiv.style.display = "none";
+        if(submitButton) submitButton.disabled = false;     // Réactiver bouton (même s'il est caché)
+        isFormSubmitting = false; // Permettre une nouvelle soumission SI l'utilisateur recharge/navigue
+    }, 3000); // Le délai est moins pertinent maintenant, mais on le garde pour le reset/flag
 }
-
 // --- CHARGEMENT ET AFFICHAGE DES ACTUALITÉS ---
 
 /** Charge et affiche les news depuis CSV. */
