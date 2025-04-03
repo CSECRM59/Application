@@ -174,8 +174,8 @@ function loadPage(pageId, fromMenuClick = false) {
                             <label class="checkbox-label"><input type="checkbox" name="296933228" value="Clé"> Clé café</label>
                             <label class="checkbox-label"><input type="checkbox" name="296933228" value="Carte AccèsCE"> Carte AccèsCE</label>
                             <label class="checkbox-label"><input type="checkbox" name="296933228" value="Carte cadeau naissance"> Carte cadeau naissance</label>
-                            <label class="checkbox-label"><input type="checkbox" name="296933228" value="Carte carte mariage mariage"> Carte mariage / pacs</label>
-                            <label class="checkbox-label"><input type="checkbox" name="296933228" value="Carte carte retraite"> Carte cadeau retraite</label>
+                            <label class="checkbox-label"><input type="checkbox" name="296933228" value="Carte cadeau mariage"> Carte mariage / pacs</label>
+                            <label class="checkbox-label"><input type="checkbox" name="296933228" value="Carte cadeau retraite"> Carte cadeau retraite</label>
                             <label class="checkbox-label"><input type="checkbox" name="296933228" value="Autre"> Autre...</label>
                             
                         </div>
