@@ -138,21 +138,21 @@ function loadPage(pageId, fromMenuClick = false) {
              // =======================================================================
              pageHTML = `
                 <section id="formulaire-contact"><div class="form-container"><h2>Contacter le CSE</h2>
-                <form id="contactForm" action="VOTRE_URL_GOOGLE_FORM_CONTACT/formResponse" method="POST" target="hidden_iframe">
+                <form id="contactForm" action="https://docs.google.com/forms/d/e/1FAIpQLSd9cPzMspmgCVEx3vLSVDiYIrX3fwFTrO3zjntnU1ZmX01w4g/formResponse" method="POST" target="hidden_iframe">
 
                     <div class="form-group">
                         <label for="contact_nomPrenom" class="required">Nom & Prénom</label>
-                        <input type="text" id="contact_nomPrenom" name="ENTRY_ID_NOM_PRENOM" required placeholder="Ex: Jean Dupont">
+                        <input type="text" id="contact_nomPrenom" name="55828962" required placeholder="Ex: Jean Dupont">
                     </div>
 
                     <div class="form-group">
                         <label for="contact_email" class="required">Mail</label>
-                        <input type="email" id="contact_email" name="ENTRY_ID_EMAIL" required placeholder="Ex: jean.dupont@entreprise.com">
+                        <input type="email" id="contact_email" name="1334830157" required placeholder="Ex: jean.dupont@entreprise.com">
                     </div>
                     
                     <div class="form-group">
                         <label for="contact_operation" class="required">Opération</label>
-                        <select id="contact_operation" name="ENTRY_ID_OPERATION" required>
+                        <select id="contact_operation" name="506750242" required>
                             <option value="" disabled selected>-- Sélectionnez une opération --</option>
                             <option value="Direction / Service généraux / IT">Direction / Service généraux / IT</option>
                             <option value="AG2R">AG2R</option>
@@ -171,19 +171,19 @@ function loadPage(pageId, fromMenuClick = false) {
                         <label class="required">Nature de la Demande (cochez ce qui s'applique)</label>
                         <div class="checkbox-group">
                                 
-                            <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="Clé"> Clé café</label>
-                            <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="Carte AccèsCE"> Carte AccèsCE</label>
-                            <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="Carte cadeau naissance"> Carte cadeau naissance</label>
-                            <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="Carte carte mariage mariage"> Carte mariage / pacs</label>
-                            <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="Carte carte retraite"> Carte cadeau retraite</label>
-                            <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="Autre"> Autre...</label>
+                            <label class="checkbox-label"><input type="checkbox" name="296933228" value="Clé"> Clé café</label>
+                            <label class="checkbox-label"><input type="checkbox" name="296933228" value="Carte AccèsCE"> Carte AccèsCE</label>
+                            <label class="checkbox-label"><input type="checkbox" name="296933228" value="Carte cadeau naissance"> Carte cadeau naissance</label>
+                            <label class="checkbox-label"><input type="checkbox" name="296933228" value="Carte carte mariage mariage"> Carte mariage / pacs</label>
+                            <label class="checkbox-label"><input type="checkbox" name="296933228" value="Carte carte retraite"> Carte cadeau retraite</label>
+                            <label class="checkbox-label"><input type="checkbox" name="296933228" value="Autre"> Autre...</label>
                             
                         </div>
                     </div>
                     
                     <div class="form-group">
                         <label for="contact_message">Votre Message (optionnel)</label>
-                        <textarea id="contact_message" name="ENTRY_ID_MESSAGE" rows="5" placeholder="Décrivez votre demande ici..."></textarea>
+                        <textarea id="contact_message" name="2046101959" rows="5" placeholder="Décrivez votre demande ici..."></textarea>
                     </div>
                     
                     <button type="submit">Envoyer le Message</button>
