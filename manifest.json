@@ -2,7 +2,7 @@
   "name": "Application CSE CRM59", // Nom complet de l'application
   "short_name": "CSE CRM59",      // Nom court (pour l'icône sur l'écran d'accueil)
   "description": "Application d'information et de services du CSE CRM59 pour les salariés.", // Description
-  "start_url": "/",               // Page de démarrage quand on lance l'app (votre index.html)
+  "start_url": "/Application/",               // Page de démarrage quand on lance l'app (votre index.html)
   "display": "standalone",        // Mode d'affichage (comme une app native, sans barre d'URL navigateur)
                                   // Autres options: "fullscreen", "minimal-ui", "browser"
   "background_color": "#FFFFFF",  // Couleur de fond de l'écran de démarrage (splash screen) - Utilisez une variable CSS ou une couleur fixe
