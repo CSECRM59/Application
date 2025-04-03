@@ -10,13 +10,13 @@
   "orientation": "portrait-primary", // Orientation préférée
   "icons": [
     {
-      "src": "Application/icons/icon-192x192.png",  // Chemin vers votre icône
+      "src": "icons/icon-192x192.png",  // Chemin vers votre icône
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable" // "maskable" permet une meilleure intégration sur Android
     },
     {
-      "src": "Application/icons/icon-512x512.png",  // Chemin vers votre icône plus grande
+      "src": "icons/icon-512x512.png",  // Chemin vers votre icône plus grande
       "sizes": "512x512",
       "type": "image/png",
        "purpose": "any maskable"
