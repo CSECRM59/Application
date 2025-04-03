@@ -1,17 +1,26 @@
 // ==================================================
 //              SCRIPT COMPLET POUR AppliCSE
-//        (Multi-Thèmes, News, Formulaires, Menu, Partenaires)
-//         [Version Finale Révisée - 2024]
+//        (Multi-Thèmes, News, Partenaires, Formulaires Café/Contact via Iframe)
+//         [Version Simplifiée - Sans Carte Cadeau ni Upload Fichier]
 // ==================================================
+
+/*
+ * Prérequis pour ce script :
+ * 1. Bibliothèque PapaParse incluse dans le HTML : <script src="...papaparse.min.js"></script>
+ * 2. Bibliothèque d'icônes (ex: Font Awesome) incluse si utilisée dans le CSS/HTML.
+ * 3. REMPLACER LES PLACEHOLDERS ci-dessous :
+ *    - Dans `loadPage` -> `case 'formulaire-contact'`: URL et TOUS les `entry.XXXX` de votre Google Form Contact.
+ *    - Vérifier `newsCsvUrl` et `partnersCsvUrl` si vos URLs publiées sont différentes.
+ *    - Vérifier les noms de colonnes CSV dans les fonctions displayNews/displayPartners si différents.
+*/
 
 // --- CONSTANTES ET VARIABLES GLOBALES ---
 
 // URLs des Google Sheets publiés au format CSV
-// ** Assurez-vous que ces Sheets sont bien "Publiés sur le Web" au format CSV **
-const newsCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQcKo9WOqdnefe5z7QpaM5XtdkGs7pBeWNFrcy1crwW18Jn_KkR1IxV_KMhatedR5lmaASfeIlEsUF9/pub?gid=0&single=true&output=csv'; // Feuille Actualités
+const newsCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQcKo9WOqdnefe5z7QpaM5XtdkGs7pBeWNFrcy1crwW18Jn_KkR1IxV_KMhatedR5lmaASfeIlEsUF9/pub?output=csv'; // Feuille Actualités
 const partnersCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQcKo9WOqdnefe5z7QpaM5XtdkGs7pBeWNFrcy1crwW18Jn_KkR1IxV_KMhatedR5lmaASfeIlEsUF9/pub?gid=1082465411&single=true&output=csv'; // Feuille Partenaires
 
-// Drapeau pour l'état de soumission des formulaires
+// Drapeau pour l'état de soumission des formulaires IFRAME (Café/Contact)
 let isFormSubmitting = false;
 
 // Constantes pour la gestion des thèmes
@@ -22,8 +31,7 @@ const KNOWN_THEMES = ['theme-default', 'theme-dark', 'theme-fun']; // Doit corre
 // --- GESTION DES THÈMES ---
 
 /**
- * Applique un thème en modifiant la classe du body
- * et sauvegarde le choix dans localStorage.
+ * Applique un thème en modifiant la classe du body et sauvegarde le choix.
  * @param {string} themeName - Nom de la classe du thème (ex: 'theme-dark').
  */
 function applyTheme(themeName) {
@@ -45,17 +53,13 @@ function loadSavedTheme() {
     let savedTheme = DEFAULT_THEME;
     try {
         savedTheme = localStorage.getItem(THEME_STORAGE_KEY) || DEFAULT_THEME;
-    } catch (e) {
-        savedTheme = DEFAULT_THEME;
-    }
-    if (!KNOWN_THEMES.includes(savedTheme)) {
-        savedTheme = DEFAULT_THEME;
-    }
+    } catch (e) { /* Ignorer erreur localStorage, garder défaut */ }
+    if (!KNOWN_THEMES.includes(savedTheme)) savedTheme = DEFAULT_THEME;
     applyTheme(savedTheme);
 }
 
 /**
- * Met à jour l'état visuel (classe 'active-theme') des boutons du sélecteur.
+ * Met à jour l'état visuel des boutons du sélecteur de thème.
  * @param {string} activeTheme - Nom du thème actuellement actif.
  */
 function updateThemeButtonStates(activeTheme) {
@@ -67,9 +71,7 @@ function updateThemeButtonStates(activeTheme) {
 
 // --- GESTION DU MENU SIDEBAR ---
 
-/**
- * Ferme le menu latéral (sidebar).
- */
+/** Ferme le menu latéral. */
 function closeMenu() {
     const sidebar = document.getElementById('sidebar');
     const hamburger = document.querySelector('.hamburger');
@@ -77,18 +79,14 @@ function closeMenu() {
     if (hamburger) hamburger.classList.remove('active');
 }
 
-/**
- * Ouvre ou ferme le menu latéral (sidebar) en basculant la classe 'active'.
- */
+/** Ouvre/Ferme le menu latéral. */
 function toggleMenu() {
     const sidebar = document.getElementById('sidebar');
     const hamburger = document.querySelector('.hamburger');
     if (sidebar && hamburger) {
         sidebar.classList.toggle('active');
         hamburger.classList.toggle('active');
-    } else {
-        console.error("Élément du menu introuvable (sidebar ou hamburger).");
-    }
+    } else { console.error("Élément du menu introuvable (sidebar ou hamburger)."); }
 }
 
 // --- CHARGEMENT DU CONTENU DES PAGES ---
@@ -100,25 +98,22 @@ function toggleMenu() {
  */
 function loadPage(pageId, fromMenuClick = false) {
     const mainContent = document.getElementById('main-content');
-    if (!mainContent) {
-        console.error("CRITICAL: #main-content introuvable.");
-        return;
-    }
+    if (!mainContent) { console.error("CRITICAL: #main-content introuvable."); return; }
     if (fromMenuClick) closeMenu();
-    isFormSubmitting = false; // Réinitialiser état formulaire
-    mainContent.innerHTML = ''; // Vider avant de charger
+    isFormSubmitting = false; // Réinitialiser état formulaire iframe
+    mainContent.innerHTML = '<p class="loading-message">Chargement...</p>'; // Message chargement générique
 
     let pageHTML = '';
     let deferredAction = null; // Fonction à exécuter après injection HTML
 
     switch (pageId) {
         case 'actualites':
-            pageHTML = `<section id="actualites"><h2>Dernières Actualités</h2><div id="news-container"><p class="loading-message">Chargement...</p></div></section>`;
+            pageHTML = `<section id="actualites"><h2>Dernières Actualités</h2><div id="news-container"></div></section>`;
             deferredAction = loadNews;
             break;
 
-        case 'formulaire-cafe':
-            pageHTML = `
+        case 'formulaire-cafe': // Formulaire simple (iframe)
+             pageHTML = `
                 <section id="formulaire-cafe"><div class="form-container"><h2>Signalement Machine à Café</h2>
                 <form id="reportForm" action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSfw2H0lzEAvt7niVxRhpkPQTLOaOfXz3SoI3IC9NfNxnY33Ag/formResponse" method="POST" target="hidden_iframe">
                     <div class="form-group"><label for="email" class="required">Email</label><input type="email" id="email" name="entry.1494559432" required></div>
@@ -126,7 +121,7 @@ function loadPage(pageId, fromMenuClick = false) {
                     <div class="form-group"><label for="operation" class="required">Opération</label><input type="text" id="operation" name="entry.1034050778" required></div>
                     <div class="form-group"><label for="machine" class="required">Machine concernée</label><select id="machine" name="entry.212638394" required><option value="">Sélectionnez...</option><option value="DEV125543 (E-1)">DEV125543 (E-1)</option><option value="BBRD0152 (E-1)">BBRD0152 (E-1)</option><option value="DEV16567 (E-1)">DEV16567 (E-1)</option><option value="BBRDL0196 (E-1)">BBRDL0196 (E-1)</option><option value="DBIC799 (E0)">DBIC799 (E0)</option><option value="B72ES1979 (E1)">B72ES1979 (E1)</option><option value="B72ES1903 (E2)">B72ES1903 (E2)</option><option value="DEV95042 (E2)">DEV95042 (E2)</option><option value="B72ES1977 (E3)">B72ES1977 (E3)</option></select></div>
                     <div class="form-group"><label for="problem" class="required">Type de problème</label><select id="problem" name="entry.1333521310" required><option value="">Sélectionnez...</option><option value="Pas de gobelet">Pas de gobelet</option><option value="Gobelet vide">Gobelet vide</option><option value="Produit non conforme">Produit non conforme</option><option value="Problème de rechargement">Problème de rechargement</option></select></div>
-                    <div class="form-group"><p class="note">Si problème de rechargement, précisez date/heure/moyen de paiement :</p><label for="date">Date</label><input type="date" id="date" name="entry.789458747"><label for="time">Heure</label><input type="time" id="time" name="entry.1519520523"><label for="payment">Moyen de paiement</label><select id="payment" name="entry.1578764886"><option value="">Sélectionnez...</option><option value="CB">CB</option><option value="Pluxee">Pluxee</option><option value="Espece">Espèce</option><option value="Badge">Badge</option></select></div>
+                    <div class="form-group"><p class="note">Si problème de rechargement, précisez :</p><label for="date">Date</label><input type="date" id="date" name="entry.789458747"><label for="time">Heure</label><input type="time" id="time" name="entry.1519520523"><label for="payment">Moyen de paiement</label><select id="payment" name="entry.1578764886"><option value="">Sélectionnez...</option><option value="CB">CB</option><option value="Pluxee">Pluxee</option><option value="Espece">Espèce</option><option value="Badge">Badge</option></select></div>
                     <div class="form-group"><label for="comment">Commentaire</label><textarea id="comment" name="entry.1120842974"></textarea></div>
                     <button type="submit">Envoyer Signalement</button>
                 </form>
@@ -134,42 +129,79 @@ function loadPage(pageId, fromMenuClick = false) {
                 <div id="confirmation" class="confirmation" style="display: none;">Merci, signalement enregistré !</div>
                 <iframe name="hidden_iframe" style="display: none;" onload="onFormSubmit()"></iframe>
                 </div></section>`;
-             deferredAction = () => attachFormEvents('reportForm');
+             deferredAction = () => attachFormEvents('reportForm'); // Utilise l'ancienne méthode iframe
              break;
 
-        case 'formulaire-contact':
+        case 'formulaire-contact': // Formulaire contact (iframe)
              // =======================================================================
              // !!! REMPLACER URL_FORMULAIRE ET LES entry.XXXX PAR VOS VALEURS RÉELLES !!!
              // =======================================================================
              pageHTML = `
                 <section id="formulaire-contact"><div class="form-container"><h2>Contacter le CSE</h2>
-                <form id="contactForm" action="URL_FORMULAIRE_CONTACT/formResponse" method="POST" target="hidden_iframe">
-                    <div class="form-group"><label for="name" class="required">Nom</label><input type="text" id="name" name="entry.XXXX_NOM" required></div>
-                    <div class="form-group"><label for="email" class="required">Email</label><input type="email" id="email" name="entry.XXXX_EMAIL" required></div>
-                    <div class="form-group"><label for="subject" class="required">Sujet</label><input type="text" id="subject" name="entry.XXXX_SUJET" required></div>
-                    <div class="form-group"><label for="message" class="required">Message</label><textarea id="message" name="entry.XXXX_MESSAGE" required></textarea></div>
-                    <button type="submit">Envoyer Message</button>
+                <form id="contactForm" action="VOTRE_URL_GOOGLE_FORM_CONTACT/formResponse" method="POST" target="hidden_iframe">
+                    {/* Nom & Prénom */}
+                    <div class="form-group">
+                        <label for="contact_nomPrenom" class="required">Nom & Prénom</label>
+                        <input type="text" id="contact_nomPrenom" name="ENTRY_ID_NOM_PRENOM" required placeholder="Ex: Jean Dupont">
+                    </div>
+                    {/* Mail */}
+                    <div class="form-group">
+                        <label for="contact_email" class="required">Mail</label>
+                        <input type="email" id="contact_email" name="ENTRY_ID_EMAIL" required placeholder="Ex: jean.dupont@entreprise.com">
+                    </div>
+                    {/* Sujet / Opération */}
+                    <div class="form-group">
+                        <label for="contact_operation" class="required">Sujet Principal / Opération</label>
+                        <select id="contact_operation" name="ENTRY_ID_OPERATION" required>
+                            <option value="" disabled selected>-- Sélectionnez un sujet --</option>
+                            <option value="Question générale">Question générale</option>
+                            <option value="Avantages CSE">Avantages CSE (billetterie, etc.)</option>
+                            <option value="Problème technique Appli">Problème technique avec l'Appli</option>
+                            <option value="Demande Événement">Demande / Info Événement</option>
+                            <option value="ASC (Activités Sociales)">Question sur les ASC</option>
+                            <option value="Communication CSE">Suggestion communication</option>
+                            <option value="Autre...">Autre...</option>
+                            {/* Adaptez cette liste */}
+                        </select>
+                    </div>
+                    {/* Nature de la Demande (Checkboxes) */}
+                    <div class="form-group">
+                        <label class="required">Nature de la Demande (cochez ce qui s'applique)</label>
+                        <div class="checkbox-group">
+                            {/* IMPORTANT: Chaque checkbox ci-dessous doit avoir :
+                                1) Le MEME attribut name="ENTRY_ID_DEMANDE"
+                                2) Un attribut value="..." EXACTEMENT identique au texte de l'option dans Google Forms */}
+                            <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="Information"> Demande d'Information</label>
+                            <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="Réclamation"> Réclamation / Problème</label>
+                            <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="Suggestion"> Suggestion / Idée</label>
+                            <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="Demande de RDV"> Demande de Rendez-vous</label>
+                            <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="Inscription activité"> Inscription à une activité</label>
+                            <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="Demande remboursement"> Demande de remboursement</label>
+                             {/* Adaptez cette liste */}
+                        </div>
+                    </div>
+                    {/* Message */}
+                    <div class="form-group">
+                        <label for="contact_message">Votre Message (optionnel)</label>
+                        <textarea id="contact_message" name="ENTRY_ID_MESSAGE" rows="5" placeholder="Décrivez votre demande ici..."></textarea>
+                    </div>
+                    <button type="submit">Envoyer le Message</button>
                 </form>
                 <div class="form-status-sending" style="display: none;">Envoi en cours...</div>
-                <div id="confirmation" class="confirmation" style="display: none;">Merci, message envoyé !</div>
+                <div id="confirmation" class="confirmation" style="display: none;">Merci, message envoyé ! Nous vous répondrons bientôt.</div>
                 <iframe name="hidden_iframe" style="display: none;" onload="onFormSubmit()"></iframe>
                 </div></section>`;
-             deferredAction = () => attachFormEvents('contactForm');
+             deferredAction = () => attachFormEvents('contactForm'); // Utilise toujours la méthode iframe
              break;
 
         case 'partenaires':
-            pageHTML = `<section id="partenaires"><h2>Nos Partenaires</h2><div id="partners-container"><p class="loading-message">Chargement...</p></div></section>`;
+            pageHTML = `<section id="partenaires"><h2>Nos Partenaires</h2><div id="partners-container"></div></section>`;
             deferredAction = loadPartners;
             break;
 
         default:
-            console.warn(`Page inconnue: '${pageId}'. Affichage Actualités.`);
-            if (pageId !== 'actualites') {
-                deferExecution(() => loadPage('actualites', fromMenuClick));
-            } else {
-                pageHTML = '<p class="error-message">Erreur chargement page.</p>';
-            }
-            if (!pageHTML && pageId === 'actualites') return;
+            pageHTML = '<p class="error-message">Page non trouvée.</p>';
+            console.warn(`Page inconnue: '${pageId}'.`);
     }
 
     mainContent.innerHTML = pageHTML; // Injecter le HTML
@@ -178,272 +210,138 @@ function loadPage(pageId, fromMenuClick = false) {
     }
 }
 
-/**
- * Exécute une fonction après un délai de 0ms, utile après manipulation du DOM.
- * @param {Function} callback Fonction à exécuter.
- */
-function deferExecution(callback) {
-    if (typeof callback === 'function') {
-        setTimeout(callback, 0);
-    }
-}
+/** Exécute une fonction après un délai de 0ms. */
+function deferExecution(callback) { if (typeof callback === 'function') setTimeout(callback, 0); }
 
-// --- GESTION DES FORMULAIRES ---
+// --- GESTION DES FORMULAIRES (IFRAME UNIQUEMENT) ---
 
-/**
- * Attache les listeners de soumission à un formulaire.
- * @param {string} formId ID du formulaire.
- */
+/** Attache listeners pour formulaires simples (iframe). */
 function attachFormEvents(formId) {
     const form = document.getElementById(formId);
-    if (!form) {
-        console.error(`Formulaire introuvable: #${formId}`);
-        return;
-    }
+    if (!form) { console.error(`Formulaire iframe introuvable: #${formId}`); return; }
     const submitButton = form.querySelector('button[type="submit"]');
     const statusDiv = form.parentNode.querySelector('.form-status-sending');
     const confirmationDiv = form.parentNode.querySelector('#confirmation');
 
-    form.addEventListener("submit", function() {
-        isFormSubmitting = true;
-        if(submitButton) submitButton.disabled = true;
-        if(statusDiv) statusDiv.style.display = 'block';
-        if(confirmationDiv) confirmationDiv.style.display = 'none';
+    form.addEventListener("submit", () => {
+        // Ce code s'exécute LORSQUE l'utilisateur clique sur "Envoyer"
+        isFormSubmitting = true; // Indique qu'une soumission est en cours
+        if(submitButton) submitButton.disabled = true; // Désactive bouton
+        if(statusDiv) statusDiv.style.display = 'block'; // Affiche "Envoi..."
+        if(confirmationDiv) confirmationDiv.style.display = 'none'; // Cache ancien message
+        // La soumission vers l'iframe se fait automatiquement (pas de preventDefault)
     });
 }
 
-/**
- * Gère la réponse de l'iframe après soumission du formulaire.
- */
-function onFormSubmit() {
-    if (!isFormSubmitting) return; // Ignorer si pas une soumission réelle
+/** Gère réponse iframe après soumission (pour formulaires simples). */
+function onFormSubmit() { // Déclenché par l'iframe APRÈS que Google Forms ait répondu
+    if (!isFormSubmitting) return; // Ne rien faire si pas une vraie soumission
 
-    const currentForm = document.querySelector('#main-content form');
-    if (!currentForm) {
-         console.error("onFormSubmit: Formulaire courant non trouvé.");
-         isFormSubmitting = false;
-         return;
-    }
+    // Trouver le formulaire qui a été soumis (celui utilisant l'iframe)
+    const currentForm = document.querySelector('#main-content form[target="hidden_iframe"]');
+    if (!currentForm) { isFormSubmitting = false; return; } // Sécurité
+
     const confirmationDiv = currentForm.parentNode.querySelector('#confirmation');
     const statusDiv = currentForm.parentNode.querySelector('.form-status-sending');
     const submitButton = currentForm.querySelector('button[type="submit"]');
 
-    currentForm.style.display = "none";
-    if (statusDiv) statusDiv.style.display = 'none';
-    if (confirmationDiv) confirmationDiv.style.display = "block";
+    currentForm.style.display = "none"; // Cacher le formulaire
+    if (statusDiv) statusDiv.style.display = 'none'; // Cacher "Envoi..."
+    if (confirmationDiv) confirmationDiv.style.display = "block"; // Afficher confirmation
 
+    // Réinitialiser après 3 secondes
     setTimeout(() => {
-        if(currentForm) currentForm.reset();
-        if(currentForm) currentForm.style.display = "block";
-        if(confirmationDiv) confirmationDiv.style.display = "none";
-        if(submitButton) submitButton.disabled = false;
-        isFormSubmitting = false; // Réinitialiser pour prochaine soumission
+        if(currentForm) currentForm.reset();             // Vider champs
+        if(currentForm) currentForm.style.display = "block"; // Réafficher formulaire
+        if(confirmationDiv) confirmationDiv.style.display = "none"; // Cacher confirmation
+        if(submitButton) submitButton.disabled = false;     // Réactiver bouton
+        isFormSubmitting = false; // Permettre une nouvelle soumission
     }, 3000);
 }
 
 // --- CHARGEMENT ET AFFICHAGE DES ACTUALITÉS ---
 
-/**
- * Charge et affiche les actualités depuis le CSV.
- */
+/** Charge et affiche les news depuis CSV. */
 function loadNews() {
     const container = document.getElementById('news-container');
     if (!container) return;
+    container.innerHTML = '<p class="loading-message">Chargement...</p>';
 
     fetch(newsCsvUrl)
-        .then(response => {
-            if (!response.ok) throw new Error(`Erreur réseau News ${response.status}`);
-            return response.text();
-        })
-        .then(csvText => {
-            Papa.parse(csvText, {
-                header: true, skipEmptyLines: 'greedy',
-                complete: results => displayNews(results.data),
-                error: err => {
-                     console.error('Erreur parsing News:', err);
-                     if(container) container.innerHTML = `<p class="error-message">Erreur lecture actualités.</p>`;
-                }
-            });
-        })
-        .catch(error => {
-            console.error('Erreur fetch News:', error);
-            if(container) container.innerHTML = `<p class="error-message">Impossible charger actualités. ${error.message}</p>`;
-        });
+        .then(response => { if (!response.ok) throw new Error(`Erreur réseau News ${response.status}`); return response.text(); })
+        .then(csvText => Papa.parse(csvText, { header: true, skipEmptyLines: 'greedy', complete: r => displayNews(r.data), error: e => { console.error('PapaParse News:', e); if(container) container.innerHTML = '<p class="error-message">Erreur lecture actu.</p>';} }))
+        .catch(error => { console.error('Fetch News:', error); if(container) container.innerHTML = `<p class="error-message">Chargement actu impossible. ${error.message}</p>`; });
 }
 
-/**
- * Affiche les actualités dans le DOM.
- * @param {Array<Object>} newsData Données parsées.
- */
+/** Affiche les news dans le DOM. */
 function displayNews(newsData) {
     const container = document.getElementById('news-container');
-    if (!container) return;
-    container.innerHTML = ''; // Vider
-
+    if (!container) return; container.innerHTML = '';
     const validNews = (newsData || [])
-        .filter(item => item && Object.values(item).some(val => val && String(val).trim() !== ''))
-        .sort((a, b) => {
-            const dateA = parseDate(a.Date || a.date);
-            const dateB = parseDate(b.Date || b.date);
-            if (!dateB && !dateA) return 0;
-            if (!dateB) return -1;
-            if (!dateA) return 1;
-            return dateB.getTime() - dateA.getTime();
-        });
+        .filter(item => item && Object.values(item).some(v => v && String(v).trim()))
+        .sort((a, b) => (parseDate(b.Date || b.date)?.getTime() || 0) - (parseDate(a.Date || a.date)?.getTime() || 0));
 
-    if (validNews.length === 0) {
-        container.innerHTML = '<p>Aucune actualité pour le moment.</p>';
-        return;
-    }
+    if (validNews.length === 0) { container.innerHTML = '<p>Aucune actualité pour le moment.</p>'; return; }
 
     validNews.forEach(item => {
         const title = item.Titre || item.titre || 'Actualité';
         const date = item.Date || item.date || '';
-        const description = item.Description || item.description || '';
-        const imageUrl = item.Lien_image || item['Lien image'] || item.Image || item.image || '';
-
-        const newsItem = document.createElement('div');
-        newsItem.className = 'actu';
-        let imageHtml = '';
-        if (imageUrl) {
-            imageHtml = `<img src="${imageUrl}" alt="${title}" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" loading="lazy"><p class="error-message image-error" style="display:none;">Erreur image</p>`;
-        }
-        newsItem.innerHTML = `<h3>${title}</h3>${date ? `<p><strong>Date:</strong> ${date}</p>` : ''}<p>${description}</p>${imageHtml}`;
-        container.appendChild(newsItem);
+        const desc = item.Description || item.description || '';
+        const imgUrl = item.Lien_image || item['Lien image'] || item.Image || item.image || '';
+        const el = document.createElement('div'); el.className = 'actu';
+        const img = imgUrl ? `<img src="${imgUrl}" alt="${title}" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" loading="lazy"><p class="error-message image-error" style="display:none;">Img?</p>` : '';
+        el.innerHTML = `<h3>${title}</h3>${date ? `<p><strong>Date:</strong> ${date}</p>` : ''}<p>${desc}</p>${img}`;
+        container.appendChild(el);
     });
 }
 
 // --- CHARGEMENT ET AFFICHAGE DES PARTENAIRES ---
 
-/**
- * Charge et affiche les partenaires depuis le CSV.
- */
+/** Charge et affiche les partenaires depuis CSV. */
 function loadPartners() {
     const container = document.getElementById('partners-container');
     if (!container) return;
+    container.innerHTML = '<p class="loading-message">Chargement...</p>';
 
     fetch(partnersCsvUrl)
-        .then(response => {
-            if (!response.ok) throw new Error(`Erreur réseau Partenaires ${response.status}`);
-            return response.text();
-        })
-        .then(csvText => {
-            Papa.parse(csvText, {
-                header: true, skipEmptyLines: 'greedy',
-                complete: results => {
-                    // console.log("Partenaires CSV:", results.data); // Debug
-                    if (container) container.classList.remove('partners-loading');
-                    const validPartners = (results.data || [])
-                        .filter(item => item && item.Nom && String(item.Nom).trim() !== ''); // Exiger au moins un nom
-                    if (validPartners.length > 0) {
-                        const grouped = groupPartnersByCategory(validPartners);
-                        displayPartners(grouped);
-                    } else {
-                         if(container) container.innerHTML = '<p>Aucun partenaire trouvé.</p>';
-                    }
-                },
-                 error: err => {
-                     console.error('Erreur parsing Partenaires:', err);
-                     if(container) container.innerHTML = `<p class="error-message">Erreur lecture partenaires.</p>`;
-                 }
-            });
-        })
-        .catch(error => {
-            console.error('Erreur fetch Partenaires:', error);
-             if(container) {
-                container.classList.remove('partners-loading');
-                container.innerHTML = `<p class="error-message">Impossible charger partenaires. ${error.message}</p>`;
-             }
-        });
+        .then(response => { if (!response.ok) throw new Error(`Erreur réseau ${response.status}`); return response.text(); })
+        .then(csvText => Papa.parse(csvText, { header: true, skipEmptyLines: 'greedy', complete: r => {
+            if(container) container.classList.remove('partners-loading');
+            const valid = (r.data || []).filter(i => i && i.Nom && String(i.Nom).trim());
+            if(valid.length > 0) displayPartners(groupPartnersByCategory(valid));
+            else if(container) container.innerHTML = '<p>Aucun partenaire.</p>';
+        }, error: e => { console.error('PapaParse Partenaires:', e); if(container) container.innerHTML = '<p class="error-message">Erreur lecture partenaires.</p>'; } }))
+        .catch(error => { console.error('Fetch Partenaires:', error); if(container) { container.classList.remove('partners-loading'); container.innerHTML = `<p class="error-message">Chargement partenaires impossible. ${error.message}</p>`; }});
 }
 
-/**
- * Groupe les partenaires par catégorie.
- * @param {Array<Object>} partners Données brutes.
- * @returns {Object} Partenaires groupés { Categorie: [partenaire1, ...] }.
- */
+/** Groupe les partenaires par catégorie. */
 function groupPartnersByCategory(partners) {
-    const grouped = {};
-    const defaultCategory = "Autres";
-
-    partners.forEach(partner => {
-        const category = (partner.Categorie || partner.categorie || '').trim() || defaultCategory;
-        if (!grouped[category]) grouped[category] = [];
-        grouped[category].push(partner);
-    });
-
-    // Tri des catégories (Autres à la fin) et partenaires par nom dans chaque catégorie
-    const sortedCategories = Object.keys(grouped).sort((a, b) => {
-        if (a === defaultCategory) return 1;
-        if (b === defaultCategory) return -1;
-        return a.localeCompare(b, 'fr', { sensitivity: 'base' });
-    });
-
+    const grouped = {}; const defaultCat = "Autres";
+    partners.forEach(p => { const cat = (p.Categorie || p.categorie || '').trim() || defaultCat; if (!grouped[cat]) grouped[cat] = []; grouped[cat].push(p); });
+    const sortedCats = Object.keys(grouped).sort((a, b) => (a === defaultCat) ? 1 : (b === defaultCat) ? -1 : a.localeCompare(b, 'fr', { sensitivity: 'base' }));
     const sortedGrouped = {};
-    sortedCategories.forEach(cat => {
-        sortedGrouped[cat] = grouped[cat].sort((a, b) =>
-            (a.Nom || '').localeCompare(b.Nom || '', 'fr', { sensitivity: 'base' })
-        );
-    });
+    sortedCats.forEach(cat => { sortedGrouped[cat] = grouped[cat].sort((a, b) => (a.Nom || '').localeCompare(b.Nom || '', 'fr', { sensitivity: 'base' })); });
     return sortedGrouped;
 }
 
-/**
- * Affiche les partenaires groupés dans le DOM.
- * @param {Object} groupedPartners Partenaires groupés.
- */
+/** Affiche les partenaires groupés dans le DOM. */
 function displayPartners(groupedPartners) {
     const container = document.getElementById('partners-container');
-    if (!container) return;
-    container.innerHTML = ''; // Vider
-
-    if (Object.keys(groupedPartners).length === 0) {
-        container.innerHTML = '<p>Aucun partenaire à afficher.</p>';
-        return;
-    }
+    if (!container) return; container.innerHTML = '';
+    if (Object.keys(groupedPartners).length === 0) { container.innerHTML = '<p>Aucun partenaire.</p>'; return; }
 
     for (const category in groupedPartners) {
         if (groupedPartners.hasOwnProperty(category)) {
-            const partnersInCategory = groupedPartners[category];
-
-            const categoryTitle = document.createElement('h3');
-            categoryTitle.className = 'partner-category-title';
-            categoryTitle.textContent = category;
-            container.appendChild(categoryTitle);
-
-            const categoryGrid = document.createElement('div');
-            categoryGrid.className = 'partner-category-grid';
-            container.appendChild(categoryGrid);
-
-            partnersInCategory.forEach(partner => {
-                const name = partner.Nom || 'Partenaire';
-                const description = partner.Description || '';
-                const link = partner.Lien || partner.lien || partner.URL || partner.url || '';
-                const logoUrl = partner.Logo || partner.logo || '';
-
-                const partnerCard = document.createElement('div');
-                partnerCard.className = 'partner-card';
-                let logoHtml = logoUrl
-                    ? `<img src="${logoUrl}" alt="Logo ${name}" class="partner-logo" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block';"><p class="error-message image-error" style="display:none;">Logo?</p>`
-                    : `<div class="partner-logo-placeholder"><i class="fas fa-building"></i></div>`; // Utilise FontAwesome ici
-
-                partnerCard.innerHTML = `
-                    ${logoHtml}
-                    <h4>${name}</h4>
-                    ${description ? `<p>${description}</p>` : ''}
-                `;
-
-                if (link) {
-                    const linkWrapper = document.createElement('a');
-                    linkWrapper.href = link;
-                    linkWrapper.target = '_blank';
-                    linkWrapper.rel = 'noopener noreferrer';
-                    linkWrapper.className = 'partner-card-link';
-                    linkWrapper.appendChild(partnerCard);
-                    categoryGrid.appendChild(linkWrapper);
-                } else {
-                    categoryGrid.appendChild(partnerCard);
-                }
+            const partners = groupedPartners[category];
+            const catTitle = document.createElement('h3'); catTitle.className = 'partner-category-title'; catTitle.textContent = category; container.appendChild(catTitle);
+            const catGrid = document.createElement('div'); catGrid.className = 'partner-category-grid'; container.appendChild(catGrid);
+            partners.forEach(p => {
+                const name = p.Nom || ''; const desc = p.Description || ''; const link = p.Lien || p.lien || p.URL || p.url || ''; const logo = p.Logo || p.logo || '';
+                const card = document.createElement('div'); card.className = 'partner-card';
+                const logoHTML = logo ? `<img src="${logo}" alt="${name}" class="partner-logo" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block';"><p class="error-message image-error" style="display:none;">Logo?</p>` : `<div class="partner-logo-placeholder"><i class="fas fa-building"></i></div>`;
+                card.innerHTML = `${logoHTML}<h4>${name}</h4>${desc ? `<p>${desc}</p>` : ''}`;
+                if (link) { const a = document.createElement('a'); a.href = link; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.className = 'partner-card-link'; a.appendChild(card); catGrid.appendChild(a); }
+                else { catGrid.appendChild(card); }
             });
         }
     }
@@ -451,84 +349,50 @@ function displayPartners(groupedPartners) {
 
 // --- UTILITAIRE DATE ---
 
-/**
- * Tente de parser une chaîne en objet Date.
- * @param {string} dateString Chaîne date.
- * @returns {Date|null} Objet Date ou null.
- */
+/** Tente de parser une chaîne en objet Date. */
 function parseDate(dateString) {
     if (!dateString || typeof dateString !== 'string') return null;
-    dateString = dateString.trim();
-    let parts, day, month, year, date;
-    // Tente DD/MM/YYYY ou DD.MM.YYYY ou DD-MM-YYYY
+    dateString = dateString.trim(); let parts, d, m, y, date;
     parts = dateString.match(/^(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})$/);
-    if (parts) {
-        day = parseInt(parts[1], 10); month = parseInt(parts[2], 10) - 1; year = parseInt(parts[3], 10);
-        if (year > 1900 && year < 2100 && month >= 0 && month < 12 && day > 0 && day <= 31) {
-            date = new Date(Date.UTC(year, month, day));
-            if (date.getUTCFullYear() === year && date.getUTCMonth() === month && date.getUTCDate() === day) return date;
-        }
-    }
-    // Tente YYYY-MM-DD
+    if (parts) { d = parseInt(parts[1], 10); m = parseInt(parts[2], 10) - 1; y = parseInt(parts[3], 10); if (y > 1900 && y < 2100 && m >= 0 && m < 12 && d > 0 && d <= 31) { date = new Date(Date.UTC(y, m, d)); if (date.getUTCFullYear() === y && date.getUTCMonth() === m && date.getUTCDate() === d) return date; } }
     parts = dateString.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
-     if (parts) {
-        year = parseInt(parts[1], 10); month = parseInt(parts[2], 10) - 1; day = parseInt(parts[3], 10);
-        if (year > 1900 && year < 2100 && month >= 0 && month < 12 && day > 0 && day <= 31) {
-           date = new Date(Date.UTC(year, month, day));
-           if (date.getUTCFullYear() === year && date.getUTCMonth() === month && date.getUTCDate() === day) return date;
-         }
-    }
-     // Tente MM/DD/YYYY
-     parts = dateString.match(/^(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})$/);
-      if (parts) {
-         month = parseInt(parts[1], 10) - 1; day = parseInt(parts[2], 10); year = parseInt(parts[3], 10);
-         if (year > 1900 && year < 2100 && month >= 0 && month < 12 && day > 0 && day <= 31) {
-             date = new Date(Date.UTC(year, month, day));
-              if (date.getUTCFullYear() === year && date.getUTCMonth() === month && date.getUTCDate() === day) return date;
-          }
-      }
-    try { // Dernier recours: parsing navigateur
-         const parsedTimestamp = Date.parse(dateString);
-         if (!isNaN(parsedTimestamp)) return new Date(parsedTimestamp);
-    } catch(e) {}
+    if (parts) { y = parseInt(parts[1], 10); m = parseInt(parts[2], 10) - 1; d = parseInt(parts[3], 10); if (y > 1900 && y < 2100 && m >= 0 && m < 12 && d > 0 && d <= 31) { date = new Date(Date.UTC(y, m, d)); if (date.getUTCFullYear() === y && date.getUTCMonth() === m && date.getUTCDate() === d) return date; } }
+    parts = dateString.match(/^(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})$/); // Réessayer pour MM/DD/YYYY
+    if (parts) { m = parseInt(parts[1], 10) - 1; d = parseInt(parts[2], 10); y = parseInt(parts[3], 10); if (y > 1900 && y < 2100 && m >= 0 && m < 12 && d > 0 && d <= 31) { date = new Date(Date.UTC(y, m, d)); if (date.getUTCFullYear() === y && date.getUTCMonth() === m && date.getUTCDate() === d) return date; } }
+    try { const ts = Date.parse(dateString); if (!isNaN(ts)) return new Date(ts); } catch(e) {}
     return null;
 }
 
 // --- INITIALISATION AU CHARGEMENT DE LA PAGE ---
 
 document.addEventListener('DOMContentLoaded', () => {
-    // console.log('DOM chargé. Initialisation...'); // Débug
+    // console.log('DOM Ready. Initializing App...'); // Debug
 
-    // 1. Appliquer thème
-    loadSavedTheme();
+    loadSavedTheme(); // Appliquer thème
+    closeMenu();      // Fermer menu
+    loadPage('actualites', false); // Charger page accueil
 
-    // 2. Fermer menu
-    closeMenu();
-
-    // 3. Charger page accueil
-    loadPage('actualites', false);
-
-    // 4. Attacher listener hamburger
+    // Listener Menu Hamburger
     const hamburger = document.querySelector('.hamburger');
-    if (hamburger) {
-        hamburger.addEventListener('click', toggleMenu);
-    } else {
-        console.error("CRITICAL: Bouton hamburger '.hamburger' introuvable.");
-    }
+    if (hamburger) hamburger.addEventListener('click', toggleMenu);
+    else console.error("CRITICAL: Hamburger not found.");
 
-    // 5. Attacher listener sélecteur de thème (délégation)
-    const sidebarElement = document.getElementById('sidebar');
-    if (sidebarElement) {
-        sidebarElement.addEventListener('click', (event) => {
-            const themeButton = event.target.closest('.theme-switcher-container button.theme-button[data-theme]');
-            if (themeButton) {
-                 event.preventDefault();
-                 applyTheme(themeButton.dataset.theme);
-            }
+    // Listener Thèmes (Délégation sur sidebar)
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar) {
+        sidebar.addEventListener('click', (e) => {
+            // Gérer clic sur bouton de thème
+            const themeBtn = e.target.closest('.theme-switcher-container button.theme-button[data-theme]');
+            if (themeBtn) { e.preventDefault(); applyTheme(themeBtn.dataset.theme); return; } // Appliquer thème et arrêter
+
+            // Gérer clic sur bouton de navigation (si vous préférez JS aux onclick HTML)
+            // const navBtn = e.target.closest('.sidebar ul li button:not(.theme-button)');
+            // if (navBtn && navBtn.dataset.page) { // Supposez que vous ajoutiez data-page="actualites" etc. aux boutons
+            //    e.preventDefault();
+            //    loadPage(navBtn.dataset.page, true);
+            // }
         });
-    } else {
-        console.error("CRITICAL: Sidebar '#sidebar' introuvable pour listener thèmes.");
-    }
+    } else { console.error("CRITICAL: Sidebar not found for listeners."); }
 });
 
 // ==================================================
