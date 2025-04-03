@@ -397,7 +397,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- ENREGISTREMENT DU SERVICE WORKER ---
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/service-worker.js') // Chemin vers votre fichier SW
+        navigator.serviceWorker.register('service-worker.js') // Chemin vers votre fichier SW
             .then(registration => {
                 console.log('[App] Service Worker enregistré avec succès ! Scope:', registration.scope);
             })
