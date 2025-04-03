@@ -142,17 +142,17 @@ function loadPage(pageId, fromMenuClick = false) {
 
                     <div class="form-group">
                         <label for="contact_nomPrenom" class="required">Nom & Prénom</label>
-                        <input type="text" id="contact_nomPrenom" name="55828962" required placeholder="Ex: Jean Dupont">
+                        <input type="text" id="contact_nomPrenom" name="entry.55828962" required placeholder="Ex: Jean Dupont">
                     </div>
 
                     <div class="form-group">
                         <label for="contact_email" class="required">Mail</label>
-                        <input type="email" id="contact_email" name="1334830157" required placeholder="Ex: jean.dupont@entreprise.com">
+                        <input type="email" id="contact_email" name="entry.1334830157" required placeholder="Ex: jean.dupont@entreprise.com">
                     </div>
                     
                     <div class="form-group">
                         <label for="contact_operation" class="required">Opération</label>
-                        <select id="contact_operation" name="506750242" required>
+                        <select id="contact_operation" name="entry.506750242" required>
                             <option value="" disabled selected>-- Sélectionnez une opération --</option>
                             <option value="Direction / Service généraux / IT">Direction / Service généraux / IT</option>
                             <option value="AG2R">AG2R</option>
@@ -171,19 +171,19 @@ function loadPage(pageId, fromMenuClick = false) {
                         <label class="required">Nature de la Demande (cochez ce qui s'applique)</label>
                         <div class="checkbox-group">
                                 
-                            <label class="checkbox-label"><input type="checkbox" name="296933228" value="Clé café"> Clé café</label>
-                            <label class="checkbox-label"><input type="checkbox" name="296933228" value="Carte AccèsCE"> Carte AccèsCE</label>
-                            <label class="checkbox-label"><input type="checkbox" name="296933228" value="Carte cadeau naissance"> Carte cadeau naissance</label>
-                            <label class="checkbox-label"><input type="checkbox" name="296933228" value="Carte cadeau mariage"> Carte cadeau mariage / pacs</label>
-                            <label class="checkbox-label"><input type="checkbox" name="296933228" value="Carte cadeau retraite"> Carte cadeau retraite</label>
-                            <label class="checkbox-label"><input type="checkbox" name="296933228" value="Autre"> Autre...</label>
+                            <label class="checkbox-label"><input type="checkbox" name="entry.296933228" value="Clé café"> Clé café</label>
+                            <label class="checkbox-label"><input type="checkbox" name="entry.296933228" value="Carte AccèsCE"> Carte AccèsCE</label>
+                            <label class="checkbox-label"><input type="checkbox" name="entry.296933228" value="Carte cadeau naissance"> Carte cadeau naissance</label>
+                            <label class="checkbox-label"><input type="checkbox" name="entry.296933228" value="Carte cadeau mariage"> Carte cadeau mariage / pacs</label>
+                            <label class="checkbox-label"><input type="checkbox" name="entry.296933228" value="Carte cadeau retraite"> Carte cadeau retraite</label>
+                            <label class="checkbox-label"><input type="checkbox" name="entry.296933228" value="Autre"> Autre...</label>
                             
                         </div>
                     </div>
                     
                     <div class="form-group">
                         <label for="contact_message">Votre Message (optionnel)</label>
-                        <textarea id="contact_message" name="2046101959" rows="5" placeholder="Décrivez votre demande ici..."></textarea>
+                        <textarea id="contact_message" name="entry.2046101959" rows="5" placeholder="Décrivez votre demande ici..."></textarea>
                     </div>
                     
                     <button type="submit">Envoyer le Message</button>
