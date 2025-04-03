@@ -395,7 +395,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     } else { console.error("CRITICAL: Sidebar not found for listeners."); }
 
-/ --- ENREGISTREMENT DU SERVICE WORKER ---
+    // --- ENREGISTREMENT DU SERVICE WORKER ---
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/service-worker.js') // Chemin vers votre fichier SW
             .then(registration => {
