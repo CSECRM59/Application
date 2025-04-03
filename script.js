@@ -151,31 +151,34 @@ function loadPage(pageId, fromMenuClick = false) {
                     </div>
                     
                     <div class="form-group">
-                        <label for="contact_operation" class="required">Sujet Principal / Opération</label>
+                        <label for="contact_operation" class="required">Opération</label>
                         <select id="contact_operation" name="ENTRY_ID_OPERATION" required>
-                            <option value="" disabled selected>-- Sélectionnez un sujet --</option>
-                            <option value="Question générale">Question générale</option>
-                            <option value="Avantages CSE">Avantages CSE (billetterie, etc.)</option>
-                            <option value="Problème technique Appli">Problème technique avec l'Appli</option>
-                            <option value="Demande Événement">Demande / Info Événement</option>
-                            <option value="ASC (Activités Sociales)">Question sur les ASC</option>
-                            <option value="Communication CSE">Suggestion communication</option>
-                            <option value="Autre...">Autre...</option>
+                            <option value="" disabled selected>-- Sélectionnez une opération --</option>
+                            <option value="Direction / Service généraux / IT">Direction / Service généraux / IT</option>
+                            <option value="AG2R">AG2R</option>
+                            <option value="UCPA">UCPA</option>
+                            <option value="CNAV">CNAV</option>
+                            <option value="IRP Auto">IRP Auto</option>
+                            <option value="Abeille">Abeille</option>
+                            <option value="EHS">EHS</option>
+                            <option value="DCP">EHS</option>
+                            <option value="Enedis">EHS</option>
+
                         </select>
                     </div>
                     
                     <div class="form-group">
                         <label class="required">Nature de la Demande (cochez ce qui s'applique)</label>
                         <div class="checkbox-group">
-                            /* IMPORTANT: Chaque checkbox ci-dessous doit avoir :
-                              *  1) Le MEME attribut name="ENTRY_ID_DEMANDE"
-                              */  2) Un attribut value="..." EXACTEMENT identique au texte de l'option dans Google Forms */}
-                            <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="Information"> Demande d'Information</label>
-                            <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="Réclamation"> Réclamation / Problème</label>
-                            <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="Suggestion"> Suggestion / Idée</label>
-                            <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="Demande de RDV"> Demande de Rendez-vous</label>
-                            <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="Inscription activité"> Inscription à une activité</label>
-                            <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="Demande remboursement"> Demande de remboursement</label>
+                                // IMPORTANT: Chaque checkbox ci-dessous doit avoir :
+                              //  1) Le MEME attribut name="ENTRY_ID_DEMANDE"
+                                //  2) Un attribut value="..." EXACTEMENT identique au texte de l'option dans Google Forms */}
+                            <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="Clé"> Clé café</label>
+                            <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="CarteCE"> Carte AccésCE</label>
+                            <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="Carte naissance"> Carte cadeau naissance</label>
+                            <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="Carte mariage"> Carte mariage / pacs</label>
+                            <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="Carte retraite"> Carte cadeau retraite</label>
+                            <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="Autre"> Autre...</label>
                             
                         </div>
                     </div>
