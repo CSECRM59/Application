@@ -139,17 +139,17 @@ function loadPage(pageId, fromMenuClick = false) {
              pageHTML = `
                 <section id="formulaire-contact"><div class="form-container"><h2>Contacter le CSE</h2>
                 <form id="contactForm" action="VOTRE_URL_GOOGLE_FORM_CONTACT/formResponse" method="POST" target="hidden_iframe">
-                    {/* Nom & Prénom */}
+                    // Nom & Prénom 
                     <div class="form-group">
                         <label for="contact_nomPrenom" class="required">Nom & Prénom</label>
                         <input type="text" id="contact_nomPrenom" name="ENTRY_ID_NOM_PRENOM" required placeholder="Ex: Jean Dupont">
                     </div>
-                    {/* Mail */}
+                    //Mail
                     <div class="form-group">
                         <label for="contact_email" class="required">Mail</label>
                         <input type="email" id="contact_email" name="ENTRY_ID_EMAIL" required placeholder="Ex: jean.dupont@entreprise.com">
                     </div>
-                    {/* Sujet / Opération */}
+                    //Sujet / Opération
                     <div class="form-group">
                         <label for="contact_operation" class="required">Sujet Principal / Opération</label>
                         <select id="contact_operation" name="ENTRY_ID_OPERATION" required>
@@ -164,20 +164,20 @@ function loadPage(pageId, fromMenuClick = false) {
                             {/* Adaptez cette liste */}
                         </select>
                     </div>
-                    {/* Nature de la Demande (Checkboxes) */}
+                    //Nature de la Demande (Checkboxes)
                     <div class="form-group">
                         <label class="required">Nature de la Demande (cochez ce qui s'applique)</label>
                         <div class="checkbox-group">
-                            {/* IMPORTANT: Chaque checkbox ci-dessous doit avoir :
-                                1) Le MEME attribut name="ENTRY_ID_DEMANDE"
-                                2) Un attribut value="..." EXACTEMENT identique au texte de l'option dans Google Forms */}
+                            // IMPORTANT: Chaque checkbox ci-dessous doit avoir :
+                              //  1) Le MEME attribut name="ENTRY_ID_DEMANDE"
+                              //  2) Un attribut value="..." EXACTEMENT identique au texte de l'option dans Google Forms */}
                             <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="Information"> Demande d'Information</label>
                             <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="Réclamation"> Réclamation / Problème</label>
                             <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="Suggestion"> Suggestion / Idée</label>
                             <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="Demande de RDV"> Demande de Rendez-vous</label>
                             <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="Inscription activité"> Inscription à une activité</label>
                             <label class="checkbox-label"><input type="checkbox" name="ENTRY_ID_DEMANDE" value="Demande remboursement"> Demande de remboursement</label>
-                             {/* Adaptez cette liste */}
+                             //Adaptez cette liste
                         </div>
                     </div>
                     {/* Message */}
