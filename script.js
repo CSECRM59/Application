@@ -296,7 +296,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Enregistrement du Service Worker
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('service-worker.js') // Doit être à la racine
+        navigator.serviceWorker.register('./service-worker.js') // Doit être à la racine
             .then(reg => console.log('[PWA] Service Worker enregistré, scope:', reg.scope))
             .catch(err => console.error('[PWA] Erreur enregistrement Service Worker:', err));
     } else {
