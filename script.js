@@ -138,7 +138,7 @@ function loadPage(pageId, fromMenuClick = false) {
              // =======================================================================
              pageHTML = `
                 <section id="formulaire-contact"><div class="form-container"><h2>Contacter le CSE</h2>
-                <form id="contactForm" action="https://docs.google.com/forms/d/e/1FAIpQLSd9cPzMspmgCVEx3vLSVDiYIrX3fwFTrO3zjntnU1ZmX01w4g/formResponse" method="POST" target="hidden_iframe">
+                <form id="contactForm" action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSd9cPzMspmgCVEx3vLSVDiYIrX3fwFTrO3zjntnU1ZmX01w4g/formResponse" method="POST" target="hidden_iframe">
 
                     <div class="form-group">
                         <label for="contact_nomPrenom" class="required">Nom & Prénom</label>
