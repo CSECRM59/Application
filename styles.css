@@ -282,6 +282,121 @@ img.member-photo + .member-placeholder {
         font-size: 2em;
     }
 }
+/* ======================================== */
+/*        STYLES SPÉCIFIQUES ACCES CE      */
+/* ======================================== */
+
+#accesce h3 {
+    font-family: var(--font-heading);
+    color: var(--color-primary);
+    font-size: 1.4em;
+    font-weight: 700;
+    margin-top: 25px; /* Espace avant les sous-titres */
+    margin-bottom: 15px;
+    padding-bottom: 3px;
+    border-bottom: 1px solid var(--color-secondary);
+}
+
+#accesce p {
+    margin-bottom: 15px;
+    line-height: 1.7;
+}
+
+#accesce ul {
+    list-style: disc; /* Puces standard */
+    margin-left: 25px;
+    margin-bottom: 20px;
+}
+#accesce ul li {
+    margin-bottom: 8px;
+}
+
+/* Style pour le bloc mis en évidence */
+.highlight-box {
+    background-color: color-mix(in srgb, var(--color-accent) 15%, var(--color-background)); /* Fond légèrement coloré avec l'accent */
+    border: 1px solid color-mix(in srgb, var(--color-accent) 30%, var(--color-border));
+    border-left: 5px solid var(--color-accent);
+    padding: 15px 20px;
+    margin: 20px 0;
+    border-radius: var(--border-radius);
+}
+.highlight-box ul {
+    list-style: none; /* Pas de puces dans ce bloc */
+    margin-left: 5px;
+    margin-bottom: 0;
+}
+.highlight-box ul li {
+     margin-bottom: 12px;
+     padding-left: 5px;
+}
+.highlight-box ul li:last-child {
+     margin-bottom: 0;
+}
+.highlight-box strong {
+    color: var(--color-text); /* Ou var(--color-primary) */
+}
+/* Adaptation thème sombre pour le highlight */
+body.theme-dark .highlight-box {
+     background-color: color-mix(in srgb, var(--color-accent) 20%, var(--color-background));
+     border-color: color-mix(in srgb, var(--color-accent) 40%, var(--color-border));
+     border-left-color: var(--color-accent);
+}
+body.theme-dark .highlight-box strong {
+    color: var(--color-text);
+}
+
+
+/* Style pour le bouton d'action (lien externe) */
+.action-button {
+    display: inline-block; /* Comportement de bouton */
+    padding: 10px 20px;
+    background-color: var(--color-primary);
+    color: var(--color-text-on-primary);
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 1em;
+    font-weight: bold;
+    text-decoration: none; /* Pas de soulignement */
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    cursor: pointer;
+}
+.action-button i { /* Style icône dans le bouton */
+    margin-left: 8px;
+    font-size: 0.9em;
+}
+.action-button:hover {
+    background-color: color-mix(in srgb, var(--color-primary) 85%, black);
+    transform: translateY(-2px);
+}
+.action-button:active {
+    transform: translateY(0);
+}
+
+/* Réutilisation du style .contact-commission pour la fin */
+#accesce .contact-commission { margin-top: 30px; /* ... autres styles hérités ... */ }
+#accesce .contact-commission p { margin-bottom: 8px; font-size: 0.95em; color: var(--color-text-muted); }
+#accesce .contact-commission strong { color: var(--color-primary); }
+#accesce button.inline-link-button { /* Styles hérités */ }
+
+
+/* Styles pour les liens externes standards dans cette section */
+#accesce a:not(.action-button) { /* Cibler les liens normaux */
+    color: var(--color-primary);
+    text-decoration: underline;
+    font-weight: normal; /* Pas en gras par défaut */
+}
+#accesce a:not(.action-button):hover {
+     color: var(--color-accent);
+}
+
+#accesce small { /* Style pour la petite note sur les identifiants */
+    display: block;
+    text-align: center;
+    font-size: 0.85em;
+    color: var(--color-text-muted);
+    margin-top: -10px; /* Rapprocher du bouton */
+    margin-bottom: 20px;
+}
 
 /* ======================================== */
 /*    STYLES SPÉCIFIQUES ACTION LOGEMENT   */
