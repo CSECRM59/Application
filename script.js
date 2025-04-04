@@ -323,13 +323,13 @@ function displayMembers(membersData) {
                 <img src="${photoUrl}" alt="Photo de ${prenom} ${nom}" class="member-photo" loading="lazy"
                      onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                 <div class="member-placeholder placeholder-error" style="display: none;">
-                    <i class="fas fa-user-alt-slash"></i> {/* Icône pour erreur chargement */}
+                    <i class="fas fa-user-alt-slash"></i>
                 </div>`;
         } else {
             // Si pas d'URL de photo, afficher le placeholder par défaut
             photoHtml = `
                 <div class="member-placeholder placeholder-default">
-                    <i class="fas fa-user"></i> {/* Icône silhouette */}
+                    <i class="fas fa-user"></i>
                 </div>`;
         }
 
@@ -337,8 +337,8 @@ function displayMembers(membersData) {
         card.innerHTML = `
             ${photoHtml}
             <h4>${prenom} ${nom}</h4>
-            <p class="member-role">${rolesHtml}</p> {/* Utilise les rôles formatés */}
-            ${operation ? `<p class="member-operation">${operation}</p>` : ''} {/* N'affiche l'opération que si elle existe */}
+            <p class="member-role">${rolesHtml}</p>
+            ${operation ? `<p class="member-operation">${operation}</p>` : ''}
         `;
 
         // Ajouter la carte finalisée à la grille
