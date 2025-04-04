@@ -136,6 +136,50 @@ function loadPage(pageId, fromMenuClick = false) {
         case 'partenaires':
             pageHTML = `<section id="partenaires"><h2>Nos Partenaires</h2><div id="partners-container"></div></section>`;
             deferredAction = loadPartners; break;
+        case 'accesce':
+            pageHTML = `
+                <section id="accesce">
+                    <h2>AccèsCE : Vos Avantages CSE Centralisés</h2>
+
+                    <p><strong>AccèsCE</strong> est la plateforme choisie par votre CSE pour vous donner accès facilement à une multitude d'offres et de réductions négociées pour vous ! C'est votre portail unique pour profiter pleinement des avantages proposés par le CSE.</p>
+
+                    <h3>Vos Avantages Spécifiques via le CSE :</h3>
+                    <div class="highlight-box"> {/* Bloc mis en évidence */}
+                        <ul>
+                            <li>🎟️ <strong>Cinéma à Prix Réduit + Bonus CSE :</strong> Profitez des tarifs négociés sur la billetterie cinéma directement sur AccèsCE, et votre CSE ajoute <strong>2€ de participation supplémentaire</strong> sur une place chaque mois !</li>
+                            <li>💳 <strong>Frais Bancaires Offerts :</strong> Utilisez la plateforme et commandez en toute sérénité, <strong>votre CSE prend intégralement en charge</strong> les éventuels frais bancaires liés à votre compte ou vos transactions AccèsCE.</li>
+                        </ul>
+                    </div>
+
+                    <h3>Que trouverez-vous sur AccèsCE ?</h3>
+                    <p>Au-delà de ces avantages spécifiques, la plateforme AccèsCE regroupe un large éventail d'offres :</p>
+                    <ul>
+                        <li><strong>Billetterie :</strong> Cinémas, parcs d'attractions, zoos, piscines, concerts, spectacles, musées, expositions...</li>
+                        <li><strong>Cartes Cadeaux & Bons d'Achat :</strong> Des remises sur des cartes valables dans de nombreuses enseignes (mode, high-tech, sport, maison, alimentation...).</li>
+                        <li><strong>Shopping :</strong> Des réductions exclusives sur des plateformes de shopping en ligne partenaires.</li>
+                        <li><strong>Vacances & Loisirs :</strong> Des offres pour vos séjours, locations, activités sportives ou de détente.</li>
+                        <li>Et bien plus encore selon les partenariats négociés !</li>
+                    </ul>
+
+                    <h3>Comment en profiter ?</h3>
+                    <p>Connectez-vous à votre espace personnel sur le site AccèsCE avec les identifiants qui vous ont été communiqués :</p>
+                    <p style="text-align: center; margin: 20px 0;">
+                        <a href="https://acces-ce.fr/" target="_blank" rel="noopener noreferrer" class="action-button">
+                            Accéder à la plateforme AccèsCE <i class="fas fa-external-link-alt"></i>
+                        </a>
+                    </p>
+                    <p><small>Si vous n'avez pas reçu vos identifiants ou si vous les avez perdus, veuillez contacter directement le CSE via le formulaire de contact.</small></p>
+
+                     <div class="contact-commission">
+                         <p><strong>Une question sur AccèsCE ou vos avantages ?</strong><br>
+                         Vos élus sont là pour vous aider via le <button class="inline-link-button" onclick="loadPage('formulaire-contact', false)">formulaire de contact</button>.</p>
+                     </div>
+                </section>
+            `;
+            // Pas de deferredAction car contenu statique
+            break;
+        // --- FIN NOUVEAU CASE ---
+
                // --- NOUVEAU CASE POUR ACTION LOGEMENT ---
         case 'action-logement':
             pageHTML = `
