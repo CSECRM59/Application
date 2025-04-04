@@ -107,11 +107,20 @@
     <footer>
         <p>© 2025 CSE CRM59. Tous droits réservés.</p>
     </footer>
+    
 <script>
     document.getElementById('sidebar').classList.remove('active');
     document.querySelector('.hamburger').classList.remove('active');
 </script>
     <script src="script.js"></script>
-    
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(() => console.log('Service Worker registered'))
+        .catch((err) => console.log('Service Worker registration failed:', err));
+    });
+  }
+</script>    
 </body>
 </html>
