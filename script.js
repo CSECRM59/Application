@@ -144,9 +144,9 @@ function loadPage(pageId, fromMenuClick = false) {
                     <p><strong>AccèsCE</strong> est la plateforme choisie par votre CSE pour vous donner accès facilement à une multitude d'offres et de réductions négociées pour vous ! C'est votre portail unique pour profiter pleinement des avantages proposés par le CSE.</p>
 
                     <h3>Vos Avantages Spécifiques via le CSE :</h3>
-                    <div class="highlight-box"> {/* Bloc mis en évidence */}
+                    <div class="highlight-box">
                         <ul>
-                            <li>🎟️ <strong>Cinéma à Prix Réduit + Bonus CSE :</strong> Profitez des tarifs négociés sur la billetterie cinéma directement sur AccèsCE, et votre CSE ajoute <strong>2€ de participation supplémentaire</strong> sur une place chaque mois !</li>
+                            <li>🎟️ <strong>Cinéma à Prix Réduit + Bonus CSE :</strong> Profitez des tarifs négociés sur la billetterie cinéma directement sur AccèsCE. <br>Votre CSE ajoute <strong>2€ de participation supplémentaire</strong> sur une place chaque mois !</li>
                             <li>💳 <strong>Frais Bancaires Offerts :</strong> Utilisez la plateforme et commandez en toute sérénité, <strong>votre CSE prend intégralement en charge</strong> les éventuels frais bancaires liés à votre compte ou vos transactions AccèsCE.</li>
                         </ul>
                     </div>
@@ -168,7 +168,7 @@ function loadPage(pageId, fromMenuClick = false) {
                             Accéder à la plateforme AccèsCE <i class="fas fa-external-link-alt"></i>
                         </a>
                     </p>
-                    <p><small>Si vous n'avez pas reçu vos identifiants ou si vous les avez perdus, veuillez contacter directement le CSE via le formulaire de contact.</small></p>
+                    <p><small>Si vous n'avez pas eu votre code d'activation, veuillez contacter directement le CSE via le formulaire de contact.</small></p>
 
                      <div class="contact-commission">
                          <p><strong>Une question sur AccèsCE ou vos avantages ?</strong><br>
