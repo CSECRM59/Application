@@ -244,7 +244,7 @@ img.member-photo + .member-placeholder {
 }
 
 .member-role {
-    font-size: 0.95em;
+    font-size: 0.8em;
     color: var(--color-primary); /* Mettre le rôle en évidence */
     font-weight: bold;
     margin: 0 0 8px 0;
@@ -268,7 +268,7 @@ img.member-photo + .member-placeholder {
         font-size: 2.5em;
     }
      .member-card h4 { font-size: 1.1em; }
-     .member-role { font-size: 0.9em; }
+     .member-role { font-size: 0.8em; }
      .member-operation { font-size: 0.85em; }
 }
 @media (max-width: 480px) {
