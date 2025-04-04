@@ -283,6 +283,85 @@ img.member-photo + .member-placeholder {
     }
 }
 
+/* ======================================== */
+/*    STYLES SPÉCIFIQUES ACTION LOGEMENT   */
+/* ======================================== */
+
+#action-logement h3 {
+    font-family: var(--font-heading);
+    color: var(--color-primary);
+    font-size: 1.4em;
+    font-weight: 700;
+    margin-top: 25px; /* Espace avant les sous-titres */
+    margin-bottom: 15px;
+    padding-bottom: 3px;
+    border-bottom: 1px solid var(--color-secondary);
+}
+
+#action-logement p {
+    margin-bottom: 15px; /* Espacement standard des paragraphes */
+    line-height: 1.7; /* Bonne lisibilité */
+}
+
+#action-logement strong {
+    font-weight: 700;
+    color: var(--color-text); /* Rendre le strong un peu plus visible */
+}
+
+#action-logement a {
+    color: var(--color-primary);
+    text-decoration: underline;
+    font-weight: bold;
+    transition: color 0.2s ease;
+}
+#action-logement a:hover {
+    color: var(--color-accent);
+}
+
+#action-logement ol {
+    margin-left: 25px; /* Indentation de la liste numérotée */
+    margin-bottom: 20px;
+}
+#action-logement ol li {
+    margin-bottom: 10px; /* Espace entre les étapes */
+}
+
+/* Style pour le bloc contact commission */
+.contact-commission {
+    margin-top: 30px;
+    padding: 15px;
+    background-color: var(--color-secondary); /* Fond léger pour distinguer */
+    border-left: 4px solid var(--color-accent);
+    border-radius: var(--border-radius);
+}
+.contact-commission p {
+    margin-bottom: 8px;
+    font-size: 0.95em;
+    color: var(--color-text-muted);
+}
+.contact-commission p:last-child {
+    margin-bottom: 0;
+}
+.contact-commission strong {
+     color: var(--color-primary); /* Mettre le titre en évidence */
+}
+
+/* Style pour le bouton "formulaire de contact" dans le texte */
+button.inline-link-button {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font-family: inherit; /* Hérite la police du paragraphe */
+    font-size: inherit; /* Hérite la taille */
+    color: var(--color-primary); /* Apparence de lien */
+    text-decoration: underline;
+    cursor: pointer;
+    font-weight: bold;
+}
+button.inline-link-button:hover {
+    color: var(--color-accent);
+}
 
 /* --- Formulaires --- */
 .form-container { background-color: var(--color-surface); padding: 25px 30px; border-radius: var(--border-radius); box-shadow: var(--shadow-sm); border: 1px solid var(--color-border); transition: all 0.3s ease; }
