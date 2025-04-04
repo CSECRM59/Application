@@ -20,6 +20,7 @@
 const newsCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQcKo9WOqdnefe5z7QpaM5XtdkGs7pBeWNFrcy1crwW18Jn_KkR1IxV_KMhatedR5lmaASfeIlEsUF9/pub?gid=0&single=true&output=csv';
 const partnersCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQcKo9WOqdnefe5z7QpaM5XtdkGs7pBeWNFrcy1crwW18Jn_KkR1IxV_KMhatedR5lmaASfeIlEsUF9/pub?gid=1082465411&single=true&output=csv';
 const eventsCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQcKo9WOqdnefe5z7QpaM5XtdkGs7pBeWNFrcy1crwW18Jn_KkR1IxV_KMhatedR5lmaASfeIlEsUF9/pub?gid=377066785&single=true&output=csv'; // URL Calendrier (Vérifiez si correcte)
+const membersCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQcKo9WOqdnefe5z7QpaM5XtdkGs7pBeWNFrcy1crwW18Jn_KkR1IxV_KMhatedR5lmaASfeIlEsUF9/pub?gid=1265664324&single=true&output=csv';
 
 let isFormSubmitting = false; // Drapeau pour formulaires iframe
 const THEME_STORAGE_KEY = 'cse-app-selected-theme';
@@ -135,6 +136,19 @@ function loadPage(pageId, fromMenuClick = false) {
         case 'partenaires':
             pageHTML = `<section id="partenaires"><h2>Nos Partenaires</h2><div id="partners-container"></div></section>`;
             deferredAction = loadPartners; break;
+        // --- NOUVEAU CASE POUR LES MEMBRES ---
+        case 'membres':
+            pageHTML = `
+                <section id="membres">
+                    <h2>Les Élus / Membres du CSE</h2>
+                    <div id="members-container">
+                       {/* Grille injectée par displayMembers */}
+                    </div>
+                </section>
+            `;
+            deferredAction = loadMembers; // Appel nouvelle fonction
+            break;
+        // --- FIN NOUVEAU CASE ---
         default:
             pageHTML = '<p class="error-message">Page non trouvée.</p>'; console.warn(`Page inconnue: '${pageId}'.`);
     }
@@ -213,6 +227,86 @@ function displayEvents(events) {
 }
 // ==========================================================
 // --- FIN : FONCTIONS CALENDRIER ---
+// ==========================================================
+// ==========================================================
+// --- DEBUT : FONCTIONS MEMBRES CSE ---
+// ==========================================================
+
+/** Charge et affiche les membres depuis le CSV. */
+function loadMembers() {
+    const container = document.getElementById('members-container');
+    if (!container) { console.error("Conteneur #members-container introuvable."); return; }
+    container.innerHTML = '<p class="loading-message">Chargement des membres...</p>';
+
+    fetch(membersCsvUrl)
+        .then(response => { if (!response.ok) throw new Error(`Erreur réseau Membres ${response.status}`); return response.text(); })
+        .then(csvText => Papa.parse(csvText, { header: true, skipEmptyLines: 'greedy', complete: results => displayMembers(results.data), error: e => { console.error('PapaParse Membres:', e); if(container) container.innerHTML = '<p class="error-message">Erreur lecture membres.</p>';} }))
+        .catch(error => { console.error('Fetch Membres:', error); if(container) container.innerHTML = `<p class="error-message">Chargement membres impossible. ${error.message}</p>`; });
+}
+
+/** Affiche la grille des membres triés dans le DOM. */
+function displayMembers(membersData) {
+    const container = document.getElementById('members-container');
+    if (!container) return; container.innerHTML = ''; // Vider
+
+    // 1. Filtrer les entrées valides (au moins Nom et Prenom)
+    const validMembers = (membersData || []).filter(m => m && (m.Nom || m.nom) && (m.Prenom || m.prenom));
+
+    if (validMembers.length === 0) { container.innerHTML = '<p>Aucun membre à afficher.</p>'; return; }
+
+    // 2. Trier par Nom, puis par Prénom
+    validMembers.sort((a, b) => {
+        const nomA = (a.Nom || a.nom || '').toLowerCase();
+        const nomB = (b.Nom || b.nom || '').toLowerCase();
+        const prenomA = (a.Prenom || a.prenom || '').toLowerCase();
+        const prenomB = (b.Prenom || b.prenom || '').toLowerCase();
+
+        if (nomA < nomB) return -1;
+        if (nomA > nomB) return 1;
+        // Si noms identiques, trier par prénom
+        if (prenomA < prenomB) return -1;
+        if (prenomA > prenomB) return 1;
+        return 0; // Noms et prénoms identiques
+    });
+
+    // 3. Créer la grille
+    const grid = document.createElement('div');
+    grid.className = 'members-grid';
+    container.appendChild(grid);
+
+    // 4. Créer une carte pour chaque membre
+    validMembers.forEach(member => {
+        // Adapter les noms de colonnes si nécessaire
+        const nom = member.Nom || member.nom;
+        const prenom = member.Prenom || member.prenom;
+        const operation = member.Operation || member.operation || '';
+        const role = member.Role || member.role || 'Membre';
+        const photoUrl = member.PhotoURL || member.PhotoUrl || member.photoURL || member.photourl || '';
+
+        const card = document.createElement('div');
+        card.className = 'member-card';
+
+        // Afficher photo ou placeholder
+        let photoHtml = '';
+        if (photoUrl) {
+            photoHtml = `<img src="${photoUrl}" alt="Photo de ${prenom} ${nom}" class="member-photo" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                         <div class="member-placeholder" style="display: none;"><i class="fas fa-user-alt-slash"></i></div>`; // Placeholder si erreur chargement
+        } else {
+            photoHtml = `<div class="member-placeholder"><i class="fas fa-user"></i></div>`; // Placeholder par défaut
+        }
+
+        card.innerHTML = `
+            ${photoHtml}
+            <h4>${prenom} ${nom}</h4>
+            <p class="member-role">${role}</p>
+            ${operation ? `<p class="member-operation">${operation}</p>` : ''}
+        `;
+        grid.appendChild(card);
+    });
+}
+
+// ==========================================================
+// --- FIN : FONCTIONS MEMBRES CSE ---
 // ==========================================================
 
 
