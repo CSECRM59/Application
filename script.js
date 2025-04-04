@@ -54,12 +54,84 @@ function loadPage(pageId, fromMenuClick = false) {
              pageHTML = `<section id="calendrier"><h2>Calendrier des Événements</h2><div id="events-container"></div></section>`;
              deferredAction = loadEvents; break; // <<<=== 'loadEvents' existe maintenant
         case 'formulaire-cafe':
-             pageHTML = `<section id="formulaire-cafe"><div class="form-container"><h2>Signalement Machine à Café</h2><form id="reportForm" action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSfw2H0lzEAvt7niVxRhpkPQTLOaOfXz3SoI3IC9NfNxnY33Ag/formResponse" method="POST" target="hidden_iframe"><!-- ... champs café ... --><button type="submit">Envoyer</button></form><div class="form-status-sending" style="display: none;">Envoi...</div><div id="confirmation" class="confirmation" style="display: none;">Merci !</div><iframe name="hidden_iframe" style="display: none;" onload="onFormSubmit()"></iframe></div></section>`;
-             deferredAction = () => attachFormEvents('reportForm'); break;
+                     pageHTML = `
+                <section id="formulaire-cafe"><div class="form-container"><h2>Signalement Machine à Café</h2>
+                <form id="reportForm" action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSfw2H0lzEAvt7niVxRhpkPQTLOaOfXz3SoI3IC9NfNxnY33Ag/formResponse" method="POST" target="hidden_iframe">
+                    <div class="form-group"><label for="email" class="required">Email</label><input type="email" id="email" name="entry.1494559432" required></div>
+                    <div class="form-group"><label for="name" class="required">Nom & Prénom</label><input type="text" id="name" name="entry.36162321" required></div>
+                    <div class="form-group"><label for="operation" class="required">Opération</label><input type="text" id="operation" name="entry.1034050778" required></div>
+                    <div class="form-group"><label for="machine" class="required">Machine</label><select id="machine" name="entry.212638394" required><option value="">Sélectionnez...</option><option value="DEV125543 (E-1)">DEV125543 (E-1)</option><option value="BBRD0152 (E-1)">BBRD0152 (E-1)</option><option value="DEV16567 (E-1)">DEV16567 (E-1)</option><option value="BBRDL0196 (E-1)">BBRDL0196 (E-1)</option><option value="DBIC799 (E0)">DBIC799 (E0)</option><option value="B72ES1979 (E1)">B72ES1979 (E1)</option><option value="B72ES1903 (E2)">B72ES1903 (E2)</option><option value="DEV95042 (E2)">DEV95042 (E2)</option><option value="B72ES1977 (E3)">B72ES1977 (E3)</option></select></div>
+                    <div class="form-group"><label for="problem" class="required">Problème</label><select id="problem" name="entry.1333521310" required><option value="">Sélectionnez...</option><option value="Pas de gobelet">Pas de gobelet</option><option value="Gobelet vide">Gobelet vide</option><option value="Produit non conforme">Produit non conforme</option><option value="Problème de rechargement">Problème de rechargement</option></select></div>
+                    <div class="form-group"><p class="note">Si rechargement:</p><label for="date">Date</label><input type="date" id="date" name="entry.789458747"><label for="time">Heure</label><input type="time" id="time" name="entry.1519520523"><label for="payment">Paiement</label><select id="payment" name="entry.1578764886"><option value="">Sélectionnez...</option><option value="CB">CB</option><option value="Pluxee">Pluxee</option><option value="Espece">Espèce</option><option value="Badge">Badge</option></select></div>
+                    <div class="form-group"><label for="comment">Commentaire</label><textarea id="comment" name="entry.1120842974"></textarea></div>
+                    <button type="submit">Envoyer</button>
+                </form>
+                <div class="form-status-sending" style="display: none;">Envoi...</div>
+                <div id="confirmation" class="confirmation" style="display: none;">Merci !</div>
+                <iframe name="hidden_iframe" style="display: none;" onload="onFormSubmit()"></iframe>
+                </div></section>`;
+             deferredAction = () => attachFormEvents('reportForm');
+             break;
         case 'formulaire-contact':
-             // !! REMPLACER PLACEHOLDERS !!
-             pageHTML = `<section id="formulaire-contact"><div class="form-container"><h2>Contacter le CSE</h2><form id="contactForm" action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSd9cPzMspmgCVEx3vLSVDiYIrX3fwFTrO3zjntnU1ZmX01w4g/formResponse" method="POST" target="hidden_iframe"><div class="form-group"><label for="contact_nomPrenom" class="required">Nom & Prénom</label><input type="text" id="contact_nomPrenom" name="entry.55828962" required></div><div class="form-group"><label for="contact_email" class="required">Mail</label><input type="email" id="contact_email" name="entry.1334830157" required></div><div class="form-group"><label for="contact_operation" class="required">Opération</label><select id="contact_operation" name="entry.506750242" required><option value="" disabled selected>-- Sélectionnez --</option><option value="Direction / Service généraux / IT">Direction / SG / IT</option><option value="AG2R">AG2R</option><option value="UCPA">UCPA</option><option value="CNAV">CNAV</option><option value="IRP Auto">IRP Auto</option><option value="Abeille">Abeille</option><option value="EHS">EHS</option><option value="DCP">DCP</option><option value="Enedis">Enedis</option><option value="Autre...">Autre...</option></select></div><div class="form-group"><label class="required">Nature Demande</label><div class="checkbox-group"><label class="checkbox-label"><input type="checkbox" name="entry.296933228" value="Clé café"> Clé café</label><label class="checkbox-label"><input type="checkbox" name="entry.296933228" value="Carte AccèsCE"> Carte AccèsCE</label><label class="checkbox-label"><input type="checkbox" name="entry.296933228" value="Carte cadeau naissance"> C. naissance</label><label class="checkbox-label"><input type="checkbox" name="entry.296933228" value="Carte cadeau mariage / pacs"> C. mariage/pacs</label><label class="checkbox-label"><input type="checkbox" name="entry.296933228" value="Carte cadeau retraite"> C. retraite</label><label class="checkbox-label"><input type="checkbox" name="entry.296933228" value="Autre"> Autre...</label></div></div><div class="form-group"><label for="contact_message">Message</label><textarea id="contact_message" name="entry.2046101959" rows="5"></textarea></div><button type="submit">Envoyer</button></form><div class="form-status-sending" style="display: none;">Envoi...</div><div id="confirmation" class="confirmation" style="display: none;">Merci !</div><iframe name="hidden_iframe" style="display: none;" onload="onFormSubmit()"></iframe></div></section>`;
-             deferredAction = () => attachFormEvents('contactForm'); break;
+            pageHTML = `
+         <section id="formulaire-contact"><div class="form-container"><h2>Contacter le CSE</h2>
+         <form id="contactForm" action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSd9cPzMspmgCVEx3vLSVDiYIrX3fwFTrO3zjntnU1ZmX01w4g/formResponse" method="POST" target="hidden_iframe">
+
+             <div class="form-group">
+                 <label for="contact_nomPrenom" class="required">Nom & Prénom</label>
+                 <input type="text" id="contact_nomPrenom" name="entry.55828962" required placeholder="Ex: Jean Dupont">
+             </div>
+
+             <div class="form-group">
+                 <label for="contact_email" class="required">Mail</label>
+                 <input type="email" id="contact_email" name="entry.1334830157" required placeholder="Ex: jean.dupont@entreprise.com">
+             </div>
+             
+             <div class="form-group">
+                 <label for="contact_operation" class="required">Opération</label>
+                 <select id="contact_operation" name="entry.506750242" required>
+                     <option value="" disabled selected>-- Sélectionnez une opération --</option>
+                     <option value="Direction / Service généraux / IT">Direction / Service généraux / IT</option>
+                     <option value="AG2R">AG2R</option>
+                     <option value="UCPA">UCPA</option>
+                     <option value="CNAV">CNAV</option>
+                     <option value="IRP Auto">IRP Auto</option>
+                     <option value="Abeille">Abeille</option>
+                     <option value="EHS">EHS</option>
+                     <option value="DCP">DCP</option>
+                     <option value="Enedis">Enedis</option>
+
+                 </select>
+             </div>
+             
+             <div class="form-group">
+                 <label class="required">Nature de la Demande (cochez ce qui s'applique)</label>
+                 <div class="checkbox-group">
+                         
+                     <label class="checkbox-label"><input type="checkbox" name="entry.296933228" value="Clé café"> Clé café</label>
+                     <label class="checkbox-label"><input type="checkbox" name="entry.296933228" value="Carte AccèsCE"> Carte AccèsCE</label>
+                     <label class="checkbox-label"><input type="checkbox" name="entry.296933228" value="Carte cadeau naissance"> Carte cadeau naissance</label>
+                     <label class="checkbox-label"><input type="checkbox" name="entry.296933228" value="Carte cadeau mariage"> Carte cadeau mariage / pacs</label>
+                     <label class="checkbox-label"><input type="checkbox" name="entry.296933228" value="Carte cadeau retraite"> Carte cadeau retraite</label>
+                     <label class="checkbox-label"><input type="checkbox" name="entry.296933228" value="Autre"> Autre...</label>
+                     
+                 </div>
+             </div>
+             
+             <div class="form-group">
+                 <label for="contact_message">Votre Message (optionnel)</label>
+                 <textarea id="contact_message" name="entry.2046101959" rows="5" placeholder="Décrivez votre demande ici..."></textarea>
+             </div>
+             
+             <button type="submit">Envoyer le Message</button>
+         </form>
+         <div class="form-status-sending" style="display: none;">Envoi en cours...</div>
+         <div id="confirmation" class="confirmation" style="display: none;">Merci, message envoyé ! Nous vous répondrons bientôt.</div>
+         <iframe name="hidden_iframe" style="display: none;" onload="onFormSubmit()"></iframe>
+         </div></section>`;
+
+             deferredAction = () => attachFormEvents('contactForm');
+             break;
         case 'partenaires':
             pageHTML = `<section id="partenaires"><h2>Nos Partenaires</h2><div id="partners-container"></div></section>`;
             deferredAction = loadPartners; break;
