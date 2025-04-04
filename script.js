@@ -140,7 +140,7 @@ function loadPage(pageId, fromMenuClick = false) {
         case 'membres':
             pageHTML = `
                 <section id="membres">
-                    <h2>Les Élus / Membres du CSE</h2>
+                    <h2>Les membres du CSE</h2>
                     <div id="members-container">
                        {/* Grille injectée par displayMembers */}
                     </div>
