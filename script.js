@@ -15,30 +15,18 @@
  *    - Vérifier les noms de colonnes CSV (ex: 'DateDebut', 'DateFin', 'Titre', etc.).
 */
 
-// --- CONSTANTES ET VARIABLES GLOBALES ---
 
-const newsCsvUrl = 'https://docs.googleAh, voilà l'explication ! S'ils ne sont plus dans le script, la fonction `loadPage` ne sait plus quoi afficher quand vous cliquez sur les liens correspondants.
 
-Pas de souci, réintégrons correctement les sections pour `formulaire-cafe` et `formulaire-contact` dans la fonction `loadPage` de votre script.
-
-Voici le fichier `script.js` complet, avec les `case` pour les deux formulaires réinsérés correctement. **N'oubliez pas de remplacer les placeholders pour le formulaire de contact !**
-
-```javascript
 // ==================================================
 //              SCRIPT COMPLET POUR AppliCSE
 //        (Multi-Thèmes, News, Partenaires, Formulaires Café/Contact, Calendrier)
 //         [Version Révisée - Formulaires Réintégrés]
 // ==================================================
 
-/*
- * Prérequis pour ce script :
- * 1. Bibliothèque PapaParse incluse dans le HTML.
- * 2. Bibliothèque d'icônes (ex: Font Awesome) incluse si utilisée.
- * 3. REMPLACER LES PLACEHOLDERS ci-dessous :
- *    - `eventsCsvUrl` : URL CSV de votre Google Sheet Calendrier.
- *    - Dans `loadPage` -> `case 'formulaire-contact'`: URL et TOUS les `entry.XXXX` de votre Google Form Contact.
- *    - Vérifier `newsCsvUrl` et `partnersCsvUrl` si différentes.
- *    - Vérifier les noms de colonnes CSV (ex: 'DateDebut', 'DateFin', 'Titre', etc.).com/spreadsheets/d/e/2PACX-1vQcKo9WOqdnefe5z7QpaM5XtdkGs7pBeWNFrcy1crwW18Jn_KkR1IxV_KMhatedR5lmaASfeIlEsUF9/pub?gid=0&single=true&output=csv';
+ 
+// --- CONSTANTES ET VARIABLES GLOBALES ---
+
+const newsCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQcKo9WOqdnefe5z7QpaM5XtdkGs7pBeWNFrcy1crwW18Jn_KkR1IxV_KMhatedR5lmaASfeIlEsUF9/pub?gid=0&single=true&output=csv'; // Feuille Actualités
 const partnersCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQcKo9WOqdnefe5z7QpaM5XtdkGs7pBeWNFrcy1crwW18Jn_KkR1IxV_KMhatedR5lmaASfeIlEsUF9/pub?gid=1082465411&single=true&output=csv';
 const eventsCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQcKo9WOqdnefe5z7QpaM5XtdkGs7pBeWNFrcy1crwW18Jn_KkR1IxV_KMhatedR5lmaASfeIlEsUF9/pub?gid=377066785&single=true&output=csv'; // URL Calendrier (Vérifiez si correcte)
 
