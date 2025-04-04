@@ -1,6 +1,6 @@
 /* ================================================== */
 /*          STYLESHEET COMPLET AppliCSE             */
-/*             (Multi-Thèmes + Sub-Header)          */
+/*             (Multi-Thèmes Icônes + Sub-Header)    */
 /* ================================================== */
 
 /* --- Import Google Fonts --- */
@@ -12,38 +12,38 @@
 
 :root {
     /* Dimensions Fixes */
-    --header-height: 64px;     /* Hauteur approx. du header principal (ajuster si nécessaire) */
-    --sub-header-height: 48px; /* Hauteur de la barre d'accès rapide */
+    --header-height: 64px;
+    --sub-header-height: 48px;
 
-    /* Polices (Thème par défaut) */
-    --font-heading: 'Montserrat', sans-serif;
-    --font-body: 'Lato', sans-serif;
-
-    /* Couleurs (Thème par défaut - Clair/Moderne) */
-    --color-primary: #005A9C;
-    --color-secondary: #e8f0f7;
-    --color-accent: #F39C12;
-    --color-background: #FFFFFF;
-    --color-surface: #FFFFFF; /* Fond cartes/formulaires/sub-header */
-    --color-text: #333333;
-    --color-text-muted: #6c757d;
-    --color-text-on-primary: #FFFFFF;
-    --color-border: #dee2e6;
-
-    /* Ombres & Arrondis (Thème par défaut) */
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 10px rgba(0, 0, 0, 0.08);
-    --border-radius: 8px;
-
-    /* Sidebar (Fixe pour tous thèmes dans cet exemple) */
+    /* Sidebar (Fixe pour tous thèmes) */
     --sidebar-bg: #2C3E50;
     --sidebar-text: #ecf0f1;
     --sidebar-icon: rgba(236, 240, 241, 0.8);
     --sidebar-hover-bg: rgba(255, 255, 255, 0.1);
 }
 
-/* --- Thème Sombre --- */
+/* --- Thème Soleil (Défaut Clair) --- */
+body, body.theme-default {
+    --font-heading: 'Montserrat', sans-serif;
+    --font-body: 'Lato', sans-serif;
+    --color-primary: #005A9C;
+    --color-secondary: #e8f0f7;
+    --color-accent: #F39C12;
+    --color-background: #FFFFFF;
+    --color-surface: #FFFFFF;
+    --color-text: #333333;
+    --color-text-muted: #6c757d;
+    --color-text-on-primary: #FFFFFF;
+    --color-border: #dee2e6;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 10px rgba(0, 0, 0, 0.08);
+    --border-radius: 8px;
+}
+
+/* --- Thème Lune (Sombre) --- */
 body.theme-dark {
+    --font-heading: 'Montserrat', sans-serif;
+    --font-body: 'Lato', sans-serif;
     --color-primary: #5dade2;
     --color-secondary: #3a4a5a;
     --color-accent: #f1c40f;
@@ -55,27 +55,62 @@ body.theme-dark {
     --color-border: #4e5d6c;
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
     --shadow-md: 0 4px 10px rgba(0, 0, 0, 0.3);
-    /* --font-heading/--font-body/--border-radius peuvent aussi être redéfinis si besoin */
+    --border-radius: 8px;
 }
 
-/* --- Thème "Fun" --- */
-body.theme-fun {
-    --font-heading: 'Comic Sans MS', cursive;
-    --font-body: 'Comic Sans MS', cursive;
-    --color-primary: #2196f3;
-    --color-secondary: #bbdefb;
-    --color-accent: #ffeb3b;
-    --color-background: linear-gradient(135deg, #ffeb3b, #ff9800);
-    --color-surface: #ffffff;
-    --color-text: #444444;
-    --color-text-muted: #777777;
+/* --- Thème Eau (Bleu Pâle) --- */
+body.theme-eau {
+    --font-heading: 'Montserrat', sans-serif;
+    --font-body: 'Lato', sans-serif;
+    --color-primary: #87CEEB;
+    --color-secondary: #f0f8ff;
+    --color-accent: #4682B4;
+    --color-background: #f8faff;
+    --color-surface: #FFFFFF;
+    --color-text: #4A4A4A;
+    --color-text-muted: #7a92a5;
     --color-text-on-primary: #FFFFFF;
-    --color-border: #bdbdbd;
-    --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.2);
-    --shadow-md: 0 5px 15px rgba(0, 0, 0, 0.3);
-    --border-radius: 15px;
+    --color-border: #d6e8f5;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 3px 8px rgba(0, 0, 0, 0.06);
+    --border-radius: 8px;
 }
 
+/* --- Thème Désert (Jaune Pâle / Sable) --- */
+body.theme-desert {
+    --font-heading: 'Montserrat', sans-serif;
+    --font-body: 'Lato', sans-serif;
+    --color-primary: #D2B48C;
+    --color-secondary: #FFF8DC;
+    --color-accent: #CD853F;
+    --color-background: #FAF0E6;
+    --color-surface: #FFFFFF;
+    --color-text: #5D4037;
+    --color-text-muted: #8D6E63;
+    --color-text-on-primary: #FFFFFF;
+    --color-border: #e4d8c7;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 10px rgba(0, 0, 0, 0.07);
+    --border-radius: 8px;
+}
+
+/* --- Thème Forêt (Vert Pâle) --- */
+body.theme-foret {
+    --font-heading: 'Montserrat', sans-serif;
+    --font-body: 'Lato', sans-serif;
+    --color-primary: #8FBC8F;
+    --color-secondary: #f0fff0;
+    --color-accent: #556B2F;
+    --color-background: #f5fff5;
+    --color-surface: #FFFFFF;
+    --color-text: #2F4F4F;
+    --color-text-muted: #6B8E23;
+    --color-text-on-primary: #FFFFFF;
+    --color-border: #d8e8d8;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 3px 8px rgba(0, 0, 0, 0.06);
+    --border-radius: 8px;
+}
 
 /* ======================================== */
 /*          STYLES STRUCTURELS             */
@@ -99,7 +134,7 @@ body {
 header {
     background-color: var(--color-primary);
     padding: 12px 20px;
-    height: var(--header-height); /* Appliquer hauteur définie */
+    height: var(--header-height);
     box-shadow: var(--shadow-md);
     position: fixed;
     top: 0;
@@ -116,82 +151,43 @@ header .hamburger.active span:nth-child(2) { opacity: 0; }
 header .hamburger.active span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
 header img.logo { height: 40px; width: auto; margin-right: 15px; transition: transform 0.3s ease; }
 header h1 { font-family: var(--font-heading); color: var(--color-text-on-primary); font-size: 1.4em; font-weight: 500; margin: 0; text-shadow: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-/* Style pour le bouton installer s'il est dans le header */
-#install-button { /* Assurez-vous qu'il est caché par défaut dans l'HTML: style="display: none;" */
-    margin-left: auto; /* Pousse à droite */
-    padding: 5px 10px;
-    background-color: var(--color-accent);
-    color: var(--color-text); /* Ou #000 / #fff selon l'accent */
-    border: none;
-    border-radius: 4px;
-    font-size: 0.9em;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
+#install-button { /* Style pour le bouton installer */
+    display: none; /* Caché par défaut */
+    margin-left: auto; padding: 5px 10px; background-color: var(--color-accent); color: var(--color-text);
+    border: none; border-radius: 4px; font-size: 0.9em; font-weight: bold; cursor: pointer; transition: background-color 0.2s ease;
 }
 #install-button:hover { background-color: color-mix(in srgb, var(--color-accent) 85%, black); }
-body.theme-dark #install-button { color: var(--color-background); } /* Texte foncé sur accent clair */
-body.theme-fun #install-button { color: #333; } /* Texte foncé sur accent jaune */
-
+body.theme-dark #install-button { color: var(--color-background); }
+body.theme-fun #install-button { color: #333; }
 
 /* --- Bandeau Sous Header --- */
 #sub-header {
-    position: fixed;
-    top: var(--header-height); /* Se positionne juste sous le header principal */
-    left: 0;
-    width: 100%;
-    height: var(--sub-header-height);
-    background-color: var(--color-surface);
-    border-bottom: 1px solid var(--color-border);
-    box-shadow: var(--shadow-sm);
-    z-index: 998;
-    overflow: hidden;
-    transition: background-color 0.3s ease, border-color 0.3s ease;
+    position: fixed; top: var(--header-height); left: 0; width: 100%; height: var(--sub-header-height);
+    background-color: var(--color-surface); border-bottom: 1px solid var(--color-border);
+    box-shadow: var(--shadow-sm); z-index: 998; overflow: hidden; transition: all 0.3s ease;
 }
-.sub-header-content {
-    max-width: 800px; /* Même largeur max que le main content */
-    height: 100%;
-    margin: 0 auto; /* Centrer */
-    padding: 0 20px; /* Padding horizontal */
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+.sub-header-content { max-width: 800px; height: 100%; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; }
 .sub-header-logos { display: flex; align-items: center; gap: 15px; }
 .sub-header-logo { height: 28px; width: auto; object-fit: contain; cursor: default; transition: opacity 0.2s ease; }
 .sub-header-logo:hover { opacity: 0.8; }
-.contact-shortcut { /* Styles pour le bouton "Nous Contacter" */
-    background: none; border: none; color: var(--color-primary);
-    font-family: var(--font-body); font-size: 0.9em; font-weight: bold;
-    cursor: pointer; padding: 5px 10px; border-radius: 4px;
-    display: flex; align-items: center; gap: 6px;
-    transition: background-color 0.2s ease, color 0.2s ease;
-}
+.contact-shortcut { background: none; border: none; color: var(--color-primary); font-family: var(--font-body); font-size: 0.9em; font-weight: bold; cursor: pointer; padding: 5px 10px; border-radius: 4px; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease; }
 .contact-shortcut:hover { background-color: var(--color-secondary); color: var(--color-accent); }
 body.theme-dark .contact-shortcut { color: var(--color-primary); }
 body.theme-dark .contact-shortcut:hover { background-color: var(--color-surface); color: var(--color-accent); }
 
-
 /* --- Sidebar --- */
 .sidebar {
-    position: fixed;
-    top: 0;
-    left: -280px;
-    width: 280px;
-    height: 100%;
-    background-color: var(--sidebar-bg);
-    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
-    transition: left 0.3s ease-in-out;
-    z-index: 999;
-    /* Ajustement padding-top pour laisser place aux 2 barres fixes */
-    padding-top: calc(var(--header-height) + var(--sub-header-height) + 20px);
-    display: flex;
-    flex-direction: column;
+    position: fixed; top: 0; left: -280px; width: 280px; height: 100%;
+    background-color: var(--sidebar-bg); box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+    transition: left 0.3s ease-in-out; z-index: 999;
+    padding-top: calc(var(--header-height) + var(--sub-header-height) + 20px); /* Espace pour les 2 barres */
+    display: flex; flex-direction: column;
 }
 .sidebar.active { left: 0; }
-.sidebar ul { list-style: none; padding: 0 20px 20px 20px; margin: 0; flex-grow: 1; } /* padding-top retiré d'ici */
+.sidebar ul { list-style: none; padding: 0 20px 20px 20px; margin: 0; flex-grow: 1; }
 .sidebar ul li:not(:last-child) { margin-bottom: 10px; }
-.sidebar ul li button:not(.theme-button) { /* Boutons navigation */
+/* Styles des boutons de navigation (NON MODIFIÉS - gardent icône + texte) */
+.sidebar ul li button:not(.theme-button) {
     background: none; border: none; padding: 12px 15px; border-radius: var(--border-radius);
     font-size: 1.1em; font-weight: 500; font-family: var(--font-heading);
     color: var(--sidebar-text); cursor: pointer; transition: background-color 0.2s ease;
@@ -200,42 +196,33 @@ body.theme-dark .contact-shortcut:hover { background-color: var(--color-surface)
 .sidebar ul li button:not(.theme-button):hover { background-color: var(--sidebar-hover-bg); }
 .sidebar ul li button:not(.theme-button) .icon { font-size: 1.2em; width: 20px; text-align: center; color: var(--sidebar-icon); transition: color 0.2s ease; }
 .sidebar ul li button:not(.theme-button):hover .icon { color: var(--sidebar-text); }
+/* Garder le texte visible pour la navigation */
+.sidebar ul li button:not(.theme-button) .nav-text { display: inline; }
 
-/* --- Style Theme Switcher (dans la sidebar) --- */
+/* --- Style Theme Switcher (Icônes Rondes) --- */
 .sidebar ul li .theme-switcher-container { padding: 15px 0 0 0; margin-top: 20px; border-top: 1px solid color-mix(in srgb, var(--sidebar-text) 15%, transparent); }
 .theme-switcher-container h4 { font-family: var(--font-heading); color: var(--sidebar-icon); font-size: 0.85em; margin-bottom: 10px; padding-left: 15px; text-transform: uppercase; font-weight: 500; letter-spacing: 0.5px; width: 100%; }
-.theme-buttons-wrapper { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding-left: 15px; padding-right: 15px; }
-.theme-switcher-container button.theme-button { /* Boutons thème */
+.theme-buttons-wrapper { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding: 0 15px; } /* Ajout padding pour aligner */
+.theme-switcher-container button.theme-button { /* Boutons thème (icônes rondes) */
     background: color-mix(in srgb, var(--sidebar-text) 10%, transparent); color: var(--sidebar-text);
-    border: 1px solid transparent; border-radius: 5px; padding: 5px 12px;
-    cursor: pointer; font-size: 0.9em; font-family: var(--font-body);
-    transition: all 0.2s ease; width: auto; display: inline-block; flex-grow: 0; flex-shrink: 0;
+    border: 1px solid transparent; border-radius: 50%; /* Rond */
+    padding: 0; width: 36px; height: 36px; /* Taille fixe */
+    cursor: pointer; font-size: 1.1em; /* Taille icône */
+    transition: all 0.2s ease; display: inline-flex; justify-content: center; align-items: center;
+    flex-grow: 0; flex-shrink: 0; line-height: 1;
 }
-.theme-switcher-container button.theme-button:hover { background: color-mix(in srgb, var(--sidebar-text) 20%, transparent); }
-.theme-switcher-container button.theme-button.active-theme { background-color: var(--color-accent); color: var(--color-text); border-color: var(--color-accent); font-weight: bold; }
+.theme-switcher-container button.theme-button:hover { background: color-mix(in srgb, var(--sidebar-text) 25%, transparent); transform: scale(1.1); }
+.theme-switcher-container button.theme-button.active-theme { background-color: var(--color-accent); color: var(--color-text); border-color: color-mix(in srgb, var(--sidebar-text) 50%, transparent); transform: scale(1.1); font-weight: bold; }
 body.theme-dark .theme-switcher-container button.theme-button.active-theme { color: var(--color-background); }
 body.theme-fun .theme-switcher-container button.theme-button.active-theme { color: #333; }
 
 /* --- Main Content --- */
-main {
-    /* Ajustement margin-top pour laisser place aux 2 barres fixes */
-    margin-top: calc(var(--header-height) + var(--sub-header-height) + 20px); /* +20px pour espace */
-    padding: 20px;
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 80px; /* Espace pour footer fixe si besoin */
-    min-height: calc(100vh - (var(--header-height) + var(--sub-header-height) + 80px + 60px)); /* header+sub+margin-bottom+footer approx */
-}
+main { margin-top: calc(var(--header-height) + var(--sub-header-height) + 20px); padding: 20px; max-width: 800px; margin-left: auto; margin-right: auto; margin-bottom: 80px; min-height: calc(100vh - (var(--header-height) + var(--sub-header-height) + 80px + 60px)); }
 h2 { font-family: var(--font-heading); color: var(--color-primary); font-size: 1.8em; font-weight: 700; text-align: center; margin-bottom: 30px; }
 section { margin-bottom: 40px; }
 
 /* --- Card Style (.actu) --- */
-.actu {
-    background: var(--color-surface); padding: 20px; margin-bottom: 25px;
-    border-radius: var(--border-radius); box-shadow: var(--shadow-md);
-    border: 1px solid var(--color-border); transition: all 0.3s ease;
-}
+.actu { background: var(--color-surface); padding: 20px; margin-bottom: 25px; border-radius: var(--border-radius); box-shadow: var(--shadow-md); border: 1px solid var(--color-border); transition: all 0.3s ease; }
 .actu:hover { box-shadow: 0 6px 15px color-mix(in srgb, var(--color-text) 10%, transparent); }
 .actu h3 { font-family: var(--font-heading); color: var(--color-primary); font-size: 1.3em; font-weight: 700; margin: 0 0 10px 0; }
 .actu p { margin-bottom: 10px; font-size: 1em; color: var(--color-text); }
@@ -277,8 +264,8 @@ button[type="submit"]:disabled { background-color: color-mix(in srgb, var(--colo
 
 /* --- Messages Statut/Erreur/Note --- */
 .confirmation, .form-status-sending, .error-message, .loading-message { padding: 15px; border-radius: var(--border-radius); text-align: center; margin-top: 20px; font-weight: 500; border: 1px solid transparent; transition: all 0.3s ease; }
-.confirmation { background-color: #d1e7dd; color: #0f5132; border-color: #badbcc; display: none; } /* Caché par défaut */
-.form-status-sending { background-color: var(--color-secondary); color: var(--color-primary); border-color: color-mix(in srgb, var(--color-border) 80%, var(--color-primary) 20%); display: none; } /* Caché par défaut */
+.confirmation { background-color: #d1e7dd; color: #0f5132; border-color: #badbcc; display: none; } /* Caché */
+.form-status-sending { background-color: var(--color-secondary); color: var(--color-primary); border-color: color-mix(in srgb, var(--color-border) 80%, var(--color-primary) 20%); display: none; } /* Caché */
 .error-message { background-color: #f8d7da; color: #842029; border-color: #f5c2c7; display: block; font-style: normal; font-size: 1em; }
 .loading-message { color: var(--color-text-muted); font-style: italic; text-align: center; padding: 20px;}
 .error-message.image-error { display: none; margin-top: -10px; margin-bottom: 10px; padding: 3px 5px; font-size: 0.8em; }
@@ -289,40 +276,23 @@ body.theme-dark .form-status-sending { background-color: #3a4a5a; color: #5dade2
 
 
 /* --- Footer --- */
-footer {
-    text-align: center; padding: 15px; background: var(--color-surface);
-    color: var(--color-text-muted); font-size: 0.9em; box-shadow: none;
-    border-top: 1px solid var(--color-border); width: 100%;
-    /* position: fixed; bottom: 0; left: 0; */ /* Décommenter si besoin d'un footer fixe */
-    transition: all 0.3s ease;
-}
+footer { text-align: center; padding: 15px; background: var(--color-surface); color: var(--color-text-muted); font-size: 0.9em; box-shadow: none; border-top: 1px solid var(--color-border); width: 100%; transition: all 0.3s ease; }
 
 /* ======================================== */
 /*              RESPONSIVE                */
 /* ======================================== */
 
 @media (max-width: 768px) {
-    :root { /* Ajuster si besoin pour mobile */
-        /* --header-height: 56px; */
-        /* --sub-header-height: 40px; */
-    }
+    :root { /* Ajuster si besoin */ }
     header { height: var(--header-height); }
     #sub-header { height: var(--sub-header-height); }
     header h1 { font-size: 1.2em; }
-    main {
-         margin-top: calc(var(--header-height) + var(--sub-header-height) + 15px);
-         padding: 15px;
-         margin-bottom: 60px; /* Ajuster si footer fixe */
-         min-height: calc(100vh - (var(--header-height) + var(--sub-header-height) + 15px + 60px)); /* Ajuster si footer */
-    }
+    main { margin-top: calc(var(--header-height) + var(--sub-header-height) + 15px); padding: 15px; margin-bottom: 60px; min-height: calc(100vh - (var(--header-height) + var(--sub-header-height) + 15px + 60px)); }
     .sidebar { padding-top: calc(var(--header-height) + var(--sub-header-height) + 15px); width: 250px; left: -250px; }
     .sub-header-content { padding: 0 15px; }
     .sub-header-logos { gap: 10px; }
     .sub-header-logo { height: 24px; }
     .contact-shortcut { font-size: 0.85em; padding: 4px 8px; gap: 4px; }
-    /* Optionnel: cacher texte ou icône sur très petits écrans si manque de place */
-    /* .contact-shortcut .fa-envelope { display: none; } */
-
     h2 { font-size: 1.5em; margin-bottom: 20px; }
     .actu, .form-container { padding: 15px; }
     button[type="submit"] { font-size: 1em; padding: 12px 20px; }
@@ -333,8 +303,8 @@ footer {
     .partner-card .partner-logo { max-width: 60px; max-height: 50px; margin-bottom: 10px; }
     .partner-card .partner-logo-placeholder { width: 50px; height: 50px; font-size: 1.5em; margin-bottom: 10px; }
     .theme-switcher-container h4 { padding-left: 10px; }
-    .theme-buttons-wrapper { padding-left: 10px; padding-right: 10px; }
-    .theme-switcher-container button.theme-button { margin-left: 0; padding: 4px 10px; }
+    .theme-buttons-wrapper { padding-left: 10px; padding-right: 10px; gap: 8px; } /* Ajuster gap si besoin */
+    .theme-switcher-container button.theme-button { width: 32px; height: 32px; font-size: 1em; } /* Boutons thème plus petits */
 }
 
 @media (max-width: 400px) {
@@ -342,8 +312,7 @@ footer {
      .sub-header-logos { gap: 8px; }
      .contact-shortcut { font-size: 0.8em; padding: 3px 6px; }
      .contact-shortcut .fa-envelope { display: none; } /* Cacher icône */
-     .partner-category-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); } /* Encore plus petit */
+     .partner-category-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+     .theme-buttons-wrapper { gap: 6px; } /* Encore moins d'espace */
+     .theme-switcher-container button.theme-button { width: 30px; height: 30px; font-size: 0.9em; }
 }
-
-/* --- Styles spécifiques pour messages chargement/erreur --- */
-.loading-message { color: var(--color-text-muted); font-style: italic; text-align: center; padding: 20px; }
