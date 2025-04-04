@@ -206,8 +206,8 @@ body.theme-dark .contact-shortcut:hover { background-color: var(--color-surface)
 .theme-switcher-container button.theme-button { /* Boutons thème (icônes rondes) */
     background: color-mix(in srgb, var(--sidebar-text) 10%, transparent); color: var(--sidebar-text);
     border: 1px solid transparent; border-radius: 50%; /* Rond */
-    padding: 0; width: 36px; height: 36px; /* Taille fixe */
-    cursor: pointer; font-size: 1.1em; /* Taille icône */
+    padding: 0; width: 30px; height: 30px; /* Taille fixe */
+    cursor: pointer; font-size: 1em; /* Taille icône */
     transition: all 0.2s ease; display: inline-flex; justify-content: center; align-items: center;
     flex-grow: 0; flex-shrink: 0; line-height: 1;
 }
