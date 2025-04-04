@@ -50,14 +50,26 @@
  <li><button onclick="loadPage('partenaires', true)"><span class="icon"><i class="fas fa-handshake"></i></span> Partenaires</button></li>
  <!-- Trouvez des icônes appropriées sur le site de Font Awesome (Free) -->
       <li>
-    <div class="theme-switcher-container">  <!-- Nouveau conteneur global -->
-        <h4>Thème :</h4>                 <!-- Le titre -->
-        <div class="theme-buttons-wrapper"> <!-- Conteneur spécifique pour les boutons -->
-            <button data-theme="theme-default" class="theme-button">Clair</button>
-            <button data-theme="theme-dark" class="theme-button">Sombre</button>
-            <button data-theme="theme-fun" class="theme-button">Fun</button>
-        </div>
+    <div class="theme-switcher-container">
+    <h4>Thème :</h4>
+    <div class="theme-buttons-wrapper">
+        <button data-theme="theme-default" class="theme-button" title="Thème Soleil (Clair)">
+            <i class="fas fa-sun"></i>
+        </button>
+        <button data-theme="theme-dark" class="theme-button" title="Thème Lune (Sombre)">
+            <i class="fas fa-moon"></i>
+        </button>
+        <button data-theme="theme-eau" class="theme-button" title="Thème Eau (Bleu Pâle)">
+            <i class="fas fa-tint"></i> {/* Ou fa-water */}
+        </button>
+        <button data-theme="theme-desert" class="theme-button" title="Thème Désert (Sable)">
+            <i class="fas fa-cloud-sun"></i> {/* Ou fa-wind, fa-feather-alt ? Difficile */}
+        </button>
+        <button data-theme="theme-foret" class="theme-button" title="Thème Forêt (Vert Pâle)">
+            <i class="fas fa-tree"></i> {/* Ou fa-leaf */}
+        </button>
     </div>
+</div>
 </li>
         </ul>
     </nav>
