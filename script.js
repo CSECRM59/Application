@@ -448,7 +448,53 @@ document.addEventListener('DOMContentLoaded', () => {
     const hamburger = document.querySelector('.hamburger'); if (hamburger) hamburger.addEventListener('click', toggleMenu); else console.error("CRITICAL: Hamburger not found.");
     const sidebar = document.getElementById('sidebar'); if (sidebar) { sidebar.addEventListener('click', (e) => { const themeBtn = e.target.closest('.theme-switcher-container button.theme-button[data-theme]'); if (themeBtn) { e.preventDefault(); applyTheme(themeBtn.dataset.theme); return; } }); } else { console.error("CRITICAL: Sidebar not found for theme listener."); }
 });
+// --- Gestion du bouton d'installation PWA ---
+let deferredPrompt = null;
 
+// Écouter l'événement 'beforeinstallprompt' pour savoir si l'installation est possible
+window.addEventListener('beforeinstallprompt', (e) => {
+    // Empêche l'invite automatique (pour contrôler via le bouton)
+    e.preventDefault();
+    // Stocker l'événement pour l'utiliser plus tard
+    deferredPrompt = e;
+    // Afficher le bouton d'installation
+    const installButton = document.getElementById('install-button');
+    if (installButton) {
+        installButton.style.display = 'block';
+    }
+});
+
+// Gérer le clic sur le bouton d'installation
+document.addEventListener('DOMContentLoaded', () => {
+    const installButton = document.getElementById('install-button');
+    if (installButton) {
+        installButton.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            // Afficher l'invite d'installation
+            deferredPrompt.prompt();
+            // Attendre la réponse de l'utilisateur
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                console.log('Utilisateur a accepté l’installation');
+            } else {
+                console.log('Utilisateur a refusé l’installation');
+            }
+            // Réinitialiser l'événement
+            deferredPrompt = null;
+            // Cacher le bouton après l'installation
+            installButton.style.display = 'none';
+        });
+    }
+});
+
+// Cacher le bouton si l'application est déjà installée
+window.addEventListener('appinstalled', () => {
+    console.log('PWA a été installée');
+    const installButton = document.getElementById('install-button');
+    if (installButton) {
+        installButton.style.display = 'none';
+    }
+});
 // ==================================================
 //              FIN DU SCRIPT
 // ==================================================
