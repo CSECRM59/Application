@@ -25,7 +25,7 @@ const partnersCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQcKo9WO
 let isFormSubmitting = false; // Drapeau pour formulaires iframe
 const THEME_STORAGE_KEY = 'cse-app-selected-theme';
 const DEFAULT_THEME = 'theme-default';
-const KNOWN_THEMES = ['theme-default', 'theme-dark', 'theme-fun'];
+const KNOWN_THEMES = ['theme-default', 'theme-dark', 'theme-eau', 'theme-desert', 'theme-foret'];
 
 // --- GESTION DES THÈMES ---
 
