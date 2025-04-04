@@ -244,67 +244,107 @@ function loadMembers() {
         .catch(error => { console.error('Fetch Membres:', error); if(container) container.innerHTML = `<p class="error-message">Chargement membres impossible. ${error.message}</p>`; });
 }
 
-/** Affiche la grille des membres triés dans le DOM. */
+/**
+ * Affiche la grille des membres triés dans le DOM.
+ * Gère les rôles multiples séparés par virgule et affiche une photo ou un placeholder.
+ * @param {Array<Object>} membersData - Données brutes des membres parsées depuis le CSV.
+ */
 function displayMembers(membersData) {
     const container = document.getElementById('members-container');
-    if (!container) return; container.innerHTML = ''; // Vider
+    if (!container) {
+        console.error("Conteneur #members-container introuvable pour l'affichage.");
+        return; // Arrêter si le conteneur n'existe pas
+    }
+    container.innerHTML = ''; // Vider le conteneur avant de le remplir
 
-    // 1. Filtrer les entrées valides (au moins Nom et Prenom)
-    const validMembers = (membersData || []).filter(m => m && (m.Nom || m.nom) && (m.Prenom || m.prenom));
+    // 1. Filtrer les entrées pour ne garder que celles avec au moins Nom et Prénom
+    const validMembers = (membersData || []).filter(m =>
+        m &&                                    // L'objet membre existe
+        (m.Nom || m.nom) &&                     // La propriété Nom (ou nom) existe et n'est pas vide
+        String(m.Nom || m.nom).trim() !== '' && // Le Nom n'est pas juste des espaces
+        (m.Prenom || m.prenom) &&               // La propriété Prenom (ou prenom) existe et n'est pas vide
+        String(m.Prenom || m.prenom).trim() !== '' // Le Prenom n'est pas juste des espaces
+    );
 
-    if (validMembers.length === 0) { container.innerHTML = '<p>Aucun membre à afficher.</p>'; return; }
+    if (validMembers.length === 0) {
+        container.innerHTML = '<p>Aucun membre à afficher pour le moment.</p>';
+        return;
+    }
 
-    // 2. Trier par Nom, puis par Prénom
+    // 2. Trier les membres valides par Nom, puis par Prénom (insensible à la casse)
     validMembers.sort((a, b) => {
-        const nomA = (a.Nom || a.nom || '').toLowerCase();
-        const nomB = (b.Nom || b.nom || '').toLowerCase();
-        const prenomA = (a.Prenom || a.prenom || '').toLowerCase();
-        const prenomB = (b.Prenom || b.prenom || '').toLowerCase();
+        // Normaliser les noms et prénoms en minuscule pour le tri
+        const nomA = String(a.Nom || a.nom || '').toLowerCase();
+        const nomB = String(b.Nom || b.nom || '').toLowerCase();
+        const prenomA = String(a.Prenom || a.prenom || '').toLowerCase();
+        const prenomB = String(b.Prenom || b.prenom || '').toLowerCase();
 
+        // Comparer les noms
         if (nomA < nomB) return -1;
         if (nomA > nomB) return 1;
-        // Si noms identiques, trier par prénom
+
+        // Si les noms sont identiques, comparer les prénoms
         if (prenomA < prenomB) return -1;
         if (prenomA > prenomB) return 1;
+
         return 0; // Noms et prénoms identiques
     });
 
-    // 3. Créer la grille
+    // 3. Créer la grille conteneur pour les cartes
     const grid = document.createElement('div');
     grid.className = 'members-grid';
     container.appendChild(grid);
 
-    // 4. Créer une carte pour chaque membre
+    // 4. Créer et ajouter une carte pour chaque membre trié
     validMembers.forEach(member => {
-        // Adapter les noms de colonnes si nécessaire
+        // Récupérer les données du membre, en gérant les variations de nom de colonne et les valeurs par défaut
         const nom = member.Nom || member.nom;
         const prenom = member.Prenom || member.prenom;
-        const operation = member.Operation || member.operation || '';
-        const role = member.Role || member.role || 'Membre';
-        const photoUrl = member.PhotoURL || member.PhotoUrl || member.photoURL || member.photourl || '';
+        const operation = member.Operation || member.operation || ''; // Laisser vide si non défini
+        const roleString = member.Role || member.role || 'Membre'; // Rôle par défaut si non défini
+        const photoUrl = member.PhotoURL || member.PhotoUrl || member.photoURL || member.photourl || ''; // URL de la photo ou chaîne vide
 
+        // Traiter les rôles multiples séparés par une virgule
+        const rolesHtml = roleString
+            .split(',')             // Sépare en tableau: [" Role1 ", "Role2 "]
+            .map(role => role.trim()) // Enlève les espaces: ["Role1", "Role2"]
+            .filter(role => role !== '') // Enlève les rôles vides si ex: "Role1,,Role2"
+            .join('<br>');            // Joint avec saut de ligne: "Role1<br>Role2"
+
+        // Créer l'élément de carte
         const card = document.createElement('div');
         card.className = 'member-card';
 
-        // Afficher photo ou placeholder
+        // Générer le HTML pour la photo ou le placeholder
         let photoHtml = '';
         if (photoUrl) {
-            photoHtml = `<img src="${photoUrl}" alt="Photo de ${prenom} ${nom}" class="member-photo" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                         <div class="member-placeholder" style="display: none;"><i class="fas fa-user-alt-slash"></i></div>`; // Placeholder si erreur chargement
+            // Si une URL de photo est fournie
+            photoHtml = `
+                <img src="${photoUrl}" alt="Photo de ${prenom} ${nom}" class="member-photo" loading="lazy"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="member-placeholder placeholder-error" style="display: none;">
+                    <i class="fas fa-user-alt-slash"></i> {/* Icône pour erreur chargement */}
+                </div>`;
         } else {
-            photoHtml = `<div class="member-placeholder"><i class="fas fa-user"></i></div>`; // Placeholder par défaut
+            // Si pas d'URL de photo, afficher le placeholder par défaut
+            photoHtml = `
+                <div class="member-placeholder placeholder-default">
+                    <i class="fas fa-user"></i> {/* Icône silhouette */}
+                </div>`;
         }
 
+        // Construire l'innerHTML complet de la carte
         card.innerHTML = `
             ${photoHtml}
             <h4>${prenom} ${nom}</h4>
-            <p class="member-role">${role}</p>
-            ${operation ? `<p class="member-operation">${operation}</p>` : ''}
+            <p class="member-role">${rolesHtml}</p> {/* Utilise les rôles formatés */}
+            ${operation ? `<p class="member-operation">${operation}</p>` : ''} {/* N'affiche l'opération que si elle existe */}
         `;
+
+        // Ajouter la carte finalisée à la grille
         grid.appendChild(card);
     });
 }
-
 // ==========================================================
 // --- FIN : FONCTIONS MEMBRES CSE ---
 // ==========================================================
