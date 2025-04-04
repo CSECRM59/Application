@@ -84,7 +84,32 @@ header h1 { font-family: var(--font-heading); color: var(--color-text-on-primary
 #install-button:hover { background-color: color-mix(in srgb, var(--color-accent) 85%, black); }
 body.theme-dark #install-button { color: var(--color-background); }
 body.theme-fun #install-button { color: #333; }
+/* Ajoutez ceci à la section Header dans styles.css */
+#install-button {
+    display: none; /* Caché par défaut */
+    margin-left: auto; /* Pousse le bouton à droite */
+    padding: 5px 10px;
+    background-color: var(--color-accent);
+    color: var(--color-text);
+    border: none;
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
 
+#install-button:hover {
+    background-color: color-mix(in srgb, var(--color-accent) 85%, black);
+}
+
+body.theme-dark #install-button {
+    color: var(--color-background);
+}
+
+body.theme-fun #install-button {
+    color: #333;
+}
 /* --- Bandeau Sous Header --- */
 #sub-header { position: fixed; top: var(--header-height); left: 0; width: 100%; height: var(--sub-header-height); background-color: var(--color-surface); border-bottom: 1px solid var(--color-border); box-shadow: var(--shadow-sm); z-index: 998; overflow: hidden; transition: all 0.3s ease; }
 .sub-header-content { max-width: 800px; height: 100%; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; }
