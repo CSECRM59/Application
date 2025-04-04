@@ -136,6 +136,51 @@ function loadPage(pageId, fromMenuClick = false) {
         case 'partenaires':
             pageHTML = `<section id="partenaires"><h2>Nos Partenaires</h2><div id="partners-container"></div></section>`;
             deferredAction = loadPartners; break;
+               // --- NOUVEAU CASE POUR ACTION LOGEMENT ---
+        case 'action-logement':
+            pageHTML = `
+                <section id="action-logement">
+                    <h2>Action Logement</h2>
+
+                    <p>Vous êtes salarié et vous cherchez un logement social à loyer modéré ?</p>
+                    <p><strong>Action Logement</strong> vous accompagne à chaque étape pour faciliter votre accès à un logement adapté à votre situation !</p>
+
+                    <h3>Nos Solutions Principales :</h3>
+
+                    <p><strong>🏡 Accédez à un logement social ou intermédiaire</strong><br>
+                    Grâce à la plateforme AL’in, postulez en toute simplicité aux logements disponibles selon vos revenus et votre situation familiale.
+                    Rendez-vous sur : <a href="https://www.al-in.fr" target="_blank" rel="noopener noreferrer">al-in.fr</a></p>
+
+                    <p><strong>🔑 Besoin d’un garant ?</strong><br>
+                    Avec la <strong>Garantie Visale</strong>, Action Logement se porte garant gratuitement auprès de votre propriétaire (sous conditions).</p>
+
+                    <p><strong>💰 Aide au dépôt de garantie</strong><br>
+                    Avec l’<strong>Avance LOCA-PASS®</strong>, bénéficiez d’un prêt sans frais ni intérêt pour financer votre dépôt de garantie, jusqu'à 1 200 €, remboursable sur 25 mois (sous conditions).</p>
+
+                    <p><strong>📦 Aide à la mobilité</strong><br>
+                    Jusqu’à 1 000 € pour vous aider à déménager en cas de mutation ou de nouvel emploi (sous conditions).</p>
+
+                    <h3>Comment ça marche pour un logement social ?</h3>
+                    <ol>
+                        <li>Demandez un Numéro Unique Départemental (NUD) ou Régional (NUR) sur le site officiel : <a href="https://www.demande-logement-social.gouv.fr" target="_blank" rel="noopener noreferrer">demande-logement-social.gouv.fr</a>.</li>
+                        <li>Créez votre compte sur la plateforme AL’in (<a href="https://www.al-in.fr" target="_blank" rel="noopener noreferrer">al-in.fr</a>) et renseignez votre demande en utilisant votre Numéro Unique.</li>
+                        <li>Postulez aux logements disponibles directement sur AL'in et suivez l’évolution de votre candidature !</li>
+                    </ol>
+
+                    <p>💡 Un logement plus accessible, un accompagnement personnalisé !<br>
+                    Ne laissez plus le logement être un frein à votre quotidien. Découvrez toutes les solutions d'Action Logement et trouvez votre futur chez-vous dès aujourd’hui !</p>
+
+                    <div class="contact-commission">
+                         <p><strong>Pour toutes demandes ou besoin d'aide, votre commission logement est là pour vous :</strong></p>
+                         <p>Sabrina Gheraf (CNAV), David Verdin (ENEDIS), Julien Nunne (AG2R)</p>
+                         <p>N'hésitez pas à utiliser le <button class="inline-link-button" onclick="loadPage('formulaire-contact', false)">formulaire de contact</button> pour les joindre.</p>
+                    </div>
+                </section>
+            `;
+            // Pas besoin de deferredAction ici car le contenu est statique
+            break;
+        // --- FIN NOUVEAU CASE ---
+
         // --- NOUVEAU CASE POUR LES MEMBRES ---
         case 'membres':
             pageHTML = `
