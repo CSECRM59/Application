@@ -234,42 +234,6 @@ function displayPartners(groupedPartners) {
 
 function parseDate(dS) { if (!dS || typeof dS !== 'string') return null; dS = dS.trim(); let p, d, m, y, dt; p = dS.match(/^(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})$/); if (p) { d = parseInt(p[1], 10); m = parseInt(p[2], 10) - 1; y = parseInt(p[3], 10); if (y > 1900 && y < 2100 && m >= 0 && m < 12 && d > 0 && d <= 31) { dt = new Date(Date.UTC(y, m, d)); if (dt.getUTCFullYear() === y && dt.getUTCMonth() === m && dt.getUTCDate() === d) return dt; } } p = dS.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/); if (p) { y = parseInt(p[1], 10); m = parseInt(p[2], 10) - 1; d = parseInt(p[3], 10); if (y > 1900 && y < 2100 && m >= 0 && m < 12 && d > 0 && d <= 31) { dt = new Date(Date.UTC(y, m, d)); if (dt.getUTCFullYear() === y && dt.getUTCMonth() === m && dt.getUTCDate() === d) return dt; } } p = dS.match(/^(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})$/); if (p) { m = parseInt(p[1], 10) - 1; d = parseInt(p[2], 10); y = parseInt(p[3], 10); if (y > 1900 && y < 2100 && m >= 0 && m < 12 && d > 0 && d <= 31) { dt = new Date(Date.UTC(y, m, d)); if (dt.getUTCFullYear() === y && dt.getUTCMonth() === m && dt.getUTCDate() === d) return dt; } } try { const ts = Date.parse(dS); if (!isNaN(ts)) return new Date(ts); } catch(e) {} return null; }
 
-// --- GESTION INSTALLATION PWA ---
-
-let deferredInstallPrompt = null; // Stocke l'événement d'installation
-
-// Écouteur pour capturer l'événement avant que le navigateur ne propose l'installation
-window.addEventListener('beforeinstallprompt', (event) => {
-    event.preventDefault(); // Empêche l'invite auto du navigateur
-    deferredInstallPrompt = event; // Stocke l'événement
-    const installButton = document.getElementById('install-button');
-    if (installButton) installButton.style.display = 'block'; // Affiche notre bouton
-    console.log('[PWA] Prêt à installer.');
-});
-
-// Attache le listener au bouton d'installation personnalisé (s'il existe au chargement initial)
-const installButton = document.getElementById('install-button');
-if (installButton) {
-    installButton.addEventListener('click', async () => {
-        if (!deferredInstallPrompt) {
-            console.log('[PWA] Pas d\'invite disponible.');
-            // Informer l'utilisateur sur comment installer manuellement ?
-            return;
-        }
-        deferredInstallPrompt.prompt(); // Afficher l'invite navigateur
-        const { outcome } = await deferredInstallPrompt.userChoice;
-        console.log(`[PWA] Installation: ${outcome}`); // 'accepted' or 'dismissed'
-        deferredInstallPrompt = null; // L'invite ne peut être utilisée qu'une fois
-        installButton.style.display = 'none'; // Cacher le bouton après le choix
-    });
-}
-
-// Écouteur pour savoir quand l'app est installée
-window.addEventListener('appinstalled', () => {
-    console.log('[PWA] Application installée !');
-    deferredInstallPrompt = null; // Nettoyer
-    if (installButton) installButton.style.display = 'none'; // Cacher le bouton si visible
-});
 
 // --- INITIALISATION AU CHARGEMENT DE LA PAGE ---
 
@@ -294,24 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     } else { console.error("CRITICAL: Sidebar not found for theme listener."); }
 
-    // Enregistrement du Service Worker
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./service-worker.js') // Doit être à la racine
-            .then(reg => console.log('[PWA] Service Worker enregistré, scope:', reg.scope))
-            .catch(err => console.error('[PWA] Erreur enregistrement Service Worker:', err));
-    } else {
-        console.log('[PWA] Service Worker non supporté.');
-    }
-
-     // Re-vérifier le bouton d'installation au cas où il serait ajouté dynamiquement (peu probable ici)
-     // et attacher le listener s'il n'était pas trouvé initialement (normalement inutile si dans HTML initial)
-     if (!installButton && document.getElementById('install-button')) {
-         const btn = document.getElementById('install-button');
-         btn.addEventListener('click', async () => { /* ... même logique que le listener plus haut ... */ });
-         console.warn("Listener d'installation attaché après DOMContentLoaded.");
-     } else if (!installButton && !document.getElementById('install-button')) {
-          console.warn("Aucun bouton avec id='install-button' trouvé.");
-     }
+   
 
 });
 
