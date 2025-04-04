@@ -97,7 +97,7 @@ body.theme-dark .contact-shortcut { color: var(--color-primary); }
 body.theme-dark .contact-shortcut:hover { background-color: var(--color-surface); color: var(--color-accent); }
 
 /* --- Sidebar --- */
-.sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background-color: var(--sidebar-bg); box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1); transition: left 0.3s ease-in-out; z-index: 999; padding-top: calc(var(--header-height) + var(--sub-header-height) + 20px); display: flex; flex-direction: column; }
+.sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background-color: var(--sidebar-bg); box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1); transition: left 0.3s ease-in-out; z-index: 999; padding-top: calc(var(--header-height) + var(--sub-header-height) + 20px); display: flex; flex-direction: column;-webkit-overflow-scrolling: touch; }
 .sidebar.active { left: 0; }
 .sidebar ul { list-style: none; padding: 0 20px 20px 20px; margin: 0; flex-grow: 1; }
 .sidebar ul li:not(:last-child) { margin-bottom: 10px; }
