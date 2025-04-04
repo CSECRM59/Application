@@ -8,6 +8,28 @@
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>    
 </head>
+<!-- ================================= -->
+    <!-- NOUVEAU BANDEAU FIXE SOUS HEADER -->
+    <!-- ================================= -->
+    <div id="sub-header" class="sub-header-band">
+        <div class="sub-header-content">
+            <div class="sub-header-logos">
+                <!-- Remplacez par les vrais chemins vers vos logos -->
+                <img src="icons/logo-cafe.png" alt="Accès Café" class="sub-header-logo" title="Signaler problème Café">
+                <img src="icons/logo-accesce.png" alt="AccèsCE" class="sub-header-logo" title="Infos AccèsCE">
+                <img src="icons/logo-wonderbox.png" alt="Wonderbox" class="sub-header-logo" title="Offres Wonderbox">
+                <!-- Ajoutez d'autres logos si besoin -->
+            </div>
+            <button id="contact-shortcut-btn" class="contact-shortcut" onclick="loadPage('formulaire-contact', false)">
+                <i class="fas fa-envelope"></i> <!-- Icône Font Awesome (optionnel) -->
+                Nous Contacter
+            </button>
+        </div>
+    </div>
+    <!-- ================================= -->
+    <!-- FIN NOUVEAU BANDEAU             -->
+    <!-- ================================= -->
+
 <body>
     <header>
         <div class="hamburger">
