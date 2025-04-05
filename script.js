@@ -254,8 +254,45 @@ function onFormSubmit() { if (!isFormSubmitting) return; const form = document.q
 
 // --- CHARGEMENT ET AFFICHAGE DES ACTUALITÉS ---
 function loadNews() { const c=document.getElementById('news-container'); if(!c)return; c.innerHTML='<p class="loading-message">Chargement...</p>'; fetch(newsCsvUrl).then(r=>{if(!r.ok)throw new Error(`E ${r.status}`);return r.text()}).then(csv=>Papa.parse(csv,{header:true,skipEmptyLines:'greedy',complete:res=>displayNews(res.data),error:e=>{console.error('PapaParse N:',e);if(c)c.innerHTML='<p class="error-message">Err actu.</p>';}})).catch(err=>{console.error('Fetch N:',err);if(c)c.innerHTML=`<p class="error-message">Actu HS.</p>`;}); }
-function displayNews(d) { const c=document.getElementById('news-container'); if(!c)return; c.innerHTML=''; const v=(d||[]).filter(i=>i&&Object.values(i).some(v=>v&&String(v).trim())).sort((a,b)=>(parseDate(b.Date||b.date)?.getTime()||0)-(parseDate(a.Date||a.date)?.getTime()||0)); if(v.length===0){c.innerHTML='<p>Rien.</p>';return;} v.forEach(i=>{const t=i.Titre||i.titre||'Actu'; const dt=i.Date||i.date||''; const ds=i.Description||i.description||''; const img=i.Lien_image||i['Lien image']||i.Image||i.image||''; const el=document.createElement('div'); el.className='actu'; const im=img?`<img src="${img}" alt="${t}" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" loading="lazy"><p class="error-message image-error" style="display:none;">Img?</p>`:''; el.innerHTML=`<h3>${t}</h3>${dt?`<p><strong>Date:</strong> ${dt}</p>`:''}<p>${ds}</p>${im}`; c.appendChild(el);}); }
+function displayNews(d) {
+    const c = document.getElementById('news-container');
+    if (!c) return;
+    c.innerHTML = '';
+    c.classList.add('news-grid'); // Ajout classe pour grille
 
+    const v = (d || [])
+        .filter(i => i && Object.values(i).some(v => v && String(v).trim()))
+        .sort((a, b) => (parseDate(b.Date || b.date)?.getTime() || 0) - (parseDate(a.Date || a.date)?.getTime() || 0));
+
+    if (v.length === 0) {
+        c.innerHTML = '<p>Aucune actualité pour le moment.</p>';
+        return;
+    }
+
+    v.forEach(i => {
+        const t = i.Titre || i.titre || 'Actualité sans titre';
+        const dt = i.Date || i.date || '';
+        const ds = i.Description || i.description || 'Aucune description disponible.';
+        const img = i.Lien_image || i['Lien image'] || i.Image || i.image || '';
+
+        const el = document.createElement('div');
+        el.className = 'news-card';
+
+        const imgHtml = img 
+            ? `<div class="news-image"><img src="${img}" alt="${t}" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" loading="lazy"><p class="error-message image-error" style="display:none;">Image indisponible</p></div>` 
+            : `<div class="news-image-placeholder"><i class="fas fa-newspaper"></i></div>`;
+
+        el.innerHTML = `
+            ${imgHtml}
+            <div class="news-content">
+                <h3>${t}</h3>
+                ${dt ? `<p class="news-date"><i class="fas fa-calendar-alt"></i> ${dt}</p>` : ''}
+                <p class="news-desc">${ds}</p>
+            </div>
+        `;
+        c.appendChild(el);
+    });
+}
 // --- CHARGEMENT ET AFFICHAGE DES PARTENAIRES ---
 function loadPartners() { const c=document.getElementById('partners-container'); if(!c)return; c.innerHTML='<p class="loading-message">Chargement...</p>'; fetch(partnersCsvUrl).then(r=>{if(!r.ok)throw new Error(`E ${r.status}`);return r.text()}).then(csv=>Papa.parse(csv,{header:true,skipEmptyLines:'greedy',complete:res=>{if(c)c.classList.remove('partners-loading'); const v=(res.data||[]).filter(i=>i&&i.Nom&&String(i.Nom).trim()); if(v.length>0)displayPartners(groupPartnersByCategory(v)); else if(c)c.innerHTML='<p>Aucun.</p>';},error:e=>console.error('PapaParse P:',e)})).catch(err=>{console.error('Fetch P:',err);if(c){c.classList.remove('partners-loading'); c.innerHTML=`<p class="error-message">Partenaires HS.</p>`;}}); }
 function groupPartnersByCategory(p) { const g={}; const d="Autres"; p.forEach(i=>{const c=(i.Categorie||i.categorie||'').trim()||d; if(!g[c])g[c]=[]; g[c].push(i);}); const k=Object.keys(g).sort((a,b)=>(a===d)?1:(b===d)?-1:a.localeCompare(b,'fr',{sensitivity:'base'})); const s={}; k.forEach(c=>{s[c]=g[c].sort((a,b)=>(a.Nom||'').localeCompare(b.Nom||'','fr',{sensitivity:'base'}));}); return s; }
