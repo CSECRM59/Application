@@ -108,12 +108,17 @@
         </section>
     </main>
 
-    <footer>
-        <button id="update-button">
-            <i class="fas fa-sync-alt"></i> Mettre à jour
-        </button>
+   <footer>
+    <div class="footer-content">
         <p>© 2025 CSE CRM59. Tous droits réservés.</p>
-    </footer>
+        <div class="update-section">
+            <button id="update-button">
+                <i class="fas fa-sync-alt"></i> Mettre à jour
+            </button>
+            <p id="last-update" class="last-update">Dernière mise à jour : <span>Chargement...</span></p>
+        </div>
+    </div>
+</footer>
     
 <script>
     document.getElementById('sidebar').classList.remove('active');
