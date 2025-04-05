@@ -155,6 +155,7 @@ section { margin-bottom: 40px; }
 .actu p:last-child { margin-bottom: 0; }
 .actu p strong { color: var(--color-text); font-weight: 700; }
 .actu img { max-width: 100%; height: auto; border-radius: calc(var(--border-radius) / 2); margin-top: 15px; border: none; display: block; }
+
 /* --- Actualités Modernes avec Animations --- */
 #news-container {
     padding-top: 10px;
@@ -165,8 +166,8 @@ section { margin-bottom: 40px; }
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 25px;
     margin-bottom: 30px;
-    opacity: 0; /* Pour animation d'entrée */
-    animation: fadeIn 0.5s ease forwards 0.2s; /* Apparition globale */
+    opacity: 0;
+    animation: fadeIn 0.5s ease forwards 0.2s;
 }
 
 @keyframes fadeIn {
@@ -180,19 +181,19 @@ section { margin-bottom: 40px; }
     box-shadow: var(--shadow-sm);
     border: 1px solid var(--color-border);
     overflow: hidden;
-    position: relative; /* Pour overlays et positionnement */
+    position: relative;
     transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
     display: flex;
     flex-direction: column;
     height: 100%;
-    animation: slideUp 0.6s ease-out forwards; /* Animation d'entrée par carte */
-    animation-delay: calc(var(--order) * 0.1s); /* Décalage basé sur l'ordre */
+    animation: slideUp 0.6s ease-out forwards;
+    animation-delay: calc(var(--order) * 0.1s);
 }
 
 .news-card:nth-child(1) { --order: 1; }
 .news-card:nth-child(2) { --order: 2; }
 .news-card:nth-child(3) { --order: 3; }
-.news-card:nth-child(4) { --order: 4; } /* Ajoutez selon besoin */
+.news-card:nth-child(4) { --order: 4; }
 
 @keyframes slideUp {
     from {
@@ -205,11 +206,10 @@ section { margin-bottom: 40px; }
     }
 }
 
-/* Effet de survol */
 .news-card:hover {
-    transform: translateY(-8px) scale(1.02); /* Légère élévation et zoom */
+    transform: translateY(-8px) scale(1.02);
     box-shadow: var(--shadow-md);
-    border-color: var(--color-accent); /* Bordure accentuée */
+    border-color: var(--color-accent);
 }
 
 .news-image {
@@ -217,8 +217,8 @@ section { margin-bottom: 40px; }
     width: 100%;
     height: 180px;
     overflow: hidden;
-    background: var(--color-secondary); /* Fond si image absente */
-    transition: transform 0.4s ease; /* Pour zoom au survol */
+    background: var(--color-secondary);
+    transition: transform 0.4s ease;
 }
 
 .news-image img {
@@ -230,11 +230,10 @@ section { margin-bottom: 40px; }
 }
 
 .news-card:hover .news-image img {
-    transform: scale(1.1); /* Zoom subtil de l'image */
-    opacity: 0.9; /* Légère transparence */
+    transform: scale(1.1);
+    opacity: 0.9;
 }
 
-/* Overlay au survol */
 .news-image::after {
     content: '';
     position: absolute;
@@ -242,20 +241,19 @@ section { margin-bottom: 40px; }
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0); /* Transparent par défaut */
+    background: rgba(0, 0, 0, 0);
     transition: background 0.3s ease;
-    pointer-events: none; /* Ne bloque pas les clics */
+    pointer-events: none;
 }
 
 .news-card:hover .news-image::after {
-    background: rgba(0, 0, 0, 0.3); /* Overlay sombre au survol */
+    background: rgba(0, 0, 0, 0.3);
 }
 
-/* Placeholder si pas d'image */
 .news-image-placeholder {
     width: 100%;
     height: 180px;
-    background: linear-gradient(135deg, var(--color-secondary), color-mix(in srgb, var(--color-secondary) 80%, var(--color-primary))); /* Dégradé moderne */
+    background: linear-gradient(135deg, var(--color-secondary), color-mix(in srgb, var(--color-secondary) 80%, var(--color-primary)));
     display: flex;
     justify-content: center;
     align-items: center;
@@ -265,8 +263,8 @@ section { margin-bottom: 40px; }
 }
 
 .news-card:hover .news-image-placeholder {
-    background: linear-gradient(135deg, var(--color-accent), var(--color-primary)); /* Changement de couleur au survol */
-    transform: scale(1.05); /* Zoom léger */
+    background: linear-gradient(135deg, var(--color-accent), var(--color-primary));
+    transform: scale(1.05);
 }
 
 .news-content {
@@ -292,7 +290,7 @@ section { margin-bottom: 40px; }
 }
 
 .news-card:hover .news-content h3 {
-    color: var(--color-accent); /* Changement de couleur au survol */
+    color: var(--color-accent);
 }
 
 .news-date {
@@ -312,11 +310,11 @@ section { margin-bottom: 40px; }
 }
 
 .news-card:hover .news-date {
-    opacity: 1; /* Date plus visible */
+    opacity: 1;
 }
 
 .news-card:hover .news-date i {
-    transform: scale(1.2); /* Zoom icône calendrier */
+    transform: scale(1.2);
 }
 
 .news-desc {
@@ -333,7 +331,6 @@ section { margin-bottom: 40px; }
     transition: color 0.3s ease;
 }
 
-/* Effet de "Lire plus" simulé avec un dégradé */
 .news-desc::after {
     content: '';
     position: absolute;
@@ -348,7 +345,7 @@ section { margin-bottom: 40px; }
 }
 
 .news-card:hover .news-desc::after {
-    opacity: 0; /* Masquer le dégradé au survol */
+    opacity: 0;
 }
 
 /* Responsive */
@@ -374,13 +371,13 @@ section { margin-bottom: 40px; }
     }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 600px) {
     .news-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr; /* Forcer une seule colonne sur écrans plus petits */
         gap: 15px;
     }
     .news-image, .news-image-placeholder {
-        height: 120px;
+        height: 140px;
     }
     .news-content h3 {
         font-size: 1.1em;
@@ -388,7 +385,21 @@ section { margin-bottom: 40px; }
     .news-desc {
         font-size: 0.85em;
     }
-}/* --- Partenaires Styles --- */
+}
+
+@media (max-width: 400px) {
+    .news-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    .news-image, .news-image-placeholder {
+        height: 120px;
+    }
+    .news-content {
+        padding: 12px;
+    }
+}
+/* --- Partenaires Styles --- */
 #partners-container { padding-top: 10px; }
 .partner-category-title { font-family: var(--font-heading); color: var(--color-primary); font-size: 1.5em; font-weight: 700; margin: 35px 0 15px 0; padding-bottom: 5px; border-bottom: 2px solid var(--color-secondary); text-align: left; }
 #partners-container > .partner-category-title:first-of-type { margin-top: 0; }
