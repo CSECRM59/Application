@@ -813,9 +813,38 @@ footer { text-align: center; padding: 15px; background: var(--color-surface); co
      .event-date { font-size: 0.85em; }
      .event-details h4 { font-size: 1em;}
 }
+/* --- Footer --- */
+footer {
+    text-align: center;
+    padding: 15px;
+    background: var(--color-surface);
+    color: var(--color-text-muted);
+    font-size: 0.9em;
+    box-shadow: none;
+    border-top: 1px solid var(--color-border);
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.footer-content {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.update-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
 #update-button {
-    margin-left: 10px;
-    padding: 5px 10px;
+    padding: 6px 12px;
     background-color: var(--color-primary);
     color: var(--color-text-on-primary);
     border: none;
@@ -831,7 +860,7 @@ footer { text-align: center; padding: 15px; background: var(--color-surface); co
 
 #update-button:hover {
     background-color: color-mix(in srgb, var(--color-primary) 85%, black);
-    transform: rotate(20deg); /* Petite rotation pour effet dynamique */
+    transform: rotate(20deg); /* Effet dynamique */
 }
 
 #update-button i {
@@ -840,4 +869,33 @@ footer { text-align: center; padding: 15px; background: var(--color-surface); co
 
 body.theme-dark #update-button {
     color: var(--color-text-on-primary);
+}
+
+.last-update {
+    font-size: 0.85em;
+    color: var(--color-text-muted);
+    margin: 0;
+}
+
+.last-update span {
+    font-weight: bold;
+    color: var(--color-primary);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .footer-content {
+        gap: 8px;
+    }
+    .update-section {
+        flex-direction: column;
+        gap: 8px;
+    }
+    #update-button {
+        font-size: 0.85em;
+        padding: 5px 10px;
+    }
+    .last-update {
+        font-size: 0.8em;
+    }
 }
