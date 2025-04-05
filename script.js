@@ -480,6 +480,92 @@ function displayMembers(membersData) {
 // --- UTILITAIRE DATE ---
 function parseDate(dS) { if (!dS || typeof dS !== 'string') return null; dS = dS.trim(); let p, d, m, y, dt; p = dS.match(/^(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})$/); if (p) { d = parseInt(p[1], 10); m = parseInt(p[2], 10) - 1; y = parseInt(p[3], 10); if (y > 1900 && y < 2100 && m >= 0 && m < 12 && d > 0 && d <= 31) { dt = new Date(Date.UTC(y, m, d)); if (dt.getUTCFullYear() === y && dt.getUTCMonth() === m && dt.getUTCDate() === d) return dt; } } p = dS.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/); if (p) { y = parseInt(p[1], 10); m = parseInt(p[2], 10) - 1; d = parseInt(p[3], 10); if (y > 1900 && y < 2100 && m >= 0 && m < 12 && d > 0 && d <= 31) { dt = new Date(Date.UTC(y, m, d)); if (dt.getUTCFullYear() === y && dt.getUTCMonth() === m && dt.getUTCDate() === d) return dt; } } p = dS.match(/^(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})$/); if (p) { m = parseInt(p[1], 10) - 1; d = parseInt(p[2], 10); y = parseInt(p[3], 10); if (y > 1900 && y < 2100 && m >= 0 && m < 12 && d > 0 && d <= 31) { dt = new Date(Date.UTC(y, m, d)); if (dt.getUTCFullYear() === y && dt.getUTCMonth() === m && dt.getUTCDate() === d) return dt; } } try { const ts = Date.parse(dS); if (!isNaN(ts)) return new Date(ts); } catch(e) {} return null; }
 
+// Gestion de la date de mise à jour
+function updateLastUpdateDate() {
+    const lastUpdateElement = document.getElementById('last-update');
+    if (!lastUpdateElement) return;
+
+    const now = new Date();
+    const lastUpdate = now.toLocaleString('fr-FR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+
+    // Stocker la date dans localStorage
+    try {
+        localStorage.setItem('last-update-date', lastUpdate);
+    } catch (e) {
+        console.warn('localStorage indisponible pour stocker la date:', e);
+    }
+
+    // Mettre à jour l'affichage
+    lastUpdateElement.querySelector('span').textContent = lastUpdate;
+}
+
+function loadLastUpdateDate() {
+    const lastUpdateElement = document.getElementById('last-update');
+    if (!lastUpdateElement) return;
+
+    let lastUpdate;
+    try {
+        lastUpdate = localStorage.getItem('last-update-date');
+    } catch (e) {
+        console.warn('localStorage indisponible pour lire la date:', e);
+    }
+
+    if (lastUpdate) {
+        lastUpdateElement.querySelector('span').textContent = lastUpdate;
+    } else {
+        lastUpdateElement.querySelector('span').textContent = 'Jamais';
+    }
+}
+
+// Gestion du bouton de mise à jour
+document.addEventListener('DOMContentLoaded', () => {
+    // Charger la date au démarrage
+    loadLastUpdateDate();
+
+    const updateButton = document.getElementById('update-button');
+    if (updateButton) {
+        updateButton.addEventListener('click', () => {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistration().then((registration) => {
+                    if (registration && registration.waiting) {
+                        registration.waiting.postMessage({ type: 'CHECK_UPDATE' });
+                    }
+
+                    registration.update().then(() => {
+                        caches.keys().then((cacheNames) => {
+                            return Promise.all(
+                                cacheNames.map((name) => caches.delete(name))
+                            );
+                        }).then(() => {
+                            // Mettre à jour la date après la mise à jour
+                            updateLastUpdateDate();
+                            window.location.reload(true);
+                        });
+                    }).catch((err) => {
+                        console.error('Erreur lors de la vérification de mise à jour:', err);
+                        alert('Impossible de vérifier les mises à jour. Essayez de vider le cache manuellement.');
+                    });
+                });
+            } else {
+                alert('Les mises à jour ne sont pas disponibles sur cet appareil.');
+            }
+        });
+    }
+
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            updateLastUpdateDate();
+            window.location.reload();
+        });
+    }
+});
+
 // --- INITIALISATION AU CHARGEMENT DE LA PAGE ---
 document.addEventListener('DOMContentLoaded', () => {
     loadSavedTheme(); closeMenu(); loadPage('actualites', false);
