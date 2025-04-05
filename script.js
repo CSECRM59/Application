@@ -258,18 +258,18 @@ function displayNews(d) {
     const c = document.getElementById('news-container');
     if (!c) return;
     c.innerHTML = '';
-    c.classList.add('news-grid'); // Ajout classe pour grille
+    c.classList.add('news-grid');
 
     const v = (d || [])
         .filter(i => i && Object.values(i).some(v => v && String(v).trim()))
-        .sort((a, b) => (parseDate(b.Date || b.date)?.getTime() || 0) - (parseDate(a.Date || a.date)?.getTime() || 0));
+        .sort((a, b) => (parseDate(b.Date || b.date)?.getTime() || 0) - (parseDate(a.Date || b.date)?.getTime() || 0));
 
     if (v.length === 0) {
         c.innerHTML = '<p>Aucune actualité pour le moment.</p>';
         return;
     }
 
-    v.forEach(i => {
+    v.forEach((i, index) => {
         const t = i.Titre || i.titre || 'Actualité sans titre';
         const dt = i.Date || i.date || '';
         const ds = i.Description || i.description || 'Aucune description disponible.';
@@ -277,6 +277,7 @@ function displayNews(d) {
 
         const el = document.createElement('div');
         el.className = 'news-card';
+        el.style.setProperty('--order', index + 1); // Ajout dynamique de l'ordre
 
         const imgHtml = img 
             ? `<div class="news-image"><img src="${img}" alt="${t}" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" loading="lazy"><p class="error-message image-error" style="display:none;">Image indisponible</p></div>` 
