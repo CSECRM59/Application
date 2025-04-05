@@ -524,7 +524,48 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+// Gestion du bouton de mise à jour
+document.addEventListener('DOMContentLoaded', () => {
+    const updateButton = document.getElementById('update-button');
+    if (updateButton) {
+        updateButton.addEventListener('click', () => {
+            if ('serviceWorker' in navigator) {
+                // Envoyer un message au Service Worker pour vérifier les mises à jour
+                navigator.serviceWorker.getRegistration().then((registration) => {
+                    if (registration && registration.waiting) {
+                        // Une mise à jour est en attente
+                        registration.waiting.postMessage({ type: 'CHECK_UPDATE' });
+                    }
 
+                    // Forcer la vérification des nouveaux fichiers
+                    registration.update().then(() => {
+                        // Recharger la page pour appliquer les changements
+                        caches.keys().then((cacheNames) => {
+                            return Promise.all(
+                                cacheNames.map((name) => caches.delete(name))
+                            );
+                        }).then(() => {
+                            window.location.reload(true); // Rechargement forcé
+                        });
+                    }).catch((err) => {
+                        console.error('Erreur lors de la vérification de mise à jour:', err);
+                        alert('Impossible de vérifier les mises à jour. Essayez de vider le cache manuellement.');
+                    });
+                });
+            } else {
+                alert('Les mises à jour ne sont pas disponibles sur cet appareil.');
+            }
+        });
+    }
+
+    // Écouter les mises à jour du Service Worker
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            // Quand le Service Worker change, recharger la page
+            window.location.reload();
+        });
+    }
+});
 // Cacher le bouton si l'application est déjà installée
 window.addEventListener('appinstalled', () => {
     console.log('PWA a été installée');
