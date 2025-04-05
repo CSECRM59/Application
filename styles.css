@@ -838,8 +838,6 @@ footer {
 .update-section {
     display: flex;
     align-items: center;
-    gap: 15px;
-    flex-wrap: wrap;
     justify-content: center;
 }
 
@@ -871,31 +869,13 @@ body.theme-dark #update-button {
     color: var(--color-text-on-primary);
 }
 
-.last-update {
-    font-size: 0.85em;
-    color: var(--color-text-muted);
-    margin: 0;
-}
-
-.last-update span {
-    font-weight: bold;
-    color: var(--color-primary);
-}
-
 /* Responsive */
 @media (max-width: 480px) {
     .footer-content {
         gap: 8px;
     }
-    .update-section {
-        flex-direction: column;
-        gap: 8px;
-    }
     #update-button {
         font-size: 0.85em;
         padding: 5px 10px;
-    }
-    .last-update {
-        font-size: 0.8em;
     }
 }
