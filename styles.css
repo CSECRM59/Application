@@ -800,20 +800,21 @@ a.partner-card-link:hover {
 
 .form-group {
     position: relative;
-    margin-bottom: 25px;
+    margin-bottom: 30px;
 }
 
 label {
-    display: block;
     font-weight: 700;
     font-size: 0.95rem;
-    color: var(--color-text);
+    color: var(--color-text-muted);
     position: absolute;
     top: 50%;
     left: 15px;
     transform: translateY(-50%);
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     pointer-events: none;
+    padding: 0 5px;
+    background: transparent;
 }
 
 label.required:after {
@@ -834,18 +835,31 @@ textarea {
     border-radius: var(--border-radius);
     font-size: 1rem;
     font-family: var(--font-body);
-    background-color: var(--color-background);
+    background-color: #ffffff; /* Fond blanc pour plus de clarté */
     color: var(--color-text);
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
+/* Gestion des labels flottants */
 input:focus + label,
 input:not(:placeholder-shown) + label,
 textarea:focus + label,
 textarea:not(:placeholder-shown) + label,
-select:focus + label {
-    top: -10px;
-    font-size: 0.8rem;
+select:focus + label,
+select:not([value=""]) + label {
+    top: -8px;
+    font-size: 0.75rem;
+    color: var(--color-primary);
+    background: var(--color-background);
+    padding: 0 5px;
+}
+
+/* Gestion spécifique pour <select> et <input type="date"> */
+input[type="date"]:not([value=""]) + label,
+select:not([value=""]) + label {
+    top: -8px;
+    font-size: 0.75rem;
     color: var(--color-primary);
     background: var(--color-background);
     padding: 0 5px;
@@ -857,6 +871,36 @@ select:focus {
     border-color: var(--color-primary);
     box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 15%, transparent);
     outline: none;
+}
+
+/* Icônes dans les champs */
+.form-group {
+    position: relative;
+}
+
+.form-group input[type="date"],
+.form-group input[type="time"] {
+    padding-right: 40px; /* Espace pour l'icône */
+}
+
+.form-group::after {
+    content: '';
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    color: var(--color-text-muted);
+    pointer-events: none;
+}
+
+.form-group input[type="date"]::after {
+    content: '\f073'; /* Icône de calendrier */
+}
+
+.form-group input[type="time"]::after {
+    content: '\f017'; /* Icône d'horloge */
 }
 
 textarea {
@@ -903,7 +947,6 @@ button[type="submit"]:active:after {
     width: 300px;
     height: 300px;
 }
-
 /* --- Footer --- */
 footer {
     text-align: center;
