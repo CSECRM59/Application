@@ -254,7 +254,7 @@ function loadContactFormPage() {
 function loadPartnersPage() {
   const mainContent = document.getElementById('main-content');
   mainContent.innerHTML = `<section id="partenaires"><h2>Nos Partenaires</h2><div id="partners-container"></div></section>`;
-  db.collection('partners').orderBy('name', 'asc').onSnapshot(snapshot => {
+  db.collection('partenaires').orderBy('name', 'asc').onSnapshot(snapshot => {
     const container = document.getElementById('partners-container');
     container.innerHTML = '';
     if (snapshot.empty) {
@@ -266,10 +266,10 @@ function loadPartnersPage() {
         const partnerCard = document.createElement('div');
         partnerCard.classList.add('partner-card');
         partnerCard.innerHTML = `
-          ${partner.logo ? `<img src="${partner.logo}" alt="${partner.name}" class="partner-logo">`
+          ${partner.logo ? `<img src="${partenaires.Logo}" alt="${partenaires.name}" class="partner-logo">`
                          : `<div class="partner-logo-placeholder"><i class="fas fa-image"></i></div>`}
-          <h4>${partner.name}</h4>
-          <p>${partner.description || ''}</p>
+          <h4>${partenaires.name}</h4>
+          <p>${partenaires.description || ''}</p>
         `;
         container.appendChild(partnerCard);
       });
