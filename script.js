@@ -283,7 +283,7 @@ function loadPartnersPage() {
 // --- SECTION ACCÈSCE ---
 function loadAccescePage() {
   const mainContent = document.getElementById('main-content');
-  mainContent.innerHTML = `<section id="accesce"><h2>AccèsCE - Vos Avantages2</h2><div id="accesce-container"></div></section>`;
+  mainContent.innerHTML = `<section id="accesce"><h2>AccèsCE - Vos Avantages</h2><div id="accesce-container"></div></section>`;
   db.collection('accesce').orderBy('title', 'asc').onSnapshot(snapshot => {
     const container = document.getElementById('accesce-container');
     container.innerHTML = '';
