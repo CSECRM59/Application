@@ -296,7 +296,7 @@ function loadAccescePage() {
         const advantageCard = document.createElement('div');
         advantageCard.classList.add('actu');
         advantageCard.innerHTML = `
-          <h3>${item.title}</h3>
+          //<h3>${item.title}</h3>
           <p>${item.description}</p>
         `;
         container.appendChild(advantageCard);
