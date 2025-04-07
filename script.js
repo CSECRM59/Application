@@ -373,7 +373,28 @@ function toggleMenu() {
   sidebar.classList.toggle('active');
   hamburger.classList.toggle('active');
 }
+let deferredPrompt;
 
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  // Afficher le bouton
+  const installBtn = document.getElementById('install-button');
+  installBtn.style.display = 'block';
+});
+
+document.getElementById('install-button').addEventListener('click', async () => {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      console.log('L’utilisateur a installé l’app');
+    } else {
+      console.log('L’utilisateur a refusé l’installation');
+    }
+    deferredPrompt = null;
+  }
+});
 // Bouton de mise à jour (rechargement de la page)
 document.getElementById('update-button').addEventListener('click', () => { location.reload(); });
 
