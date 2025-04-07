@@ -296,7 +296,6 @@ function loadAccescePage() {
         const advantageCard = document.createElement('div');
         advantageCard.classList.add('actu');
         advantageCard.innerHTML = `
-          //<h3>${item.title}</h3>
           <p>${item.description}</p>
         `;
         container.appendChild(advantageCard);
@@ -324,7 +323,7 @@ function loadActionLogementPage() {
         const infoCard = document.createElement('div');
         infoCard.classList.add('actu');
         infoCard.innerHTML = `
-          <h3>${info.title}</h3>
+          
           <p>${info.content}</p>
           <small>${info.date}</small>
         `;
