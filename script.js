@@ -396,7 +396,26 @@ document.getElementById('install-button').addEventListener('click', async () => 
   }
 });
 // Bouton de mise à jour (rechargement de la page)
-document.getElementById('update-button').addEventListener('click', () => { location.reload(); });
+document.getElementById('update-button').addEventListener('click', async () => {
+  // Supprimer tous les caches commençant par "cse-cache"
+  if ('caches' in window) {
+    const cacheNames = await caches.keys();
+    for (const cacheName of cacheNames) {
+      if (cacheName.startsWith('cse-cache')) {
+        await caches.delete(cacheName);
+      }
+    }
+  }
+
+  // Si un nouveau service worker attend, lui envoyer le message pour qu'il prenne le relais
+  const registration = await navigator.serviceWorker.getRegistration();
+  if (registration && registration.waiting) {
+    registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+  }
+
+  // Recharger la page pour appliquer les nouvelles ressources
+  location.reload();
+});
 
 // --- CHARGEMENT INITIAL DE LA PAGE ---
 window.addEventListener('DOMContentLoaded', () => { loadPage('actualites', false); });
