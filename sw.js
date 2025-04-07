@@ -1,5 +1,5 @@
 // Nom du cache avec une version pour forcer la mise à jour si besoin
-const CACHE_NAME = 'cse-cache-v4'; // Changez "v2" à chaque mise à jour importante
+const CACHE_NAME = 'cse-cache-v5'; // Changez "v2" à chaque mise à jour importante
 
 // Installation : Mise en cache des fichiers
 self.addEventListener('install', (event) => {
