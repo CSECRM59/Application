@@ -145,100 +145,107 @@ function loadCoffeeFormPage() {
   const mainContent = document.getElementById('main-content');
   mainContent.innerHTML = `
     <section id="formulaire-cafe">
-  <div class="form-container">
-    <h2>Signalement Machine à Café</h2>
-    <form id="coffeeForm">
-      <div class="form-group">
-        <label for="coffee-email" class="required">Email</label>
-        <input type="email" id="coffee-email" required>
+      <div class="form-container">
+        <h2>Signalement Machine à Café</h2>
+        <form id="coffeeForm">
+          <div class="form-group">
+            <label for="coffee-email" class="required">Email</label>
+            <input type="email" id="coffee-email" required>
+          </div>
+          <div class="form-group">
+            <label for="coffee-name" class="required">Nom & Prénom</label>
+            <input type="text" id="coffee-name" required>
+          </div>
+          <div class="form-group">
+            <label for="coffee-operation" class="required">Opération</label>
+            <input type="text" id="coffee-operation" required>
+          </div>
+          <div class="form-group">
+            <label for="coffee-machine" class="required">Machine</label>
+            <select id="coffee-machine" required>
+              <option value="">Sélectionnez la machine</option>
+              <option value="machine1">Machine 1</option>
+              <option value="machine2">Machine 2</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="coffee-problem" class="required">Problème</label>
+            <select id="coffee-problem" required>
+              <option value="">Sélectionnez le problème</option>
+              <option value="panne">Panne</option>
+              <option value="erreur-paiement">Erreur de paiement</option>
+              <option value="autre">Autre</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="coffee-date" class="required">Date du problème</label>
+            <input type="date" id="coffee-date" required>
+          </div>
+          <div class="form-group">
+            <label for="coffee-time" class="required">Heure du problème</label>
+            <input type="time" id="coffee-time" required>
+          </div>
+          <div class="form-group" id="payment-method-group" style="display: none;">
+            <label for="coffee-payment">Moyen de paiement (en cas d'échec)</label>
+            <select id="coffee-payment">
+              <option value="">Sélectionnez le moyen de paiement</option>
+              <option value="carte">Carte bancaire</option>
+              <option value="paypal">PayPal</option>
+              <option value="autre">Autre</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="coffee-comment">Commentaire</label>
+            <textarea id="coffee-comment"></textarea>
+          </div>
+          <button type="submit">Envoyer</button>
+        </form>
+        <div id="coffee-status" class="form-status-sending" style="display: none;">Envoi...</div>
+        <div id="coffee-confirmation" class="confirmation" style="display: none;">Merci ! Votre signalement a été envoyé.</div>
       </div>
-      <div class="form-group">
-        <label for="coffee-name" class="required">Nom & Prénom</label>
-        <input type="text" id="coffee-name" required>
-      </div>
-      <div class="form-group">
-        <label for="coffee-operation" class="required">Opération</label>
-        <input type="text" id="coffee-operation" required>
-      </div>
-      <div class="form-group">
-        <label for="coffee-machine" class="required">Machine</label>
-        <!-- Remplace le champ texte par un menu déroulant -->
-        <select id="coffee-machine" required>
-          <option value="">Sélectionnez la machine</option>
-          <option value="machine1">Machine 1</option>
-          <option value="machine2">Machine 2</option>
-          <!-- Ajouter d'autres options selon besoin -->
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="coffee-problem" class="required">Problème</label>
-        <!-- Menu déroulant pour choisir le type de problème -->
-        <select id="coffee-problem" required>
-          <option value="">Sélectionnez le problème</option>
-          <option value="panne">Panne</option>
-          <option value="erreur-paiement">Erreur de paiement</option>
-          <option value="autre">Autre</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="coffee-date" class="required">Date du problème</label>
-        <input type="date" id="coffee-date" required>
-      </div>
-      <div class="form-group">
-        <label for="coffee-time" class="required">Heure du problème</label>
-        <input type="time" id="coffee-time" required>
-      </div>
-      <!-- Ce champ sera affiché seulement si l'erreur de paiement est sélectionnée -->
-      <div class="form-group" id="payment-method-group" style="display: none;">
-        <label for="coffee-payment">Moyen de paiement (en cas d'échec)</label>
-        <select id="coffee-payment">
-          <option value="">Sélectionnez le moyen de paiement</option>
-          <option value="carte">Carte bancaire</option>
-          <option value="paypal">PayPal</option>
-          <option value="autre">Autre</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="coffee-comment">Commentaire</label>
-        <textarea id="coffee-comment"></textarea>
-      </div>
-      <button type="submit">Envoyer</button>
-    </form>
-    <div id="coffee-status" class="form-status-sending" style="display: none;">Envoi...</div>
-    <div id="coffee-confirmation" class="confirmation" style="display: none;">Merci ! Votre signalement a été envoyé.</div>
-  </div>
-</section>
+    </section>
+  `;
 
-document.getElementById('coffeeForm').addEventListener('submit', e => {
-  e.preventDefault();
-  // Récupération des valeurs du formulaire
-  const data = {
-    email: document.getElementById('coffee-email').value,
-    name: document.getElementById('coffee-name').value,
-    operation: document.getElementById('coffee-operation').value,
-    machine: document.getElementById('coffee-machine').value,
-    problem: document.getElementById('coffee-problem').value,
-    date: document.getElementById('coffee-date').value,
-    time: document.getElementById('coffee-time').value,
-    paymentMethod: document.getElementById('coffee-payment').value,
-    comment: document.getElementById('coffee-comment').value,
-    timestamp: new Date().toISOString()
-  };
+  // Afficher ou masquer le champ moyen de paiement en fonction du problème sélectionné
+  document.getElementById('coffee-problem').addEventListener('change', (e) => {
+    const paymentGroup = document.getElementById('payment-method-group');
+    if (e.target.value === 'erreur-paiement') {
+      paymentGroup.style.display = 'block';
+    } else {
+      paymentGroup.style.display = 'none';
+    }
+  });
 
-  document.getElementById('coffee-status').style.display = 'block';
-  db.collection('coffee').add(data)
-    .then(() => {
-      document.getElementById('coffee-status').style.display = 'none';
-      document.getElementById('coffee-confirmation').style.display = 'block';
-      document.getElementById('coffeeForm').reset();
-      // Masquer le champ paiement après remise à zéro
-      document.getElementById('payment-method-group').style.display = 'none';
-    })
-    .catch(error => {
-      console.error("Erreur lors de l'envoi du formulaire café:", error);
-      document.getElementById('coffee-status').style.display = 'none';
-    });
-});
+  // Gérer la soumission du formulaire
+  document.getElementById('coffeeForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const data = {
+      email: document.getElementById('coffee-email').value,
+      name: document.getElementById('coffee-name').value,
+      operation: document.getElementById('coffee-operation').value,
+      machine: document.getElementById('coffee-machine').value,
+      problem: document.getElementById('coffee-problem').value,
+      date: document.getElementById('coffee-date').value,
+      time: document.getElementById('coffee-time').value,
+      paymentMethod: document.getElementById('coffee-payment').value,
+      comment: document.getElementById('coffee-comment').value,
+      timestamp: new Date().toISOString()
+    };
+
+    document.getElementById('coffee-status').style.display = 'block';
+    db.collection('coffee').add(data)
+      .then(() => {
+        document.getElementById('coffee-status').style.display = 'none';
+        document.getElementById('coffee-confirmation').style.display = 'block';
+        document.getElementById('coffeeForm').reset();
+        document.getElementById('payment-method-group').style.display = 'none';
+      })
+      .catch(error => {
+        console.error("Erreur lors de l'envoi du formulaire café:", error);
+        document.getElementById('coffee-status').style.display = 'none';
+      });
+  });
+}
 
 
 // --- SECTION FORMULAIRE CONTACT ---
