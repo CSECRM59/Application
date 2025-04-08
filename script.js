@@ -164,34 +164,42 @@ function loadCoffeeFormPage() {
             <label for="coffee-machine" class="required">Machine</label>
             <select id="coffee-machine" required>
               <option value="">Sélectionnez la machine</option>
-              <option value="machine1">Machine 1</option>
-              <option value="machine2">Machine 2</option>
+                <option value="DEV125543 (E-1)">DEV125543 (E-1)</option>
+                <option value="BBRD0152 (E-1)">BBRD0152 (E-1)</option>
+                <option value="DEV16567 (E-1)">DEV16567 (E-1)</option>
+                <option value="BBRDL0196 (E-1)">BBRDL0196 (E-1)</option>
+                <option value="DBIC799 (E0)">DBIC799 (E0)</option>
+                <option value="B72ES1979 (E1)">B72ES1979 (E1)</option>
+                <option value="B72ES1903 (E2)">B72ES1903 (E2)</option>
+                <option value="DEV95042 (E2)">DEV95042 (E2)</option>
+                <option value="B72ES1977 (E3)">B72ES1977 (E3)</option>
             </select>
           </div>
           <div class="form-group">
             <label for="coffee-problem" class="required">Problème</label>
             <select id="coffee-problem" required>
               <option value="">Sélectionnez le problème</option>
-              <option value="panne">Panne</option>
-              <option value="erreur-paiement">Erreur de paiement</option>
-              <option value="autre">Autre</option>
+                <option value="Pas de gobelet">Pas de gobelet</option>
+                <option value="Gobelet vide">Gobelet vide</option>
+                <option value="Produit non conforme à la demande">Produit non conforme à la demande</option>
+                <option value="Problème de rechargement">Problème de rechargement</option>
             </select>
           </div>
           <div class="form-group">
             <label for="coffee-date" class="required">Date du problème</label>
-            <input type="date" id="coffee-date" required>
+            <input type="date" id="coffee-date">
           </div>
           <div class="form-group">
             <label for="coffee-time" class="required">Heure du problème</label>
-            <input type="time" id="coffee-time" required>
+            <input type="time" id="coffee-time">
           </div>
           <div class="form-group" id="payment-method-group" style="display: none;">
             <label for="coffee-payment">Moyen de paiement (en cas d'échec)</label>
             <select id="coffee-payment">
               <option value="">Sélectionnez le moyen de paiement</option>
-              <option value="carte">Carte bancaire</option>
-              <option value="paypal">PayPal</option>
-              <option value="autre">Autre</option>
+                <option value="Pluxee">Pluxee</option>
+                <option value="Espece">Espèce</option>
+                <option value="Badge">Badge</option>
             </select>
           </div>
           <div class="form-group">
@@ -209,7 +217,7 @@ function loadCoffeeFormPage() {
   // Afficher ou masquer le champ moyen de paiement en fonction du problème sélectionné
   document.getElementById('coffee-problem').addEventListener('change', (e) => {
     const paymentGroup = document.getElementById('payment-method-group');
-    if (e.target.value === 'erreur-paiement') {
+    if (e.target.value === 'Problème de rechargement') {
       paymentGroup.style.display = 'block';
     } else {
       paymentGroup.style.display = 'none';
