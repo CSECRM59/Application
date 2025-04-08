@@ -253,32 +253,64 @@ function loadContactFormPage() {
 // --- SECTION PARTENAIRES ---
 function loadPartnersPage() {
   const mainContent = document.getElementById('main-content');
-  mainContent.innerHTML = `<section id="partenaires"><h2>Nos Partenaires</h2><div id="partners-container"></div></section>`;
+  mainContent.innerHTML = `
+    <section id="partenaires">
+      <h2>Nos Partenaires</h2>
+      <div id="partners-container"></div>
+    </section>`;
+    
   db.collection('partenaires').orderBy('Categorie', 'asc').onSnapshot(snapshot => {
     const container = document.getElementById('partners-container');
     container.innerHTML = '';
+    
     if (snapshot.empty) {
       container.innerHTML = '<p>Aucun partenaire pour le moment.</p>';
     } else {
+      // Groupement des partenaires par catégorie
+      const groups = {};
       snapshot.forEach(doc => {
         const partner = doc.data();
         partner.id = doc.id;
-        const partnerCard = document.createElement('div');
-        partnerCard.classList.add('partner-card');
-        partnerCard.innerHTML = `
-          ${partner.logo ? `<img src="${partner.Logo}" alt="${partner.Nom}" class="partner-logo">`
-                         : `<div class="partner-logo-placeholder"><i class="fas fa-image"></i></div>`}
-          <h4>${partner.Nom}</h4>
-          <p>${partner.Description || ''}</p>
-        `;
-        container.appendChild(partnerCard);
+        // On suppose que le champ de catégorie s'appelle "Categorie" (ou tu peux prévoir une valeur par défaut)
+        const category = partner.Categorie || 'Autres';
+        if (!groups[category]) {
+          groups[category] = [];
+        }
+        groups[category].push(partner);
       });
+      
+      // Affichage des groupes avec titre de catégorie et grille de partenaires
+      for (const category in groups) {
+        // Création et ajout du titre de la catégorie
+        const categoryTitle = document.createElement('h3');
+        categoryTitle.textContent = category;
+        container.appendChild(categoryTitle);
+        
+        // Création du conteneur de la grille
+        const grid = document.createElement('div');
+        grid.classList.add('partner-category-grid'); // Assure-toi que cette classe est définie en CSS pour la grille
+        
+        // Pour chaque partenaire du groupe, on crée une "card"
+        groups[category].forEach(partner => {
+          const partnerCard = document.createElement('div');
+          partnerCard.classList.add('partner-card');
+          partnerCard.innerHTML = `
+            ${partner.logo ? `<img src="${partner.Logo}" alt="${partner.Nom}" class="partner-logo">`
+                           : `<div class="partner-logo-placeholder"><i class="fas fa-image"></i></div>`}
+            <h4>${partner.Nom}</h4>
+            <p>${partner.Description || ''}</p>
+          `;
+          grid.appendChild(partnerCard);
+        });
+        container.appendChild(grid);
+      }
     }
   }, error => {
     console.error("Erreur de chargement des partenaires:", error);
     mainContent.innerHTML = '<p class="error-message">Erreur de chargement des partenaires.</p>';
   });
 }
+
 
 // --- SECTION ACCÈSCE ---
 function loadAccescePage() {
