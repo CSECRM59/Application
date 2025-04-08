@@ -158,7 +158,18 @@ function loadCoffeeFormPage() {
           </div>
           <div class="form-group">
             <label for="coffee-operation" class="required">Opération</label>
-            <input type="text" id="coffee-operation" required>
+            <select id="coffee-operation" required>
+              <option value="">Sélectionnez la machine</option>
+                <option value="Support">Fonction support</option>
+                <option value="AG2R">AG2R</option>
+                <option value="CNAV">CNAV</option>
+                <option value="UCPA">UCPA</option>
+                <option value="IRP Auto">IRP Auto</option>
+                <option value="Abeille">Abeille</option>
+                <option value="EHS">EHS</option>
+                <option value="DCP">Engie DCP</option>
+                <option value="Enedis">Enedis</option>
+            </select>
           </div>
           <div class="form-group">
             <label for="coffee-machine" class="required">Machine</label>
@@ -185,12 +196,13 @@ function loadCoffeeFormPage() {
                 <option value="Problème de rechargement">Problème de rechargement</option>
             </select>
           </div>
+            <p class="note">S’il s'agit d'un problème de rechargement, merci d'indiquer la date, heure et moyen de paiement.</p>
           <div class="form-group">
-            <label for="coffee-date" class="required">Date du problème</label>
+            <label for="coffee-date">Date du problème</label>
             <input type="date" id="coffee-date">
           </div>
           <div class="form-group">
-            <label for="coffee-time" class="required">Heure du problème</label>
+            <label for="coffee-time">Heure du problème</label>
             <input type="time" id="coffee-time">
           </div>
           <div class="form-group" id="payment-method-group" style="display: none;">
