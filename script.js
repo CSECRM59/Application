@@ -239,7 +239,7 @@ document.getElementById('coffeeForm').addEventListener('submit', e => {
       document.getElementById('coffee-status').style.display = 'none';
     });
 });
-}
+
 
 // --- SECTION FORMULAIRE CONTACT ---
 function loadContactFormPage() {
