@@ -750,12 +750,12 @@ button.inline-link-button:hover { color: var(--accent-couleur-2); }
 /* --- FOOTER --- */
 footer {
   text-align: center;
-  padding: 1rem 1.5rem;
+  padding: 0.8rem 1.5rem;
   background: transparent; /* Pas de fond distinct */
   color: var(--encre-secondaire);
-  font-size: 0.9em;
+  font-size: 0.85em;
   border-top: 1px solid var(--bordure-crayon);
-  margin-top: 3rem; /* Espace avant le footer */
+  margin-top: 2.5rem; /* Espace avant le footer */
   position: relative; /* Ou fixed si besoin */
   bottom: 0;
   width: 100%;
@@ -767,19 +767,19 @@ footer {
   display: flex;
   flex-direction: column; /* Empile les éléments */
   align-items: center;
-  gap: 0.8rem;
+  gap: 0.5rem;
 }
 
 #update-button { /* Style hérité de .btn .btn-secondary */
-    margin-top: 0.5rem;
-    padding: 0.5rem 1rem; /* Plus petit */
-    font-size: 0.9rem;
+    margin-top: 0rem;
+    padding: 0.4rem 0.9rem; /* Plus petit */
+    font-size: 0.85rem;
 }
 #update-button:hover {
      transform: rotate(5deg); /* Légère rotation au survol */
 }
 #update-button i {
-    margin-right: 5px; /* Espace icône/texte */
+    margin-right: 4px; /* Espace icône/texte */
     transition: transform 0.3s ease;
 }
 #update-button:hover i {
@@ -963,15 +963,18 @@ footer {
 
   /* --- Footer --- */
   footer {
-    padding: 0.8rem 1rem;
-    margin-top: 2rem; /* Moins d'espace avant footer */
+    padding: 0.6rem 1rem;
+    margin-top: 1.5rem; /* Moins d'espace avant footer */
   }
+  .footer-content {
+        gap: 0.3rem; /* <<< Gap mobile très réduit */
+    }
   .footer-content p {
     font-size: 0.8em; /* Texte copyright plus petit */
   }
   #update-button {
-    font-size: 0.8em; /* Bouton màj plus petit */
-    padding: 0.4rem 0.8rem;
+    font-size: 0.75em; /* Bouton màj plus petit */
+    padding: 0.3rem 0.7rem;
   }
 }
 @media (max-width: 400px) {
@@ -1130,14 +1133,17 @@ footer {
 
   /* --- Footer --- */
   footer {
-    padding: 0.8rem 1rem;
-    margin-top: 2rem; /* Moins d'espace avant footer */
+    padding: 0.6rem 1rem;
+    margin-top: 1.5rem; /* Moins d'espace avant footer */
   }
   .footer-content p {
-    font-size: 0.8em; /* Texte copyright plus petit */
+    font-size: 0.75em; /* Texte copyright plus petit */
   }
+  .footer-content {
+        gap: 0.3rem; /* <<< Gap mobile très réduit */
+    }
   #update-button {
-    font-size: 0.8em; /* Bouton màj plus petit */
-    padding: 0.4rem 0.8rem;
+    font-size: 0.75em; /* Bouton màj plus petit */
+    padding: 0.3rem 0.7rem;
   }
 }
