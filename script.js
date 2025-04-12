@@ -13,6 +13,36 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
+// --- RÉFÉRENCE AU DOCUMENT ANALYTICS ---
+const analyticsRef = db.collection('analytics').doc('globalCounts');
+
+// --- FONCTION POUR INCRÉMENTER UN COMPTEUR ANALYTICS ---
+//     (Pour éviter la duplication de code)
+function incrementAnalyticsCounter(fieldName) {
+    const updateData = {};
+    // Utilise FieldValue.increment pour une mise à jour atomique (sécurisée en cas d'accès concurrents)
+    updateData[fieldName] = firebase.firestore.FieldValue.increment(1);
+    // Met aussi à jour le timestamp correspondant (le nom est construit dynamiquement)
+    updateData[`last${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}Timestamp`] = firebase.firestore.FieldValue.serverTimestamp();
+
+    analyticsRef.update(updateData)
+    .catch((error) => {
+        // Gère le cas où le document n'existe pas encore (bien qu'on l'ait créé manuellement)
+        if (error.code === 'not-found') {
+            console.warn("Document analytics/globalCounts non trouvé. Tentative de création...");
+            // Crée le document avec le compteur initialisé à 1 et les autres à 0
+            const initialData = { totalViews: 0, totalInstalls: 0 };
+            initialData[fieldName] = 1; // Met le compteur actuel à 1
+            initialData[`last${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}Timestamp`] = firebase.firestore.FieldValue.serverTimestamp();
+            analyticsRef.set(initialData, { merge: true }) // Merge au cas où
+                       .catch(err => console.error("Erreur lors de la création du document analytics:", err));
+        } else {
+            console.error(`Erreur lors de la mise à jour du compteur ${fieldName}:`, error);
+        }
+    });
+}
+
+
 // --- FONCTION UTILITAIRE POUR ROTATION ALÉATOIRE ---
 function applyRandomRotation(selector) {
     // Applique une rotation aléatoire aux éléments correspondants
@@ -833,6 +863,7 @@ if(installButton) {
 
 window.addEventListener('appinstalled', () => {
   console.log('PWA installée');
+     incrementAnalyticsCounter('totalInstalls');
   // Cacher le bouton d'installation si l'application est installée
   if(installButton) installButton.style.display = 'none';
   deferredPrompt = null;
@@ -872,6 +903,7 @@ if (updateButton) {
 // --- CHARGEMENT INITIAL & ROTATION MENU ---
 window.addEventListener('DOMContentLoaded', () => {
   console.log("DOM Atelier prêt.");
-  loadPage('actualites'); // Charger la page d'accueil par défaut
+  incrementAnalyticsCounter('totalViews');
+    loadPage('actualites'); // Charger la page d'accueil par défaut
   applyRandomRotation('.menu-item'); // Appliquer la rotation initiale au menu
 });
