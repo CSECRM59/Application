@@ -379,16 +379,16 @@ function loadCoffeeFormPage() {
 
         const data = {
           email: document.getElementById('coffee-email').value.trim(),
-          name: document.getElementById('coffee-name').value.trim(),
+          nom: document.getElementById('coffee-name').value.trim(),
           operation: document.getElementById('coffee-operation').value,
           machine: document.getElementById('coffee-machine').value,
-          problem: document.getElementById('coffee-problem').value,
+          probleme: document.getElementById('coffee-problem').value,
           // Inclure les champs date/heure/paiement seulement s'ils sont visibles/pertinents
-          date: (paymentGroup.style.display === 'block' ? document.getElementById('coffee-date').value : null),
-          time: (paymentGroup.style.display === 'block' ? document.getElementById('coffee-time').value : null),
-          paymentMethod: (paymentGroup.style.display === 'block' ? document.getElementById('coffee-payment').value : null),
-          comment: document.getElementById('coffee-comment').value.trim(),
-          timestamp: firebase.firestore.FieldValue.serverTimestamp(), // Utiliser timestamp serveur
+          dateEvenementRaw: (paymentGroup.style.display === 'block' ? document.getElementById('coffee-date').value : null),
+          heureEvenementRaw: (paymentGroup.style.display === 'block' ? document.getElementById('coffee-time').value : null),
+          paiement: (paymentGroup.style.display === 'block' ? document.getElementById('coffee-payment').value : null),
+          commentaire: document.getElementById('coffee-comment').value.trim(),
+          importTimestamp: firebase.firestore.FieldValue.serverTimestamp(), // Utiliser timestamp serveur
           status: 'en cours' // Statut initial
         };
 
