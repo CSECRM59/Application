@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inscription ANCV - CSE CRM59</title>
+
+  <!-- Favicon (gardé du modèle) -->
+  <link rel="shortcut icon" href="icons/favicon.ico">
+
+  <!-- Google Fonts (Identiques) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Patrick+Hand&family=Architects+Daughter&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome (Identique) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- Firebase SDK (Identiques) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+  <style>
+    /* ================================================== */
+    /*       STYLESHEET AppliCSE - Thème Atelier        */
+    /* ================================================== */
+
+    /* --- Google Font Import --- */
+    @import url('https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Patrick+Hand&family=Architects+Daughter&family=Roboto:wght@400;500;700&display=swap');
+
+    /* --- VARIABLES CSS & STYLES GÉNÉRAUX --- */
+    :root {
+      /* Palette "Atelier" */
+      --papier-bg: #f8f5f0;
+      --encre-texte: #4a4a4a;
+      --encre-secondaire: #7a7a7a;
+      --bordure-crayon: #dcdcdc;
+      --postit-jaune: #fffacd;
+      --postit-bleu: #d3f1ff;
+      --postit-rose: #ffe4e1;
+      --masking-tape-jaune: #ffe8a0;
+      --masking-tape-vert: #cff0cc;
+      --accent-couleur-1: #677BC4;
+      --accent-couleur-2: #ffb347;
+      --danger-couleur: #e57373;
+      --success-couleur: #81c784;
+
+      /* Typographie */
+      --font-corps: 'Roboto', sans-serif;
+      --font-titre-principal: 'Kalam', cursive;
+      --font-titre-secondaire: 'Patrick Hand', cursive;
+      --font-bouton: 'Architects Daughter', cursive;
+
+      /* Effets */
+      --ombre-legere: 2px 2px 5px rgba(0, 0, 0, 0.08);
+      --ombre-moyenne: 3px 3px 8px rgba(0, 0, 0, 0.12);
+      --ombre-forte: 5px 5px 15px rgba(0, 0, 0, 0.15);
+      --transition-rapide: 0.2s ease-out;
+      --transition-normale: 0.3s ease;
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--font-corps);
+      background-color: var(--papier-bg);
+      /* background-image: url('img/paper.png'); */
+      color: var(--encre-texte);
+      line-height: 1.6;
+      padding: 1rem;
+    }
+
+    /* Style pour l'image d'en-tête ANCV */
+    .page-header-image {
+      display: block; /* Nécessaire pour le centrage avec margin: auto */
+      margin: 1rem auto 1.5rem auto; /* Marge en haut, centrage horizontal, marge en bas */
+      max-width: 280px; /* Ajustez cette valeur selon la taille souhaitée */
+      width: 80%; /* Pour être responsive sur petits écrans */
+      height: auto; /* Garde les proportions */
+      border-radius: 4px; /* Optionnel: coins arrondis */
+      box-shadow: var(--ombre-legere); /* Optionnel: ombre légère */
+    }
+
+    h1 { /* Titre de la page */
+        font-family: var(--font-titre-principal);
+        font-size: 2.2rem;
+        color: var(--encre-texte);
+        font-weight: 700;
+        /* margin: 1rem 0 2rem 0; */ /* Marge haute retirée, gérée par l'image */
+        margin: 0 0 2rem 0; /* Marge bas conservée */
+        text-align: center;
+        border-bottom: 1px dashed var(--bordure-crayon);
+        padding-bottom: 0.5rem;
+    }
+    h1 i {
+        margin-right: 10px;
+        color: var(--accent-couleur-1);
+    }
+
+    /* Styles formulaires, boutons, messages (INCHANGÉS) */
+    .form-container {
+      background: #fff;
+      padding: 2rem 2.5rem 2.5rem;
+      border-radius: 5px;
+      border: 1px solid var(--bordure-crayon);
+      max-width: 650px;
+      margin: 0 auto;
+      box-shadow: var(--ombre-moyenne);
+      position: relative;
+    }
+    .form-group { margin-bottom: 1.5rem; }
+    .form-group label { display: block; margin-bottom: 0.6rem; font-family: var(--font-titre-secondaire); color: var(--encre-secondaire); font-size: 1rem; }
+    label.required:after { content: " *"; color: var(--danger-couleur); font-weight: normal; }
+    .form-group input[type="text"], .form-group input[type="email"], .form-group input[type="url"], .form-group input[type="date"], .form-group input[type="time"], .form-group input[type="number"], .form-group textarea, .form-group select { width: 100%; padding: 0.6rem 0.1rem; border: none; border-bottom: 1px solid var(--bordure-crayon); border-radius: 0; font-size: 1rem; font-family: var(--font-corps); color: var(--encre-texte); background-color: transparent; transition: border-color var(--transition-rapide); box-shadow: none !important; box-sizing: border-box; }
+    .form-group select { appearance: none; background: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%237a7a7a%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E') no-repeat right .5rem center/10px 10px; padding-right: 1.5rem; }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-bottom: 2px solid var(--accent-couleur-1); }
+    .form-group textarea { min-height: 80px; resize: vertical; line-height: 1.5; }
+    select::placeholder, input::placeholder, textarea::placeholder { color: var(--encre-secondaire); opacity: 0.7; font-size:0.8rem; }
+    .note { font-size: 0.9em; color: var(--encre-secondaire); margin: -10px 0 15px 0; padding: 8px 12px; background-color: #fdfdee; border-radius: 3px; border-left: 3px solid var(--accent-couleur-2); }
+    .btn { padding: 0.6rem 1.5rem; border: none; border-radius: 3px; cursor: pointer; font-family: var(--font-bouton); font-size: 1rem; font-weight: bold; transition: all var(--transition-rapide); box-shadow: var(--ombre-legere); text-transform: uppercase; letter-spacing: 1px; display: inline-block; }
+    .btn:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: var(--ombre-moyenne); }
+    .btn:active { transform: translateY(0); box-shadow: var(--ombre-legere); }
+    .btn-primary { background-color: var(--accent-couleur-1); color: #fff; }
+    .btn-primary:hover { background-color: #5361a1; }
+    .btn-primary:disabled { background-color: #ccc; cursor: not-allowed; box-shadow: none; transform: none; opacity: 0.7; }
+    .form-container button[type="submit"] { display: block; width: auto; margin: 1.5rem auto 0; padding: 0.7rem 2rem; }
+    .confirmation, .form-status-sending, .error-message { padding: 1rem; border-radius: 4px; margin: 1.5rem auto 0; max-width: 600px; font-weight: 500; border: 1px solid transparent; text-align: center; font-family: var(--font-corps); }
+    .confirmation { background-color: #e8f5e9; color: #2e7d32; border-color: #a5d6a7; display: none; }
+    .form-status-sending { background-color: #e3f2fd; color: #0d47a1; border-color: #90caf9; display: none; }
+    .error-message { background-color: #ffebee; color: #c62828; border-color: #ef9a9a; display: none; }
+    .confirmation i, .form-status-sending i { margin-right: 8px; }
+
+    /* Responsive (INCHANGÉ) */
+    @media (max-width: 768px) {
+        body { padding: 0.5rem; }
+        .page-header-image { max-width: 220px; margin-bottom: 1rem;}
+        h1 { font-size: 1.8rem; margin-bottom: 1.5rem; }
+        .form-container { padding: 1.5rem 1rem 2rem; }
+        .btn { padding: 0.5rem 1.2rem; font-size: 0.9rem;}
+    }
+     @media (max-width: 480px) {
+         .page-header-image { max-width: 180px; margin-bottom: 1rem;}
+         h1 { font-size: 1.5rem; }
+         .form-container { padding: 1rem 0.8rem 1.5rem; }
+         .form-group { margin-bottom: 1.2rem; }
+         .form-container button[type="submit"] { padding: 0.6rem 1.5rem; font-size: 0.9rem; }
+         .note { font-size: 0.85em; }
+         .confirmation, .form-status-sending, .error-message { font-size: 0.9rem; }
+     }
+
+  </style>
+</head>
+<body>
+
+  <!-- === IMAGE AJOUTÉE ICI === -->
+  <img src="https://raw.githubusercontent.com/CSECRM59/Application/refs/heads/main/images/ANCV.png" alt="Logo Chèques-Vacances ANCV" class="page-header-image">
+  <!-- ========================== -->
+
+  <!-- Titre adapté -->
+  <h1><i class="fas fa-suitcase-rolling"></i> Inscription Chèques-Vacances (ANCV)</h1>
+
+  <div class="form-container">
+    <!-- ID du formulaire changé -->
+    <form id="ancvForm">
+      <!-- Note adaptée -->
+      <p class="note">Veuillez remplir ce formulaire pour indiquer si vous souhaitez bénéficier des Chèques-Vacances (ANCV) proposés par le CSE.</p>
+
+      <!-- Champ Nom -->
+      <div class="form-group">
+        <label for="ancv-nom" class="required">Votre Nom</label>
+        <input type="text" id="ancv-nom" required placeholder="Ex: Dupont">
+      </div>
+
+      <!-- Champ Prénom -->
+      <div class="form-group">
+        <label for="ancv-prenom" class="required">Votre Prénom</label>
+        <input type="text" id="ancv-prenom" required placeholder="Ex: Jean">
+      </div>
+
+      <!-- Champ Email Personnel -->
+      <div class="form-group">
+        <label for="ancv-email" class="required">Votre Email Personnel</label>
+        <input type="email" id="ancv-email" required placeholder="Ex: jean.dupont@mail-personnel.com">
+        <small style="font-size: 0.8em; color: var(--encre-secondaire);">Important: Utilisez votre adresse email personnelle (pas celle de l'entreprise).</small>
+      </div>
+
+      <!-- Champ Choix ANCV -->
+      <div class="form-group">
+        <label for="ancv-choix" class="required">Votre Choix ANCV</label>
+        <select id="ancv-choix" required>
+          <option value="" disabled selected>Choisir une option...</option>
+          <option value="oui">Je souhaite bénéficier des ANCV</option>
+          <option value="non">Je ne souhaite pas bénéficier des ANCV</option>
+        </select>
+      </div>
+
+      <!-- Bouton Submit adapté -->
+      <button type="submit" id="ancv-submit-btn" class="btn btn-primary">Envoyer ma réponse</button>
+    </form>
+
+    <!-- Messages de statut adaptés -->
+    <div id="ancv-status" class="form-status-sending" style="display: none;"><i class="fas fa-paper-plane"></i> Envoi en cours...</div>
+    <div id="ancv-confirmation" class="confirmation" style="display: none;"><i class="fas fa-check-circle"></i> Merci ! Votre choix concernant les ANCV a bien été enregistré.</div>
+    <div id="ancv-error" class="error-message" style="display: none;">Erreur lors de l'envoi. Veuillez réessayer ou contacter le CSE.</div>
+  </div>
+
+  <footer>
+      <p style="text-align: center; font-size: 0.8em; color: var(--encre-secondaire); margin-top: 2rem;">
+          © 2025 CSE CRM59 <!-- Mettre à jour l'année si besoin -->
+      </p>
+  </footer>
+
+  <script>
+    // --- INITIALISATION DE FIREBASE ---
+    const firebaseConfig = {
+      // Remplacez par votre configuration Firebase réelle (identique)
+      apiKey: "AIzaSyCzlrRY437eu0tUCqK99OXtOeyOdYSUYsw",
+      authDomain: "appli-cse-56b03.firebaseapp.com",
+      projectId: "appli-cse-56b03",
+      storageBucket: "appli-cse-56b03.firebasestorage.app",
+      messagingSenderId: "892776841086",
+      appId: "1:892776841086:web:2a1a7c60be011fda0afd2f"
+    };
+
+    // Initialiser Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // --- LOGIQUE DU FORMULAIRE ANCV (INCHANGÉE) ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const ancvForm = document.getElementById('ancvForm');
+        const submitBtn = document.getElementById('ancv-submit-btn');
+        const statusDiv = document.getElementById('ancv-status');
+        const confirmDiv = document.getElementById('ancv-confirmation');
+        const errorDiv = document.getElementById('ancv-error');
+
+        if (ancvForm) {
+            ancvForm.addEventListener('submit', e => {
+                e.preventDefault();
+                confirmDiv.style.display = 'none';
+                errorDiv.style.display = 'none';
+                statusDiv.style.display = 'block';
+                submitBtn.disabled = true;
+
+                const data = {
+                  nom: document.getElementById('ancv-nom').value.trim(),
+                  prenom: document.getElementById('ancv-prenom').value.trim(),
+                  emailPerso: document.getElementById('ancv-email').value.trim(),
+                  choixAncv: document.getElementById('ancv-choix').value,
+                  timestampSoumission: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                db.collection('ANCV').add(data)
+                  .then(() => {
+                    statusDiv.style.display = 'none';
+                    confirmDiv.style.display = 'block';
+                    ancvForm.reset();
+                    submitBtn.disabled = false;
+                    confirmDiv.scrollIntoView({ behavior: 'smooth' });
+                  })
+                  .catch(error => {
+                    console.error("Erreur envoi formulaire ANCV:", error);
+                    statusDiv.style.display = 'none';
+                    errorDiv.textContent = "Erreur lors de l'enregistrement de votre réponse. Veuillez réessayer ou contacter le CSE directement.";
+                    errorDiv.style.display = 'block';
+                    submitBtn.disabled = false;
+                    errorDiv.scrollIntoView({ behavior: 'smooth' });
+                  });
+            });
+        }
+    });
+  </script>
+
+</body>
+</html>
