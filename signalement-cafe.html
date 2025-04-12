@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Signalement Problème Café - CSE CRM59</title>
+  
+    <link rel="shortcut icon" href="icons/favicon.ico">
+  <!-- Google Fonts (Identiques à l'application principale) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Patrick+Hand&family=Architects+Daughter&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome pour les icônes -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+  <style>
+    /* ================================================== */
+    /*       STYLESHEET AppliCSE - Thème Atelier        */
+    /* (COLLÉ DIRECTEMENT ICI - Identique à styles.css) */
+    /* ================================================== */
+
+    /* --- Google Font Import --- */
+    @import url('https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Patrick+Hand&family=Architects+Daughter&family=Roboto:wght@400;500;700&display=swap');
+
+    /* --- VARIABLES CSS & STYLES GÉNÉRAUX --- */
+    :root {
+      /* Palette "Atelier" */
+      --papier-bg: #f8f5f0; /* Blanc cassé / Kraft très clair */
+      --encre-texte: #4a4a4a; /* Gris foncé, pas noir pur */
+      --encre-secondaire: #7a7a7a; /* Gris moyen */
+      --bordure-crayon: #dcdcdc;
+      --postit-jaune: #fffacd;
+      --postit-bleu: #d3f1ff;
+      --postit-rose: #ffe4e1;
+      --masking-tape-jaune: #ffe8a0;
+      --masking-tape-vert: #cff0cc;
+      --accent-couleur-1: #677BC4; /* Bleu-violet doux pour liens/boutons */
+      --accent-couleur-2: #ffb347; /* Orange doux */
+      --danger-couleur: #e57373; /* Rouge doux */
+      --success-couleur: #81c784; /* Vert doux */
+
+      /* Typographie */
+      --font-corps: 'Roboto', sans-serif;
+      --font-titre-principal: 'Kalam', cursive;
+      --font-titre-secondaire: 'Patrick Hand', cursive;
+      --font-bouton: 'Architects Daughter', cursive;
+
+      /* Effets */
+      --ombre-legere: 2px 2px 5px rgba(0, 0, 0, 0.08);
+      --ombre-moyenne: 3px 3px 8px rgba(0, 0, 0, 0.12);
+      --ombre-forte: 5px 5px 15px rgba(0, 0, 0, 0.15);
+      --transition-rapide: 0.2s ease-out;
+      --transition-normale: 0.3s ease;
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--font-corps);
+      background-color: var(--papier-bg);
+      /* Optionnel: Texture papier subtile */
+      background-image: url('img/paper.png'); /* Assurez-vous que le chemin est correct ou supprimez si non nécessaire */
+      color: var(--encre-texte);
+      line-height: 1.6;
+      padding: 1rem; /* Simple padding pour la page autonome */
+    }
+
+    /* --- Simplification : Pas de Header/Nav/Footer complexes ici --- */
+    h1 { /* Titre de la page */
+        font-family: var(--font-titre-principal);
+        font-size: 2.2rem;
+        color: var(--encre-texte);
+        font-weight: 700;
+        margin: 1rem 0 2rem 0;
+        text-align: center;
+        border-bottom: 1px dashed var(--bordure-crayon);
+        padding-bottom: 0.5rem;
+    }
+    h1 i { /* Icône dans le titre */
+        margin-right: 10px;
+        color: var(--accent-couleur-1);
+    }
+
+    /* Conserver tous les styles pour les formulaires, boutons, messages, etc. */
+    .form-container {
+      background: #fff; /* Fond papier blanc */
+      padding: 2rem 2.5rem 2.5rem;
+      border-radius: 5px;
+      border: 1px solid var(--bordure-crayon);
+      max-width: 650px; /* Limite largeur */
+      margin: 0 auto; /* Centre */
+      box-shadow: var(--ombre-moyenne);
+      position: relative;
+    }
+
+    .form-group { margin-bottom: 1.5rem; }
+    .form-group label { display: block; margin-bottom: 0.6rem; font-family: var(--font-titre-secondaire); color: var(--encre-secondaire); font-size: 1rem; }
+    label.required:after { content: " *"; color: var(--danger-couleur); font-weight: normal; }
+    .form-group input[type="text"], .form-group input[type="email"], .form-group input[type="url"], .form-group input[type="date"], .form-group input[type="time"], .form-group input[type="number"], .form-group textarea, .form-group select { width: 100%; padding: 0.6rem 0.1rem; border: none; border-bottom: 1px solid var(--bordure-crayon); border-radius: 0; font-size: 1rem; font-family: var(--font-corps); color: var(--encre-texte); background-color: transparent; transition: border-color var(--transition-rapide); box-shadow: none !important; box-sizing: border-box; }
+    .form-group select { appearance: none; background: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%237a7a7a%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E') no-repeat right .5rem center/10px 10px; padding-right: 1.5rem; }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-bottom: 2px solid var(--accent-couleur-1); }
+    .form-group textarea { min-height: 80px; resize: vertical; line-height: 1.5; }
+    select::placeholder, input::placeholder, textarea::placeholder { color: var(--encre-secondaire); opacity: 0.7; font-size:0.8rem; }
+
+    .note { font-size: 0.9em; color: var(--encre-secondaire); margin: -10px 0 15px 0; padding: 8px 12px; background-color: #fdfdee; border-radius: 3px; border-left: 3px solid var(--accent-couleur-2); }
+
+    /* Styles Boutons */
+    .btn { padding: 0.6rem 1.5rem; border: none; border-radius: 3px; cursor: pointer; font-family: var(--font-bouton); font-size: 1rem; font-weight: bold; transition: all var(--transition-rapide); box-shadow: var(--ombre-legere); text-transform: uppercase; letter-spacing: 1px; display: inline-block; }
+    .btn:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: var(--ombre-moyenne); }
+    .btn:active { transform: translateY(0); box-shadow: var(--ombre-legere); }
+    .btn-primary { background-color: var(--accent-couleur-1); color: #fff; }
+    .btn-primary:hover { background-color: #5361a1; }
+    .btn-primary:disabled { background-color: #ccc; cursor: not-allowed; box-shadow: none; transform: none; opacity: 0.7; }
+    .form-container button[type="submit"] { display: block; width: auto; margin: 1.5rem auto 0; padding: 0.7rem 2rem; }
+
+    /* Styles Messages */
+    .confirmation, .form-status-sending, .error-message { padding: 1rem; border-radius: 4px; margin: 1.5rem auto 0; /* Ajout marge top */ max-width: 600px; font-weight: 500; border: 1px solid transparent; text-align: center; font-family: var(--font-corps); }
+    .confirmation { background-color: #e8f5e9; color: #2e7d32; border-color: #a5d6a7; display: none; }
+    .form-status-sending { background-color: #e3f2fd; color: #0d47a1; border-color: #90caf9; display: none; }
+    .error-message { background-color: #ffebee; color: #c62828; border-color: #ef9a9a; display: none; } /* Caché par défaut */
+    .confirmation i, .form-status-sending i { margin-right: 8px; }
+
+    /* --- Styles spécifiques au formulaire café si nécessaire (normalement couverts par le général) --- */
+
+    /* Responsive (simplifié pour cette page unique, mais garder les ajustements du formulaire) */
+    @media (max-width: 768px) {
+        body { padding: 0.5rem; }
+        h1 { font-size: 1.8rem; margin-bottom: 1.5rem; }
+        .form-container { padding: 1.5rem 1rem 2rem; }
+        .btn { padding: 0.5rem 1.2rem; font-size: 0.9rem;}
+    }
+     @media (max-width: 480px) {
+         h1 { font-size: 1.5rem; }
+         .form-container { padding: 1rem 0.8rem 1.5rem; }
+         .form-group { margin-bottom: 1.2rem; }
+         .form-container button[type="submit"] { padding: 0.6rem 1.5rem; font-size: 0.9rem; }
+         .note { font-size: 0.85em; }
+         .confirmation, .form-status-sending, .error-message { font-size: 0.9rem; }
+     }
+
+  </style>
+</head>
+<body>
+
+  <h1><i class="fas fa-mug-hot"></i> Signaler un Problème Café</h1>
+
+  <div class="form-container">
+    <form id="coffeeForm">
+      <p class="note">Utilisez ce formulaire pour signaler rapidement un souci avec une machine à café du site.</p>
+
+      <div class="form-group">
+        <label for="coffee-email" class="required">Votre Email</label>
+        <input type="email" id="coffee-email" required placeholder="nom.prenom@example.com">
+      </div>
+      <div class="form-group">
+        <label for="coffee-name" class="required">Votre Nom & Prénom</label>
+        <input type="text" id="coffee-name" required placeholder="Ex: Jean Dupont">
+      </div>
+      <div class="form-group">
+        <label for="coffee-operation" class="required">Votre Opération</label>
+        <select id="coffee-operation" required>
+          <option value="" disabled selected>Choisir...</option>
+          <option value="Support">Fonction support</option>
+          <option value="AG2R">AG2R</option>
+          <option value="CNAV">CNAV</option>
+          <option value="UCPA">UCPA</option>
+          <option value="IRP Auto">IRP Auto</option>
+          <option value="Abeille">Abeille</option>
+          <option value="EHS">EHS</option>
+          <option value="DCP">Engie DCP</option>
+          <option value="Enedis">Enedis</option>
+          <!-- Ajoutez d'autres options si nécessaire -->
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="coffee-machine" class="required">Machine concernée</label>
+        <select id="coffee-machine" required>
+          <option value="" disabled selected>Identifier la machine...</option>
+          <!-- Collez ici les options exactes de votre script.js -->
+          <option value="DEV125543 (E-1)">DEV125543 (E-1)</option>
+          <option value="BBRD0152 (E-1)">BBRD0152 (E-1)</option>
+          <option value="DEV16567 (E-1)">DEV16567 (E-1)</option>
+          <option value="BBRDL0196 (E-1)">BBRDL0196 (E-1)</option>
+          <option value="DBIC799 (E0)">DBIC799 (E0)</option>
+          <option value="B72ES1979 (E1)">B72ES1979 (E1)</option>
+          <option value="B72ES1903 (E2)">B72ES1903 (E2)</option>
+          <option value="DEV95042 (E2)">DEV95042 (E2)</option>
+          <option value="B72ES1977 (E3)">B72ES1977 (E3)</option>
+          <!-- Assurez-vous que la liste est à jour -->
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="coffee-problem" class="required">Nature du problème</label>
+        <select id="coffee-problem" required>
+          <option value="" disabled selected>Décrire le souci...</option>
+          <!-- Collez ici les options exactes de votre script.js -->
+          <option value="Pas de gobelet">Pas de gobelet</option>
+          <option value="Gobelet vide/Boisson non servie">Gobelet vide/Boisson non servie</option>
+          <option value="Produit non conforme">Produit non conforme (mauvais goût, etc.)</option>
+          <option value="Problème de paiement/rechargement">Problème de paiement/rechargement</option>
+          <option value="Machine bloquée/Hors service">Machine bloquée/Hors service</option>
+          <option value="Fuite/Propreté">Fuite/Propreté</option>
+          <option value="Autre">Autre (préciser en commentaire)</option>
+        </select>
+      </div>
+
+      <div class="form-group" id="payment-details-group" style="display: none;">
+         <p class="note">Pour un problème de paiement :</p>
+         <div class="form-group">
+             <label for="coffee-date">Date</label>
+             <input type="date" id="coffee-date">
+         </div>
+         <div class="form-group">
+             <label for="coffee-time">Heure approx.</label>
+             <input type="time" id="coffee-time">
+         </div>
+         <div class="form-group">
+            <label for="coffee-payment">Moyen de paiement utilisé</label>
+            <select id="coffee-payment">
+              <option value="" disabled selected>Choisir...</option>
+              <option value="Pluxee">Carte Pluxee</option>
+              <option value="Espece">Espèces</option>
+              <option value="Badge">Badge interne</option>
+              <option value="CB">Carte Bancaire</option>
+            </select>
+         </div>
+      </div>
+
+      <div class="form-group">
+        <label for="coffee-comment">Commentaire (optionnel)</label>
+        <textarea id="coffee-comment" placeholder="Ajoutez des détails si nécessaire..."></textarea>
+      </div>
+
+      <button type="submit" id="coffee-submit-btn" class="btn btn-primary">Envoyer le signalement</button>
+    </form>
+
+    <!-- Messages de statut -->
+    <div id="coffee-status" class="form-status-sending" style="display: none;"><i class="fas fa-paper-plane"></i> Envoi en cours...</div>
+    <div id="coffee-confirmation" class="confirmation" style="display: none;"><i class="fas fa-check-circle"></i> Merci ! Votre signalement a bien été transmis au CSE.</div>
+    <div id="coffee-error" class="error-message" style="display: none;">Erreur lors de l'envoi. Veuillez réessayer.</div>
+  </div>
+
+  <footer>
+      <p style="text-align: center; font-size: 0.8em; color: var(--encre-secondaire); margin-top: 2rem;">
+          © 2025 CSE CRM59
+      </p>
+  </footer>
+
+  <script>
+    // --- INITIALISATION DE FIREBASE ---
+    const firebaseConfig = {
+      // Remplacez par votre configuration Firebase réelle (identique à script.js)
+      apiKey: "AIzaSyCzlrRY437eu0tUCqK99OXtOeyOdYSUYsw",
+      authDomain: "appli-cse-56b03.firebaseapp.com",
+      projectId: "appli-cse-56b03",
+      storageBucket: "appli-cse-56b03.firebasestorage.app",
+      messagingSenderId: "892776841086",
+      appId: "1:892776841086:web:2a1a7c60be011fda0afd2f"
+    };
+
+    // Initialiser Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // --- LOGIQUE DU FORMULAIRE CAFÉ (Identique à script.js) ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const coffeeForm = document.getElementById('coffeeForm');
+        const problemSelect = document.getElementById('coffee-problem');
+        const paymentGroup = document.getElementById('payment-details-group');
+        const submitBtn = document.getElementById('coffee-submit-btn');
+        const statusDiv = document.getElementById('coffee-status');
+        const confirmDiv = document.getElementById('coffee-confirmation');
+        const errorDiv = document.getElementById('coffee-error');
+
+        // Logique pour afficher/masquer les détails de paiement
+        if (problemSelect && paymentGroup) {
+            problemSelect.addEventListener('change', (e) => {
+                if (e.target.value === 'Problème de paiement/rechargement') {
+                    paymentGroup.style.display = 'block';
+                } else {
+                    paymentGroup.style.display = 'none';
+                }
+            });
+        }
+
+        // Gérer la soumission du formulaire
+        if (coffeeForm) {
+            coffeeForm.addEventListener('submit', e => {
+                e.preventDefault();
+
+                // Cacher anciens messages, afficher envoi
+                confirmDiv.style.display = 'none';
+                errorDiv.style.display = 'none';
+                statusDiv.style.display = 'block';
+                submitBtn.disabled = true;
+
+                const isPaymentProblem = paymentGroup.style.display === 'block';
+
+                const data = {
+          email: document.getElementById('coffee-email').value.trim(),
+          nom: document.getElementById('coffee-name').value.trim(),
+          operation: document.getElementById('coffee-operation').value,
+          machine: document.getElementById('coffee-machine').value,
+          probleme: document.getElementById('coffee-problem').value,
+          // Inclure les champs date/heure/paiement seulement s'ils sont visibles/pertinents
+          dateEvenementRaw: (paymentGroup.style.display === 'block' ? document.getElementById('coffee-date').value : null),
+          heureEvenementRaw: (paymentGroup.style.display === 'block' ? document.getElementById('coffee-time').value : null),
+          paiement: (paymentGroup.style.display === 'block' ? document.getElementById('coffee-payment').value : null),
+          commentaire: document.getElementById('coffee-comment').value.trim(),
+          importTimestamp: firebase.firestore.FieldValue.serverTimestamp(), // Utiliser timestamp serveur
+          status: 'en cours' // Statut initial
+        };
+
+                db.collection('coffee').add(data)
+                  .then(() => {
+                    statusDiv.style.display = 'none';
+                    confirmDiv.style.display = 'block'; // Afficher confirmation
+                    coffeeForm.reset(); // Vider le formulaire
+                    paymentGroup.style.display = 'none'; // Cacher à nouveau les détails paiement
+                    submitBtn.disabled = false; // Réactiver le bouton
+                    // Optionnel: faire défiler vers le message de confirmation
+                    confirmDiv.scrollIntoView({ behavior: 'smooth' });
+                  })
+                  .catch(error => {
+                    console.error("Erreur envoi formulaire café:", error);
+                    statusDiv.style.display = 'none';
+                    errorDiv.textContent = "Erreur lors de l'envoi. Veuillez réessayer ou contacter le CSE directement."; // Message d'erreur plus précis
+                    errorDiv.style.display = 'block'; // Afficher erreur
+                    submitBtn.disabled = false; // Réactiver le bouton
+                    // Optionnel: faire défiler vers le message d'erreur
+                     errorDiv.scrollIntoView({ behavior: 'smooth' });
+                  });
+            });
+        }
+    });
+
+  </script>
+
+</body>
+</html>
