@@ -52,6 +52,61 @@ function loadPage(pageId) {
   window.scrollTo(0, 0);
 }
 
+// --- FONCTION UTILITAIRE POUR "LIRE LA SUITE" ---
+function applyReadMore(selector, maxHeight) {
+    const elements = document.querySelectorAll(selector);
+
+    elements.forEach(element => {
+        // Vérifier si l'élément dépasse la hauteur max ET n'a pas déjà un bouton
+        if (element.scrollHeight > maxHeight && !element.nextElementSibling?.classList.contains('btn-read-more')) {
+
+            // Stocker le contenu original (au cas où, mais pas utilisé ici pour le moment)
+            // const originalContent = element.innerHTML;
+
+            // Appliquer les styles pour tronquer
+            element.style.maxHeight = maxHeight + 'px';
+            element.style.overflow = 'hidden';
+            element.style.position = 'relative'; // Pour positionner le bouton si besoin plus tard
+            element.style.transition = 'max-height 0.3s ease-out'; // Animation douce
+
+            // Créer le bouton "Lire la suite"
+            const readMoreBtn = document.createElement('button');
+            readMoreBtn.textContent = 'Lire la suite...';
+            readMoreBtn.classList.add('btn-read-more'); // Classe pour styler
+            readMoreBtn.setAttribute('aria-expanded', 'false'); // Pour l'accessibilité
+
+            // Ajouter un écouteur d'événement au bouton
+            readMoreBtn.addEventListener('click', () => {
+                const isExpanded = element.classList.toggle('expanded');
+                readMoreBtn.setAttribute('aria-expanded', isExpanded.toString());
+
+                if (isExpanded) {
+                    // Étendre : enlever la limite de hauteur
+                    element.style.maxHeight = element.scrollHeight + 'px';
+                    readMoreBtn.textContent = 'Réduire';
+                } else {
+                    // Réduire : remettre la limite de hauteur
+                    element.style.maxHeight = maxHeight + 'px';
+                    readMoreBtn.textContent = 'Lire la suite...';
+                    // Optionnel: remonter un peu pour voir le début
+                    // element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            });
+
+            // Insérer le bouton APRES le paragraphe de contenu
+            element.parentNode.insertBefore(readMoreBtn, element.nextSibling);
+        }
+         // Si l'élément est plus court que maxHeight mais avait un bouton (cas de resize fenêtre?), on l'enlève
+         else if (element.scrollHeight <= maxHeight && element.nextElementSibling?.classList.contains('btn-read-more')) {
+            element.nextElementSibling.remove();
+            element.style.maxHeight = ''; // Enlever la contrainte
+            element.style.overflow = '';
+            element.classList.remove('expanded');
+         }
+    });
+}
+
+
 // --- SECTION ACTUALITÉS (Style Atelier) ---
 function loadNewsPage() {
   const mainContent = document.getElementById('main-content');
@@ -74,14 +129,33 @@ function loadNewsPage() {
         news.id = doc.id; // Garder l'ID si besoin futur
         const newsItem = document.createElement('div');
         newsItem.classList.add('grid-item'); // Utilisation de la classe grid-item
-        newsItem.innerHTML = `
+
+          // --- NOUVEAU : Préparer le HTML du lien conditionnellement ---
+        let linkHtml = ''; // Initialiser une chaîne vide
+        if (news.link && typeof news.link === 'string' && news.link.trim() !== '') {
+          // Si le champ 'link' existe, est une chaîne et n'est pas vide
+          linkHtml = `
+            <div class="news-link-container">
+              <a href="${news.link}" target="_blank" rel="noopener noreferrer" class="news-link">
+                Visiter le site <i class="fas fa-external-link-alt fa-xs"></i>
+              </a>
+            </div>
+          `;
+        }
+        // --- FIN NOUVEAU ---
+          
+          newsItem.innerHTML = `
           ${news.image ? `<img src="${news.image}" alt="Illustration ${news.title}">` : ''}
           <h3>${news.title}</h3>
-          <p>${news.content}</p>
+          <p class="news-content">${news.content}</p>
+          ${linkHtml}
           <small>Noté le ${news.date} (${news.status || 'Publié'})</small>
         `;
         container.appendChild(newsItem);
       });
+        
+      // Paramètres: sélecteur du paragraphe, hauteur max en pixels
+      applyReadMore('.news-content', 100); // Tronquer après 100px de hauteur
       // Appliquer la rotation APRES avoir ajouté les éléments
       applyRandomRotation('#actualites .grid-item');
     }
