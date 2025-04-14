@@ -551,7 +551,7 @@ function loadContactFormPage() {
           <div class="form-group">
             <label>Objet de la demande (cochez)</label>
             <div class="checkbox-group">
-              <label class="checkbox-label"><input type="checkbox" name="demande" value="Clé café"> Clé café</label>
+              <label class="checkbox-label"><input type="checkbox" name="demande" value="Clé café"> Clé café (caution de 7€ en espèce)</label>
               <label class="checkbox-label"><input type="checkbox" name="demande" value="Carte AccèsCE"> Carte AccèsCE</label>
               <label class="checkbox-label"><input type="checkbox" name="demande" value="Carte cadeau naissance"> Carte cadeau naissance</label>
               <label class="checkbox-label"><input type="checkbox" name="demande" value="Carte cadeau mariage/pacs"> Carte cadeau mariage / pacs</label>
