@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard INSCRIPTIONS ANCV</title>
+  <!-- Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-light: #f9f9fb;
+      --card-bg: #ffffff;
+      --primary: #4f46e5;
+      --text-main: #1f2937;
+      --text-muted: #6b7280;
+      --border: #e5e7eb;
+      --shadow: rgba(0, 0, 0, 0.05);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-light);
+      color: var(--text-main);
+      line-height: 1.5;
+    }
+    .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+    header { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px; }
+    .logo { width: 48px; height: auto; }
+    header h1 {
+      font-size: 2.5rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 2px;
+      color: var(--primary);
+    }
+    .card { background: var(--card-bg); border-radius: 8px; box-shadow: 0 2px 8px var(--shadow); padding: 20px; margin-bottom: 30px; }
+    .stats-card { display: flex; justify-content: center; }
+    .stat-item h2 { font-size:1.25rem; font-weight:600; color:var(--text-muted); margin-bottom:8px; }
+    .stat-item p { font-size:2.5rem; font-weight:700; color:var(--primary); }
+    .chart-container { position:relative; width:100%; height:280px; }
+    .table-actions { display:flex; gap:10px; margin-bottom:15px; }
+    #searchInput { flex:1; padding:10px 15px; border:1px solid var(--border); border-radius:6px; font-size:1rem; transition:border-color .2s; }
+    #searchInput:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(79,70,229,0.2); }
+    .export-btn { padding:10px 20px; background:var(--primary); color:#fff; border:none; border-radius:6px; cursor:pointer; font-size:1rem; transition:background .2s; }
+    .export-btn:hover { background:#3730a3; }
+    table { width:100%; border-collapse:collapse; font-size:.95rem; }
+    thead { background:var(--bg-light); }
+    th, td { padding:12px 15px; text-align:left; vertical-align:middle; }
+    th { cursor:pointer; font-weight:600; color:var(--text-main); border-bottom:2px solid var(--border); position:relative; }
+    th.asc::after { content:'▲'; position:absolute; right:10px; font-size:.7rem; }
+    th.desc::after { content:'▼'; position:absolute; right:10px; font-size:.7rem; }
+    #inscriptionsTable th[data-col="0"], td:nth-child(1) { width:20%; }
+    #inscriptionsTable th[data-col="1"], td:nth-child(2) { width:15%; }
+    #inscriptionsTable th[data-col="2"], td:nth-child(3) { width:35%; }
+    #inscriptionsTable th[data-col="3"], td:nth-child(4) { width:25%; white-space:nowrap; }
+    #inscriptionsTable th:last-child, td:last-child { width:5%; text-align:center; }
+    tbody tr:nth-child(even) { background:var(--bg-light); }
+    tbody tr:hover { background:#e0e7ff; }
+    .delete-btn { background:none; border:none; cursor:pointer; font-size:1.1rem; color:#e11d48; transition:color .2s; }
+    .delete-btn:hover { color:#be123c; }
+    #scrollTopBtn { position:fixed; bottom:20px; right:20px; width:40px; height:40px; background:var(--primary); color:#fff; border:none; border-radius:50%; display:none; align-items:center; justify-content:center; font-size:1.5rem; box-shadow:0 2px 6px rgba(0,0,0,0.2); transition:opacity .3s; }
+    #scrollTopBtn.show { display:flex; opacity:.8; }
+    #scrollTopBtn:hover { opacity:1; }
+    .table-card h2 { margin-bottom:10px; font-size:1.25rem; color:var(--text-muted); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <img src="logo-ancv.png" alt="Logo ANCV" class="logo">
+      <h1>INSCRIPTIONS ANCV</h1>
+    </header>
+
+    <section class="card stats-card">
+      <div class="stat-item">
+        <h2>Total des inscriptions</h2>
+        <p id="totalInscriptions">...</p>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="chart-container">
+        <canvas id="inscriptionsChart"></canvas>
+      </div>
+    </section>
+
+    <section class="card table-card">
+      <h2>Liste des inscrits</h2>
+      <div class="table-actions">
+        <input type="text" id="searchInput" placeholder="Rechercher un nom, prénom, email…">
+        <button id="exportCsvBtn" class="export-btn">Exporter CSV</button>
+      </div>
+      <table id="inscriptionsTable">
+        <thead>
+          <tr>
+            <th data-col="0">Nom</th>
+            <th data-col="1">Prénom</th>
+            <th data-col="2">Email</th>
+            <th data-col="3">Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </div>
+
+  <button id="scrollTopBtn" title="Remonter en haut">↑</button>
+
+  <!-- Firebase compat + Chart.js -->
+  <script src="https://www.gstatic.com/firebasejs/9.20.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.20.0/firebase-firestore-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    // 1. Init Firebase
+    var firebaseConfig = {
+      apiKey: "AIzaSyCzlrRY437eu0tUCqK99OXtOeyOdYSUYsw",
+      authDomain: "appli-cse-56b03.firebaseapp.com",
+      databaseURL: "https://appli-cse-56b03-default-rtdb.firebaseio.com",
+      projectId: "appli-cse-56b03",
+      storageBucket: "appli-cse-56b03.firebasestorage.app",
+      messagingSenderId: "892776841086",
+      appId: "1:892776841086:web:2a1a7c60be011fda0afd2f"
+    };
+    firebase.initializeApp(firebaseConfig);
+    var db = firebase.firestore();
+
+    // 2. Formatage des dates
+    function formatTimestamp(ts) {
+      var d = (ts && ts.toDate) ? ts.toDate() : new Date(ts);
+      return (d && !isNaN(d.getTime())) ? d.toLocaleString() : "Date invalide";
+    }
+    function formatTimestampForChart(ts) {
+      var d = (ts && ts.toDate) ? ts.toDate() : new Date(ts);
+      return (d && !isNaN(d.getTime())) ? d.toISOString().split("T")[0] : null;
+    }
+
+    // 3. Chargement + affichage
+    function chargerInscriptions() {
+      db.collection("ANCV").get()
+        .then(snap => {
+          var items = [];
+          snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+          document.getElementById("totalInscriptions").textContent = items.length;
+          buildChart(items);
+          buildTable(items);
+        })
+        .catch(console.error);
+    }
+
+    // 4. Graphique
+    var chartInstance = null;
+    function buildChart(items) {
+      var counts = {};
+      items.forEach(i => {
+        var dt = formatTimestampForChart(i.timestampSoumission);
+        if (dt) counts[dt] = (counts[dt]||0) + 1;
+      });
+      var labels = Object.keys(counts).sort();
+      var data = labels.map(d => counts[d]);
+      var ctx = document.getElementById("inscriptionsChart").getContext("2d");
+      if (chartInstance) chartInstance.destroy();
+      chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: { labels: labels, datasets: [{ label: "Inscriptions par jour", data: data, borderColor: 'var(--primary)', backgroundColor: 'rgba(79,46,229,0.2)', fill: true, tension: 0.3 }] },
+        options: { maintainAspectRatio:false, scales:{x:{title:{display:true,text:'Date'}},y:{title:{display:true,text:'Nombre'},beginAtZero:true}} }
+      });
+    }
+
+    // 5. Tableau + filtre + tri + suppression + export
+    function buildTable(items) {
+      var tbody = document.querySelector("#inscriptionsTable tbody");
+      tbody.innerHTML = "";
+      items.forEach(i => {
+        var tr = document.createElement("tr");
+        var tdNom = document.createElement("td"); tdNom.textContent = (i.nom||"").toUpperCase(); tr.appendChild(tdNom);
+        var tdPrenom = document.createElement("td"); tdPrenom.textContent = (i.prenom||"").toUpperCase(); tr.appendChild(tdPrenom);
+        var tdEmail = document.createElement("td"); tdEmail.textContent = i.emailPerso||""; tr.appendChild(tdEmail);
+        var tdDate = document.createElement("td"); tdDate.textContent = formatTimestamp(i.timestampSoumission); tr.appendChild(tdDate);
+        var tdAct = document.createElement("td"); var btn = document.createElement("button"); btn.className="delete-btn"; btn.textContent="🗑️";
+        btn.onclick = function() { if(confirm(`Supprimer ${i.prenom} ${i.nom} ?`)) { db.collection("ANCV").doc(i.id).delete().then(()=>{ tr.remove(); var c=document.getElementById("totalInscriptions"); c.textContent = parseInt(c.textContent)-1; }).catch(err=>alert("Erreur : "+err)); }};
+        tdAct.appendChild(btn); tr.appendChild(tdAct);
+        tbody.appendChild(tr);
+      });
+      initFilter(); initSort(); initExport();
+    }
+
+    function initFilter() {
+      var inp=document.getElementById("searchInput"); inp.oninput = function() {
+        var v=inp.value.trim().toLowerCase();
+        document.querySelectorAll("#inscriptionsTable tbody tr").forEach(tr => {
+          var text = Array.from(tr.cells).map(td => td.textContent.toLowerCase()).join(" ");
+          tr.style.display = text.includes(v) ? "" : "none";
+        });
+      };
+    }
+
+    function initSort() {
+      document.querySelectorAll("#inscriptionsTable thead th[data-col]").forEach(th => {
+        th.onclick = function() {
+          var tbl=th.closest("table"), idx=+th.dataset.col, asc = !th.classList.contains("asc");
+          var rows=Array.from(tbl.querySelectorAll("tbody tr"));
+          rows.sort((a,b) => {
+            var A=a.cells[idx].textContent.trim().toUpperCase(), B=b.cells[idx].textContent.trim().toUpperCase();
+            if(idx===3){A=new Date(A).getTime()||0;B=new Date(B).getTime()||0;}
+            return asc ? (A>B?1:-1) : (A<B?1:-1);
+          });
+          var body=tbl.querySelector("tbody"); body.innerHTML=""; rows.forEach(r=>body.appendChild(r));
+          tbl.querySelectorAll("th").forEach(h=>h.classList.remove("asc","desc")); th.classList.add(asc?"asc":"desc");
+        };
+      });
+    }
+
+    function initExport() {
+      document.getElementById('exportCsvBtn').onclick = function() {
+        var rows = Array.from(document.querySelectorAll('#inscriptionsTable tr'));
+        var csv = rows.map(r => Array.from(r.querySelectorAll('th,td')).map(c => '"' + c.textContent.replace(/"/g,'""') + '"').join(',')).join('\n');
+        var blob = new Blob([csv], { type:'text/csv' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a'); a.href=url; a.download='inscriptions.csv'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+      };
+    }
+
+    var scrollBtn = document.getElementById('scrollTopBtn');
+    window.addEventListener('scroll', function() { scrollBtn.classList.toggle('show', window.pageYOffset>200); });
+    scrollBtn.addEventListener('click', function() { window.scrollTo({ top:0, behavior:'smooth' }); });
+
+    window.addEventListener('load', chargerInscriptions);
+  </script>
+</body>
+</html>
