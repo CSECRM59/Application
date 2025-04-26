@@ -1,4 +1,5 @@
 
+
 // --- INITIALISATION DE FIREBASE ---
 const firebaseConfig = {
   // Remplacez par votre configuration Firebase réelle
@@ -12,6 +13,9 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+
+/* === EmailJS (public key) === */
+emailjs.init('ua6LDZ5bj0OHjyVr-'); 
 
 // --- RÉFÉRENCE AU DOCUMENT ANALYTICS ---
 const analyticsRef = db.collection('analytics').doc('globalCounts');
@@ -146,7 +150,10 @@ function loadNewsPage() {
       <div id="news-container" class="grid"></div>
     </section>`;
 
-  db.collection('news').orderBy('date', 'desc').onSnapshot(snapshot => {
+  db.collection('news')
+  .where('status', '==', 'Publié')   // ⇦ filtre
+  .orderBy('date', 'desc')           // ⇦ tri
+  .onSnapshot(snapshot => {
     const container = document.getElementById('news-container');
     if (!container) return; // Sécurité si la page a changé entre temps
     container.innerHTML = ''; // Vider avant de remplir
@@ -353,6 +360,7 @@ function loadPartnersPage() {
 }
 
 // --- SECTION FORMULAIRE CAFÉ (Adapté Style Atelier) ---
+// --- SECTION FORMULAIRE CAFÉ ---
 function loadCoffeeFormPage() {
   const mainContent = document.getElementById('main-content');
   mainContent.innerHTML = `
@@ -360,300 +368,302 @@ function loadCoffeeFormPage() {
       <h2><i class="fas fa-mug-hot"></i> Signaler un souci Café</h2>
       <div class="form-container">
         <form id="coffeeForm">
-          <p class="note">Un problème avec une machine ? Décrivez-le nous ici pour une intervention rapide.</p>
-          
+          <p class="note">Un problème avec une machine ? Décrivez-le ici.</p>
+
           <div class="form-group">
             <label for="coffee-email" class="required">Votre Email</label>
             <input type="email" id="coffee-email" required placeholder="nom.prenom@example.com">
           </div>
+
           <div class="form-group">
             <label for="coffee-name" class="required">Votre Nom & Prénom</label>
-            <input type="text" id="coffee-name" required placeholder="Ex: Jean Dupont">
+            <input type="text" id="coffee-name" required placeholder="Jean Dupont">
           </div>
+
+          <div class="form-group">
+            <label for="coffee-phone">Téléphone</label>
+            <input type="tel" id="coffee-phone" placeholder="+33 6 12 34 56 78">
+          </div>
+
           <div class="form-group">
             <label for="coffee-operation" class="required">Votre Opération</label>
             <select id="coffee-operation" required>
-              <option value="" disabled selected>Choisir...</option>
-              <option value="Support">Fonction support</option>
-              <option value="AG2R">AG2R</option>
-              <option value="CNAV">CNAV</option>
-              <option value="UCPA">UCPA</option>
-              <option value="IRP Auto">IRP Auto</option>
-              <option value="Abeille">Abeille</option>
-              <option value="EHS">EHS</option>
-              <option value="DCP">Engie DCP</option>
-              <option value="Enedis">Enedis</option>
-              
+              <option value="" disabled selected>Choisir…</option>
+          <option value="Support">Fonction support</option>
+          <option value="AG2R">AG2R</option>
+          <option value="CNAV">CNAV</option>
+          <option value="UCPA">UCPA</option>
+          <option value="IRP Auto">IRP Auto</option>
+          <option value="Abeille">Abeille</option>
+          <option value="EHS">EHS</option>
+          <option value="DCP">Engie DCP</option>
+          <option value="Enedis">Enedis</option>
             </select>
           </div>
+
           <div class="form-group">
             <label for="coffee-machine" class="required">Machine concernée</label>
             <select id="coffee-machine" required>
-              <option value="" disabled selected>Identifier la machine...</option>
-              <option value="DEV125543 (E-1)">DEV125543 (E-1)</option>
-              <option value="BBRD0152 (E-1)">BBRD0152 (E-1)</option>
-              <option value="DEV16567 (E-1)">DEV16567 (E-1)</option>
-              <option value="BBRDL0196 (E-1)">BBRDL0196 (E-1)</option>
-              <option value="DBIC799 (E0)">DBIC799 (E0)</option>
-              <option value="B72ES1979 (E1)">B72ES1979 (E1)</option>
-              <option value="B72ES1903 (E2)">B72ES1903 (E2)</option>
-              <option value="DEV95042 (E2)">DEV95042 (E2)</option>
-              <option value="B72ES1977 (E3)">B72ES1977 (E3)</option>
-             
+              <option value="" disabled selected>Identifier la machine…</option>
+          <option value="DEV125543 (E-1)">DEV125543 (E-1)</option>
+          <option value="BBRD0152 (E-1)">BBRD0152 (E-1)</option>
+          <option value="DEV16567 (E-1)">DEV16567 (E-1)</option>
+          <option value="BBRDL0196 (E-1)">BBRDL0196 (E-1)</option>
+          <option value="DBIC799 (E0)">DBIC799 (E0)</option>
+          <option value="B72ES1979 (E1)">B72ES1979 (E1)</option>
+          <option value="B72ES1903 (E2)">B72ES1903 (E2)</option>
+          <option value="DEV95042 (E2)">DEV95042 (E2)</option>
+          <option value="B72ES1977 (E3)">B72ES1977 (E3)</option>
             </select>
           </div>
+
           <div class="form-group">
             <label for="coffee-problem" class="required">Nature du problème</label>
             <select id="coffee-problem" required>
-              <option value="" disabled selected>Décrire le souci...</option>
-              <option value="Pas de gobelet">Pas de gobelet</option>
-              <option value="Gobelet vide/Boisson non servie">Gobelet vide/Boisson non servie</option>
-              <option value="Produit non conforme">Produit non conforme (mauvais goût, etc.)</option>
-              <option value="Problème de paiement/rechargement">Problème de paiement/rechargement</option>
-              <option value="Machine bloquée/Hors service">Machine bloquée/Hors service</option>
-              <option value="Fuite/Propreté">Fuite/Propreté</option>
-              <option value="Autre">Autre (préciser en commentaire)</option>
+              <option value="" disabled selected>Décrire le souci…</option>
+          <option value="Pas de gobelet">Pas de gobelet</option>
+          <option value="Gobelet vide/Boisson non servie">Gobelet vide / Boisson non servie</option>
+          <option value="Produit non conforme">Produit non conforme</option>
+          <option value="Problème de paiement/rechargement">Problème de paiement / rechargement</option>
+          <option value="Machine bloquée/Hors service">Machine bloquée / Hors service</option>
+          <option value="Fuite/Propreté">Fuite / Propreté</option>
+          <option value="Autre">Autre</option>
             </select>
           </div>
-          
-          <div class="form-group" id="payment-details-group" style="display: none;">
-             <p class="note">Pour un problème de paiement :</p>
-             <div class="form-group">
-                 <label for="coffee-date">Date</label>
-                 <input type="date" id="coffee-date">
-             </div>
-             <div class="form-group">
-                 <label for="coffee-time">Heure approx.</label>
-                 <input type="time" id="coffee-time">
-             </div>
-             <div class="form-group">
-                <label for="coffee-payment">Moyen de paiement utilisé</label>
-                <select id="coffee-payment">
-                  
-                  <option value="Pluxee">Carte Pluxee</option>
-                  <option value="Espece">Espèces</option>
-                  <option value="Badge">Badge interne</option>
-                  <option value="CB">Carte Bancaire</option>
-                </select>
-             </div>
+
+          <div class="form-group">
+            <label for="coffee-date">Date</label>
+            <input type="date" id="coffee-date">
+          </div>
+
+          <div class="form-group">
+            <label for="coffee-time">Heure approx.</label>
+            <input type="time" id="coffee-time">
+          </div>
+
+          <div class="form-group">
+            <label for="coffee-payment">Moyen de paiement</label>
+            <select id="coffee-payment">
+              <option value="" disabled selected>Choisir…</option>
+          <option value="Pluxee">Carte Pluxee</option>
+          <option value="Espece">Espèces</option>
+          <option value="Badge">Badge interne</option>
+          <option value="CB">Carte Bancaire</option>
+            </select>
           </div>
 
           <div class="form-group">
             <label for="coffee-comment">Commentaire (optionnel)</label>
-            <textarea id="coffee-comment" placeholder="Ajoutez des détails si nécessaire..."></textarea>
+            <textarea id="coffee-comment" placeholder="Ajoutez des détails si nécessaire…"></textarea>
           </div>
+
           <button type="submit" id="coffee-submit-btn" class="btn btn-primary">Envoyer le signalement</button>
         </form>
-        
-        <div id="coffee-status" class="form-status-sending" style="display: none;"><i class="fas fa-paper-plane"></i> Envoi en cours...</div>
-        <div id="coffee-confirmation" class="confirmation" style="display: none;"><i class="fas fa-check-circle"></i> Merci ! Votre signalement a bien été noté.</div>
-        <div id="coffee-error" class="error-message" style="display: none;"></div>
+
+        <div id="coffee-status" class="form-status-sending"><i class="fas fa-paper-plane"></i> Envoi en cours…</div>
+        <div id="coffee-confirmation" class="confirmation"><i class="fas fa-check-circle"></i> Merci ! Signalement transmis.</div>
+        <div id="coffee-error" class="error-message"></div>
       </div>
-    </section>
-  `;
+    </section>`;
 
-  // Logique pour afficher/masquer les détails de paiement
-  const problemSelect = document.getElementById('coffee-problem');
-  const paymentGroup = document.getElementById('payment-details-group');
-  if (problemSelect && paymentGroup) {
-      problemSelect.addEventListener('change', (e) => {
-          if (e.target.value === 'Problème de paiement/rechargement') {
-              paymentGroup.style.display = 'block';
-          } else {
-              paymentGroup.style.display = 'none';
-          }
-      });
-  }
-
-  // Gérer la soumission du formulaire
+  /* === Soumission === */
   const coffeeForm = document.getElementById('coffeeForm');
-  if (coffeeForm) {
-      coffeeForm.addEventListener('submit', e => {
-        e.preventDefault();
-        const submitBtn = document.getElementById('coffee-submit-btn');
-        const statusDiv = document.getElementById('coffee-status');
-        const confirmDiv = document.getElementById('coffee-confirmation');
-        const errorDiv = document.getElementById('coffee-error');
+  const submitBtn  = document.getElementById('coffee-submit-btn');
+  const statusDiv  = document.getElementById('coffee-status');
+  const confirmDiv = document.getElementById('coffee-confirmation');
+  const errorDiv   = document.getElementById('coffee-error');
 
-        // Cacher anciens messages, afficher envoi
-        confirmDiv.style.display = 'none';
-        errorDiv.style.display = 'none';
-        statusDiv.style.display = 'block';
-        submitBtn.disabled = true;
+  coffeeForm.addEventListener('submit', e => {
+    e.preventDefault();
+    statusDiv.style.display = 'block';
+    confirmDiv.style.display = 'none';
+    errorDiv.style.display   = 'none';
+    submitBtn.disabled = true;
 
-        const data = {
-          email: document.getElementById('coffee-email').value.trim(),
-          nom: document.getElementById('coffee-name').value.trim(),
-          operation: document.getElementById('coffee-operation').value,
-          machine: document.getElementById('coffee-machine').value,
-          probleme: document.getElementById('coffee-problem').value,
-          // Inclure les champs date/heure/paiement seulement s'ils sont visibles/pertinents
-          dateEvenementRaw: (paymentGroup.style.display === 'block' ? document.getElementById('coffee-date').value : null),
-          heureEvenementRaw: (paymentGroup.style.display === 'block' ? document.getElementById('coffee-time').value : null),
-          paiement: (paymentGroup.style.display === 'block' ? document.getElementById('coffee-payment').value : null),
-          commentaire: document.getElementById('coffee-comment').value.trim(),
-          importTimestamp: firebase.firestore.FieldValue.serverTimestamp(), // Utiliser timestamp serveur
-          status: 'en cours' // Statut initial
-        };
+    const data = {
+      email  : document.getElementById('coffee-email').value.trim(),
+      nom    : document.getElementById('coffee-name').value.trim(),
+      telephone: document.getElementById('coffee-phone').value.trim(),
+      operation: document.getElementById('coffee-operation').value,
+      machine  : document.getElementById('coffee-machine').value,
+      probleme : document.getElementById('coffee-problem').value,
+      dateEvenementRaw : document.getElementById('coffee-date').value || null,
+      heureEvenementRaw: document.getElementById('coffee-time').value || null,
+      paiement : document.getElementById('coffee-payment').value || null,
+      commentaire: document.getElementById('coffee-comment').value.trim(),
+      importTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      status: 'en cours'
+    };
 
-        db.collection('coffee').add(data)
-          .then(() => {
-            statusDiv.style.display = 'none';
-            confirmDiv.style.display = 'block';
-            coffeeForm.reset();
-            paymentGroup.style.display = 'none'; // Cacher à nouveau
-            submitBtn.disabled = false;
-          })
-          .catch(error => {
-            console.error("Erreur envoi formulaire café:", error);
-            statusDiv.style.display = 'none';
-            errorDiv.textContent = "Erreur lors de l'envoi. Veuillez réessayer.";
-            errorDiv.style.display = 'block';
-            submitBtn.disabled = false;
-          });
+    /* 1️⃣ Enregistrer dans Firestore */
+    db.collection('coffee').add(data)
+      /* 2️⃣ Envoyer l’e-mail */
+      .then(() => {
+        return emailjs.send('Coffee_Id', 'template_Coffee', {
+          reply_to          : data.email,
+          nom               : data.nom,
+          telephone         : data.telephone || '—',
+          machine           : data.machine,
+          probleme          : data.probleme,
+          operation         : data.operation,
+          dateEvenementRaw  : data.dateEvenementRaw || '—',
+          heureEvenementRaw : data.heureEvenementRaw || '—',
+          paiement          : data.paiement || '—',
+          commentaire       : data.commentaire || '—'
+        });
+      })
+      /* 3️⃣ Success */
+      .then(() => {
+        statusDiv.style.display = 'none';
+        confirmDiv.style.display = 'block';
+        coffeeForm.reset();
+        submitBtn.disabled = false;
+      })
+      /* 🔴 Erreurs */
+      .catch(err => {
+        console.error('Erreur:', err.status || '', err.text || err);
+        statusDiv.style.display = 'none';
+        errorDiv.textContent = 'Erreur : ' + (err.text || 'envoi impossible, réessayez.');
+        errorDiv.style.display = 'block';
+        submitBtn.disabled = false;
       });
-  }
+  });
 }
 
+
 // --- SECTION FORMULAIRE CONTACT (Adapté Style Atelier) ---
+// --- SECTION FORMULAIRE CONTACT (mise à jour) ---
 function loadContactFormPage() {
   const mainContent = document.getElementById('main-content');
   mainContent.innerHTML = `
     <section id="formulaire-contact">
-       <h2><i class="fas fa-pencil-alt"></i> Écrire au CSE</h2>
-       <div class="form-container">
+      <h2><i class="fas fa-pencil-alt"></i> Écrire au CSE</h2>
+      <div class="form-container">
         <form id="contactForm">
-          <p class="note">Besoin d'une clé café, d'une carte cadeau ou une autre demande ? Laissez-nous un mot.</p>
+          <p class="note">Besoin d'une clé café, d'une carte cadeau ou autre ? Laissez-nous un mot.</p>
+
           <div class="form-group">
             <label for="contact-name" class="required">Votre Nom & Prénom</label>
-            <input type="text" id="contact-name" required placeholder="Ex: Marie Durand">
+            <input type="text" id="contact-name" required placeholder="Marie Durand" />
           </div>
+
           <div class="form-group">
             <label for="contact-email" class="required">Votre Email</label>
-            <input type="email" id="contact-email" required placeholder="marie.durand@example.com">
+            <input type="email" id="contact-email" required placeholder="marie.durand@example.com" />
           </div>
+
           <div class="form-group">
-          <label for="coffee-operation" class="required">Votre Opération</label>
-             <select id="contact-operation" required>
-                <option value="" disabled selected>Choisir...</option>
-                 <option value="Support">Fonction support</option>
-                 <option value="AG2R">AG2R</option>
-                 <option value="CNAV">CNAV</option>
-                 <option value="UCPA">UCPA</option>
-                 <option value="IRP Auto">IRP Auto</option>
-                 <option value="Abeille">Abeille</option>
-                 <option value="EHS">EHS</option>
-                 <option value="DCP">Engie DCP</option>
-                 <option value="Enedis">Enedis</option>
-             </select>
-        
+            <label for="contact-operation" class="required">Votre Opération</label>
+            <select id="contact-operation" required>
+              <option value="" disabled selected>Choisir…</option>
+              <option value="Support">Fonction support</option><option value="AG2R">AG2R</option>
+              <option value="CNAV">CNAV</option><option value="UCPA">UCPA</option>
+              <option value="IRP Auto">IRP Auto</option><option value="Abeille">Abeille</option>
+              <option value="EHS">EHS</option><option value="DCP">Engie DCP</option>
+              <option value="Enedis">Enedis</option>
+            </select>
           </div>
+
           <div class="form-group">
             <label>Objet de la demande (cochez)</label>
             <div class="checkbox-group">
-              <label class="checkbox-label"><input type="checkbox" name="demande" value="Clé café"> Clé café (caution de 7€ en espèce)</label>
-              <label class="checkbox-label"><input type="checkbox" name="demande" value="Carte AccèsCE"> Carte AccèsCE</label>
-              <label class="checkbox-label"><input type="checkbox" name="demande" value="Carte cadeau naissance"> Carte cadeau naissance</label>
-              <label class="checkbox-label"><input type="checkbox" name="demande" value="Carte cadeau mariage/pacs"> Carte cadeau mariage / pacs</label>
-              <label class="checkbox-label"><input type="checkbox" name="demande" value="Carte cadeau retraite"> Carte cadeau retraite</label>
-              <label class="checkbox-label"><input type="checkbox" name="demande" value="Autre"> Autre (préciser ci-dessous)</label>
+              <label class="checkbox-label"><input type="checkbox" name="demande" value="Clé café" /> Clé café (caution 7 €)</label>
+              <label class="checkbox-label"><input type="checkbox" name="demande" value="Carte AccèsCE" /> Carte AccèsCE</label>
+              <label class="checkbox-label"><input type="checkbox" name="demande" value="Carte cadeau naissance" /> Carte cadeau naissance</label>
+              <label class="checkbox-label"><input type="checkbox" name="demande" value="Carte cadeau mariage/pacs" /> Carte cadeau mariage / pacs</label>
+              <label class="checkbox-label"><input type="checkbox" name="demande" value="Carte cadeau retraite" /> Carte cadeau retraite</label>
+              <label class="checkbox-label"><input type="checkbox" name="demande" value="Autre" /> Autre (préciser ci-dessous)</label>
             </div>
           </div>
+
           <div class="form-group">
             <label for="contact-message">Votre Message / Précisions</label>
-            <textarea id="contact-message" rows="4" placeholder="Si 'Autre' ou pour donner plus de détails..."></textarea>
+            <textarea id="contact-message" rows="4" placeholder="Si « Autre » ou pour donner plus de détails…"></textarea>
           </div>
+
           <button type="submit" id="contact-submit-btn" class="btn btn-primary">Envoyer la note</button>
         </form>
-       
-        <div id="contact-status" class="form-status-sending" style="display: none;"><i class="fas fa-paper-plane"></i> Transmission en cours...</div>
-        <div id="contact-confirmation" class="confirmation" style="display: none;"><i class="fas fa-check-circle"></i> C'est noté ! Votre message a été envoyé au CSE.</div>
-        <div id="contact-error" class="error-message" style="display: none;"></div>
+
+        <div id="contact-status" class="form-status-sending"><i class="fas fa-paper-plane"></i> Transmission en cours…</div>
+        <div id="contact-confirmation" class="confirmation"><i class="fas fa-check-circle"></i> C'est noté ! Votre message a été envoyé.</div>
+        <div id="contact-error" class="error-message"></div>
       </div>
     </section>`;
 
-  // Gérer la soumission
+  /* === Soumission === */
   const contactForm = document.getElementById('contactForm');
-  if (contactForm) {
-      contactForm.addEventListener('submit', e => {
-        e.preventDefault();
-        const submitBtn = document.getElementById('contact-submit-btn');
-        const statusDiv = document.getElementById('contact-status');
-        const confirmDiv = document.getElementById('contact-confirmation');
-        const errorDiv = document.getElementById('contact-error');
+  const submitBtn   = document.getElementById('contact-submit-btn');
+  const statusDiv   = document.getElementById('contact-status');
+  const confirmDiv  = document.getElementById('contact-confirmation');
+  const errorDiv    = document.getElementById('contact-error');
 
-        // Récupérer les demandes cochées
-        const demandesCochees = Array.from(contactForm.querySelectorAll('input[name="demande"]:checked')).map(el => el.value);
-        if (demandesCochees.length === 0) {
-            errorDiv.textContent = "Veuillez cocher au moins un objet de demande.";
-            errorDiv.style.display = 'block';
-            return; // Arrêter si aucune case cochée
-        }
+    contactForm.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+  // état initial (utile si tu coches/décoches via auto-remplissage)
+  cb.parentNode.classList.toggle('is-checked', cb.checked);
 
-        // Cacher anciens messages, afficher envoi
-        confirmDiv.style.display = 'none';
-        errorDiv.style.display = 'none';
-        statusDiv.style.display = 'block';
-        submitBtn.disabled = true;
+  cb.addEventListener('change', e => {
+    e.target.parentNode.classList.toggle('is-checked', e.target.checked);
+  });
+});
+    
+  contactForm.addEventListener('submit', e => {
+    e.preventDefault();
 
-        const data = {
-          name: document.getElementById('contact-name').value.trim(),
-          email: document.getElementById('contact-email').value.trim(),
-          operation: document.getElementById('contact-operation').value.trim(),
-          demande: demandesCochees,
-          message: document.getElementById('contact-message').value.trim(),
-          timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-          status: 'en cours' // Statut initial
-        };
+    // Récupère les demandes cochées
+    const demandesCochees = [...contactForm.querySelectorAll('input[name=\"demande\"]:checked')]
+                            .map(el => el.value);
 
-        db.collection('contact').add(data)
-          .then(() => {
-            statusDiv.style.display = 'none';
-            confirmDiv.style.display = 'block';
-            contactForm.reset(); // Vide le formulaire
-            submitBtn.disabled = false;
-          })
-          .catch(error => {
-            console.error("Erreur envoi formulaire contact:", error);
-            statusDiv.style.display = 'none';
-            errorDiv.textContent = "Erreur lors de l'envoi. Veuillez réessayer.";
-            errorDiv.style.display = 'block';
-            submitBtn.disabled = false;
-          });
+    if (demandesCochees.length === 0) {
+      errorDiv.textContent = 'Veuillez cocher au moins un objet de demande.';
+      errorDiv.classList.add('show');
+      return;
+    }
+
+    statusDiv.style.display  = 'block';
+    confirmDiv.style.display = 'none';
+    errorDiv.classList.remove('show');
+    submitBtn.disabled = true;
+
+    const data = {
+      name      : document.getElementById('contact-name').value.trim(),
+      email     : document.getElementById('contact-email').value.trim(),
+      operation : document.getElementById('contact-operation').value,
+      demande   : demandesCochees,
+      message   : document.getElementById('contact-message').value.trim(),
+      timestamp : firebase.firestore.FieldValue.serverTimestamp(),
+      status    : 'en cours'
+    };
+
+    /* 1️⃣ Firestore */
+    db.collection('contact').add(data)
+      /* 2️⃣ EmailJS */
+      .then(() => {
+        return emailjs.send('Coffee_Id', 'template_contact', {
+          name      : data.name,
+          email     : data.email,
+          operation : data.operation,
+          demande   : data.demande.join(', '),
+          message   : data.message || '—'
+        });
+      })
+      /* 3️⃣ Succès */
+      .then(() => {
+        statusDiv.style.display = 'none';
+        confirmDiv.style.display = 'block';
+        contactForm.reset();
+        submitBtn.disabled = false;
+      })
+      /* 🔴 Erreurs */
+      .catch(err => {
+        console.error('Erreur:', err.status || '', err.text || err);
+        statusDiv.style.display = 'none';
+        errorDiv.textContent = 'Erreur : ' + (err.text || 'Envoi impossible.');
+        errorDiv.classList.add('show');
+        submitBtn.disabled = false;
       });
-  }
-    // --- NOUVEAU : GESTION VISUELLE DES CHECKBOXES VIA JS ---
-  const checkboxGroup = contactForm?.querySelector('.checkbox-group');
-  if (checkboxGroup) {
-    // Écouter les changements DANS le groupe pour toutes les checkboxes
-    checkboxGroup.addEventListener('change', function(event) {
-      const targetInput = event.target;
-      // Vérifier si l'élément qui a changé est bien une checkbox dans une label
-      if (targetInput.type === 'checkbox' && targetInput.closest('.checkbox-label')) {
-        const parentLabel = targetInput.closest('.checkbox-label');
-        // Ajouter ou retirer une classe sur la LABEL basée sur l'état coché de l'INPUT
-        if (targetInput.checked) {
-          parentLabel.classList.add('is-checked');
-          console.log('Label class added:', parentLabel); // Debug log
-        } else {
-          parentLabel.classList.remove('is-checked');
-           console.log('Label class removed:', parentLabel); // Debug log
-        }
-      }
-    });
-
-    // Optionnel : Définir l'état initial au chargement (si des cases peuvent être pré-cochées)
-    checkboxGroup.querySelectorAll('input[type="checkbox"]').forEach(input => {
-        const parentLabel = input.closest('.checkbox-label');
-        if (input.checked) {
-            parentLabel.classList.add('is-checked');
-        } else {
-            parentLabel.classList.remove('is-checked');
-        }
-    });
-  }
-  // --- FIN GESTION VISUELLE CHECKBOXES ---
+  });
 }
+
 
 // --- SECTION ACCÈSCE (Dynamique depuis Firestore) ---
 function loadAccescePage() {
@@ -873,30 +883,22 @@ window.addEventListener('appinstalled', () => {
 const updateButton = document.getElementById('update-button');
 if (updateButton) {
     updateButton.addEventListener('click', () => {
-      console.log("Tentative de mise à jour via bouton...");
-      // Méthode simple : recharger la page, le SW fera le reste si une nouvelle version est activée
-      // location.reload();
+  navigator.serviceWorker.getRegistration().then(reg => {
+    if (!reg) return location.reload();
 
-      // Méthode plus avancée: vérifier s'il y a un SW en attente et lui demander de s'activer
-      navigator.serviceWorker.getRegistration().then(registration => {
-          if (registration && registration.waiting) {
-              console.log("SW en attente trouvé, envoi de SKIP_WAITING...");
-              registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-              // Le rechargement peut être déclenché par le SW ou ici après un délai
-              setTimeout(() => {
-                 console.log("Rechargement après SKIP_WAITING...");
-                 window.location.reload();
-              }, 500); // Laisse le temps au SW de s'activer
-          } else {
-              console.log("Pas de SW en attente, simple rechargement.");
-              // Si pas de SW en attente, on recharge juste pour récupérer les nouvelles ressources via le fetch du SW
-              window.location.reload();
+    reg.update().then(() => {
+      if (reg.waiting) {
+        reg.waiting.postMessage({type:'SKIP_WAITING'});
+      } else if (reg.installing) {
+        reg.installing.addEventListener('statechange', e => {
+          if (e.target.state === 'installed' && reg.waiting) {
+            reg.waiting.postMessage({type:'SKIP_WAITING'});
           }
-      }).catch(error => {
-           console.error("Erreur lors de la vérification/activation du SW:", error);
-           window.location.reload(); // Fallback: recharger quand même
-      });
+        });
+      }
     });
+  });
+});
 }
 
 
