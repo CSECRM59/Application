@@ -359,7 +359,6 @@ function loadPartnersPage() {
     }); // Fin onSnapshot
 }
 
-// --- SECTION FORMULAIRE CAFÉ (Adapté Style Atelier) ---
 // --- SECTION FORMULAIRE CAFÉ ---
 function loadCoffeeFormPage() {
   const mainContent = document.getElementById('main-content');
@@ -461,6 +460,27 @@ function loadCoffeeFormPage() {
         </form>
 
         <div id="coffee-status" class="form-status-sending"><i class="fas fa-paper-plane"></i> Envoi en cours…</div>
+        
+        <!-- Procédure de remboursement -->
+        <aside id="refund-procedure" class="refund-box">
+          <h3><i class="fas fa-euro-sign"></i> Procédure de remboursement</h3>
+        
+          <ol>
+            <li>Télécharge l’application&nbsp;
+                <a href="https://lydia-app.com/pro" target="_blank" rel="noopener">Lydia Pro</a>.</li>
+            <li>Remplis le formulaire en ligne</li>
+<li>Une fois par semaine, on envoie toutes les demandes au SAV de MaxiCoffee.</li>
+<li>Le SAV te contacte directement pour faire le remboursement uniquement via Lydia Pro.</li>
+           
+          </ol>
+        
+          <img src="img/InfogCoffee.png"
+               alt="Remboursement – CSE CRM59"
+               class="refund-qr">
+        
+          
+        </aside>
+        
         <div id="coffee-confirmation" class="confirmation"><i class="fas fa-check-circle"></i> Merci ! Signalement transmis.</div>
         <div id="coffee-error" class="error-message"></div>
       </div>
