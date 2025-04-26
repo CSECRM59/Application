@@ -461,7 +461,11 @@ function loadCoffeeFormPage() {
 
         <div id="coffee-status" class="form-status-sending"><i class="fas fa-paper-plane"></i> Envoi en cours…</div>
         
-        <!-- Procédure de remboursement -->
+        
+        
+        <div id="coffee-confirmation" class="confirmation"><i class="fas fa-check-circle"></i> Merci ! Signalement transmis.</div>
+        <div id="coffee-error" class="error-message"></div>
+      <!-- Procédure de remboursement -->
         <aside id="refund-procedure" class="refund-box">
           <h3><i class="fas fa-euro-sign"></i> Procédure de remboursement</h3>
         
@@ -480,9 +484,6 @@ function loadCoffeeFormPage() {
         
           
         </aside>
-        
-        <div id="coffee-confirmation" class="confirmation"><i class="fas fa-check-circle"></i> Merci ! Signalement transmis.</div>
-        <div id="coffee-error" class="error-message"></div>
       </div>
     </section>`;
 
