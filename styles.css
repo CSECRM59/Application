@@ -1265,3 +1265,23 @@ footer {
     padding: 0.4rem 0.8rem;
   }
 }
+
+/* === Bouton Scroll-to-Top === */
+.scroll-top {
+  position: fixed;
+  bottom: 90px;           /* au-dessus du footer */
+  right: 20px;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: var(--accent-couleur-1);
+  color: #fff;
+  font-size: 1rem;
+  box-shadow: var(--ombre-legere);
+  cursor: pointer;
+  display: none;          /* caché tant qu’on est en haut */
+  z-index: 1000;
+  transition: opacity .2s ease;
+}
+.scroll-top:hover { opacity: .85; }
