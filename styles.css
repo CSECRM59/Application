@@ -906,7 +906,7 @@ footer {
 }
 @media (max-width: 480px){
   .refund-box { padding: 1.2rem; }
-  .refund-qr  { max-width: 80%; }
+  <!--.refund-qr  { max-width: 80%; }-->
 }
 
 
