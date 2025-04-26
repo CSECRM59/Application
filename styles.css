@@ -891,8 +891,8 @@ footer {
   padding-left: 0.2rem;
 }
 .refund-qr {
-  width: 140px;
-  max-width: 60%;
+  /*width: 140px;*/
+  max-width: 90%;
   height: auto;
   display: block;
   margin: 0.5rem auto 0.8rem;
