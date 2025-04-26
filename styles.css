@@ -1,931 +1,1267 @@
 
 
-// --- INITIALISATION DE FIREBASE ---
-const firebaseConfig = {
-  // Remplacez par votre configuration Firebase réelle
-  apiKey: "AIzaSyCzlrRY437eu0tUCqK99OXtOeyOdYSUYsw",
-  authDomain: "appli-cse-56b03.firebaseapp.com",
-  projectId: "appli-cse-56b03",
-  storageBucket: "appli-cse-56b03.firebasestorage.app",
-  messagingSenderId: "892776841086",
-  appId: "1:892776841086:web:2a1a7c60be011fda0afd2f"
-};
+/* ================================================== */
+/*       STYLESHEET AppliCSE - Thème Atelier        */
+/* (Adapté depuis CodeSauv-atelier.txt pour salariés) */
+/* ================================================== */
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+/* --- Google Font Import --- */
+@import url('https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Patrick+Hand&family=Architects+Daughter&family=Roboto:wght@400;500;700&display=swap');
 
-/* === EmailJS (public key) === */
-emailjs.init('ua6LDZ5bj0OHjyVr-'); 
+/* --- VARIABLES CSS & STYLES GÉNÉRAUX --- */
+:root {
+  /* Palette "Atelier" */
+  --papier-bg: #f8f5f0; /* Blanc cassé / Kraft très clair */
+  --encre-texte: #4a4a4a; /* Gris foncé, pas noir pur */
+  --encre-secondaire: #7a7a7a; /* Gris moyen */
+  --bordure-crayon: #dcdcdc;
+  --postit-jaune: #fffacd;
+  --postit-bleu: #d3f1ff;
+  --postit-rose: #ffe4e1;
+  --masking-tape-jaune: #ffe8a0;
+  --masking-tape-vert: #cff0cc;
+  --accent-couleur-1: #677BC4; /* Bleu-violet doux pour liens/boutons */
+  --accent-couleur-2: #ffb347; /* Orange doux */
+  --danger-couleur: #e57373; /* Rouge doux */
+  --success-couleur: #81c784; /* Vert doux */
 
-// --- RÉFÉRENCE AU DOCUMENT ANALYTICS ---
-const analyticsRef = db.collection('analytics').doc('globalCounts');
+  /* Typographie */
+  --font-corps: 'Roboto', sans-serif;
+  --font-titre-principal: 'Kalam', cursive;
+  --font-titre-secondaire: 'Patrick Hand', cursive;
+  --font-bouton: 'Architects Daughter', cursive;
 
-// --- FONCTION POUR INCRÉMENTER UN COMPTEUR ANALYTICS ---
-//     (Pour éviter la duplication de code)
-function incrementAnalyticsCounter(fieldName) {
-    const updateData = {};
-    // Utilise FieldValue.increment pour une mise à jour atomique (sécurisée en cas d'accès concurrents)
-    updateData[fieldName] = firebase.firestore.FieldValue.increment(1);
-    // Met aussi à jour le timestamp correspondant (le nom est construit dynamiquement)
-    updateData[`last${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}Timestamp`] = firebase.firestore.FieldValue.serverTimestamp();
+  /* Effets */
+  --ombre-legere: 2px 2px 5px rgba(0, 0, 0, 0.08);
+  --ombre-moyenne: 3px 3px 8px rgba(0, 0, 0, 0.12);
+  --ombre-forte: 5px 5px 15px rgba(0, 0, 0, 0.15);
+  --transition-rapide: 0.2s ease-out;
+  --transition-normale: 0.3s ease;
+}
 
-    analyticsRef.update(updateData)
-    .catch((error) => {
-        // Gère le cas où le document n'existe pas encore (bien qu'on l'ait créé manuellement)
-        if (error.code === 'not-found') {
-            console.warn("Document analytics/globalCounts non trouvé. Tentative de création...");
-            // Crée le document avec le compteur initialisé à 1 et les autres à 0
-            const initialData = { totalViews: 0, totalInstalls: 0 };
-            initialData[fieldName] = 1; // Met le compteur actuel à 1
-            initialData[`last${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}Timestamp`] = firebase.firestore.FieldValue.serverTimestamp();
-            analyticsRef.set(initialData, { merge: true }) // Merge au cas où
-                       .catch(err => console.error("Erreur lors de la création du document analytics:", err));
-        } else {
-            console.error(`Erreur lors de la mise à jour du compteur ${fieldName}:`, error);
-        }
-    });
+body {
+  margin: 0;
+  font-family: var(--font-corps);
+  background-color: var(--papier-bg);
+  /* Optionnel: Texture papier subtile */
+  background-image: url('img/paper.png');
+  color: var(--encre-texte);
+  line-height: 1.6;
+  padding-top: 55px;  /* Espace pour header fixe */
+  padding-bottom: 80px; /* Espace pour footer */
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-weight: 400;
+}
+
+h1 { /* Titre principal Header */
+  font-family: var(--font-titre-principal);
+  font-size: 2.2rem; /* Légèrement réduit pour header fixe */
+  color: var(--encre-texte); /* Couleur principale du texte */
+  font-weight: 700;
+  margin: 0;
+  text-align: center; /* Centrer dans le header */
+  flex-grow: 1; /* Prendre l'espace disponible */
+}
+
+h2 { /* Titre de Section dans <main> */
+ font-family: var(--font-titre-principal);
+ font-size: 2rem;
+ color: var(--encre-texte);
+ border-bottom: 1px dashed var(--bordure-crayon);
+ padding-bottom: 0.5rem;
+ margin-bottom: 2rem;
+ font-weight: 400;
+ text-align: center; /* Centrer les titres de section */
+}
+
+h3 { /* Titres dans les cartes / Sous-titres */
+    font-family: var(--font-titre-secondaire);
+    font-size: 1.3rem;
+    color: var(--accent-couleur-1);
+    margin-bottom: 0.5rem;
+}
+
+h4 { /* Utilisé dans Partner Cards, Member Cards */
+    font-family: var(--font-titre-secondaire);
+    font-size: 1.1em;
+    color: var(--encre-texte);
+    font-weight: 700;
+    margin-bottom: 0.3rem;
 }
 
 
-// --- FONCTION UTILITAIRE POUR ROTATION ALÉATOIRE ---
-function applyRandomRotation(selector) {
-    // Applique une rotation aléatoire aux éléments correspondants
-    document.querySelectorAll(selector).forEach(item => {
-        const randomRotation = Math.random() * 6 - 3; // Entre -3 et +3 degrés
-        item.style.transform = `rotate(${randomRotation}deg)`;
-    });
+p {
+  margin-bottom: 0.75rem;
+  color: var(--encre-secondaire);
+  font-size: 0.95rem;
+}
+p strong {
+    color: var(--encre-texte);
+    font-weight: 500;
 }
 
-// --- FONCTION DE CHARGEMENT DE PAGE ---
-function loadPage(pageId) {
-  // Note: La fermeture du menu n'est plus nécessaire ici
-  const mainContent = document.getElementById('main-content');
-  mainContent.innerHTML = '<p class="loading-message"><i class="fas fa-spinner fa-spin"></i> Chargement du carnet...</p>'; // Message style atelier
+a {
+  color: var(--accent-couleur-1);
+  text-decoration: none;
+  border-bottom: 1px dotted var(--accent-couleur-1);
+  transition: color var(--transition-rapide), border-bottom var(--transition-rapide);
+}
 
-  // Enlever la classe 'active' de l'ancien menu item si nécessaire (optionnel)
-  document.querySelectorAll('.menu-item.active').forEach(item => item.classList.remove('active'));
-  // Ajouter la classe 'active' au nouveau (optionnel, pour style si besoin)
-  const menuItem = document.querySelector(`.menu-item[onclick="loadPage('${pageId}')"]`);
-  if (menuItem) menuItem.classList.add('active');
+a:hover {
+  color: var(--accent-couleur-2);
+  border-bottom: 1px dotted var(--accent-couleur-2);
+}
 
-  // Charger le contenu de la page
-  switch(pageId) {
-    case 'actualites': loadNewsPage(); break;
-    case 'membres': loadMembersPage(); break;
-    case 'partenaires': loadPartnersPage(); break;
-    case 'formulaire-cafe': loadCoffeeFormPage(); break;
-    case 'formulaire-contact': loadContactFormPage(); break;
-    case 'accesce': loadAccescePage(); break;
-    case 'action-logement': loadActionLogementPage(); break;
-    // case 'calendrier': loadCalendarPage(); break; // Si réactivé
-    default:
-      mainContent.innerHTML = '<p class="error-message">Oups ! Page non trouvée dans l\'atelier.</p>';
+img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 3px;
+  /* Style image standard, peut être surchargé par .grid-item img */
+}
+
+/* --- HEADER (Fixe) --- */
+header {
+  /* Fond légèrement différent, ou garder --papier-bg si préféré */
+  background-color: #f4f1eb; /* Un beige très clair, proche du papier */
+  /* background-color: var(--papier-bg); */ /* Alternative: garder le fond papier */
+
+  /* Bordure plus marquée style croquis */
+  border-bottom: 1px dashed var(--bordure-crayon); /* Trait crayonné */
+
+  box-shadow: var(--ombre-legere); /* Ombre plus subtile */
+  padding: 0.6rem 1rem;   /* Padding réduit pour moins de hauteur */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  height: 55px; /* Hauteur réduite */
+  transition: background-color 0.3s ease; /* Garder la transition si besoin futur */
+}
+
+header img.logo {
+  height: 35px; /* Ajuster selon la taille souhaitée du logo */
+  width: auto;
+  margin-right: 12px; /* Espace entre logo et titre */
+  flex-shrink: 0; /* Empêche le logo de rétrécir */
+}
+
+header h1 {
+  font-family: var(--font-titre-principal);
+  font-size: 1.8rem; /* Taille du titre ajustée */
+  color: var(--encre-texte);
+  font-weight: 700;
+  margin: 0;
+  text-align: left; /* Aligné à gauche, près du logo */
+  flex-grow: 1; /* Prend l'espace restant au milieu */
+  white-space: nowrap; /* Empêche le retour à la ligne */
+  overflow: hidden;
+  text-overflow: ellipsis; /* Ajoute ... si trop long */
+}
+
+#install-button.btn { /* Style spécifique au bouton install dans le header */
+    padding: 0.3rem 0.8rem; /* Padding bouton réduit */
+    font-size: 0.85rem;
+    margin-left: 1rem; /* Espace par rapport au titre */
+    flex-shrink: 0; /* Empêche le bouton de rétrécir */
+    /* Les couleurs et autres styles viennent de .btn */
+}
+
+
+/* --- MENU DE NAVIGATION (POST-ITS) --- */
+.menu {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin: 1.5rem 0 3rem 0; /* Marge après header et avant contenu */
+  padding: 0 1rem;
+  position: relative; /* Pour z-index au survol */
+  z-index: 1; /* En dessous du header mais au dessus du contenu normal */
+}
+
+.menu-item {
+  background-color: var(--postit-jaune);
+  border-radius: 3px;
+  width: 95px;
+  height: 95px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: var(--ombre-moyenne);
+  transition: transform var(--transition-rapide), box-shadow var(--transition-rapide);
+  cursor: pointer;
+  text-align: center;
+  /* Rotation initiale via JS */
+}
+
+/* Couleurs alternées */
+.menu-item:nth-child(3n+1) { background-color: var(--postit-bleu); }
+.menu-item:nth-child(3n+2) { background-color: var(--postit-rose); }
+
+.menu-item:hover {
+  transform: rotate(0deg) scale(1.1);
+  box-shadow: var(--ombre-forte);
+  z-index: 10; /* Passe au dessus des autres au survol */
+}
+
+.menu-item i {
+  font-size: 2rem;
+  color: var(--encre-secondaire);
+  margin-bottom: 0.3rem;
+  transition: color var(--transition-rapide);
+}
+
+.menu-item:hover i {
+  color: var(--encre-texte);
+}
+
+.tooltip {
+  display: block;
+  position: static;
+  background: none;
+  color: var(--encre-secondaire);
+  padding: 0;
+  border-radius: 0;
+  font-family: var(--font-titre-secondaire);
+  font-size: 0.8rem;
+  margin-top: 0px;
+  white-space: normal;
+  line-height: 1.2;
+}
+
+/* --- MAIN CONTENT AREA --- */
+main {
+  padding: 1rem 1.5rem;
+  max-width: 900px; /* Un peu plus large pour le contenu */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Section contenant le contenu chargé */
+section {
+    margin-bottom: 40px;
+    animation: fadeIn 0.5s ease forwards; /* Appliquer l'animation */
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- GRILLE & CARTES (Style Atelier .grid-item) --- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 2rem;
+}
+
+.grid-item {
+  background: #fff; /* Fond blanc papier */
+  padding: 1.5rem;
+  border-radius: 4px;
+  box-shadow: var(--ombre-legere);
+  border: 1px solid var(--bordure-crayon);
+  position: relative;
+  transition: transform var(--transition-normale), box-shadow var(--transition-normale);
+  display: flex;
+  flex-direction: column;
+  min-height: 200px; /* Hauteur minimale pour la cohérence */
+  /* Rotation initiale via JS */
+}
+
+.grid-item:hover {
+  transform: rotate(0deg) scale(1.03);
+  box-shadow: var(--ombre-forte);
+  z-index: 5;
+}
+
+/* Effet Masking Tape Optionnel (Décommenter si souhaité) */
+
+.grid-item::before {
+  content: '';
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  width: 70px;
+  height: 25px;
+  background-color: var(--masking-tape-jaune);
+  box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+  border-left: 1px dashed rgba(0,0,0,0.1);
+  border-right: 1px dashed rgba(0,0,0,0.1);
+  transform: translateX(-50%) rotate(-4deg);
+  opacity: 0.75;
+  z-index: 1;
+  pointer-events: none;
+}
+.grid-item:nth-child(2n)::before {
+    background-color: var(--masking-tape-vert);
+    transform: translateX(-50%) rotate(3deg);
+}
+
+
+.grid-item img { /* Style pour images DANS les cartes */
+    border: 1px solid var(--bordure-crayon);
+    padding: 4px;
+    background-color: #fff;
+    box-shadow: var(--ombre-legere);
+    margin-bottom: 1rem;
+    display: block; /* Assure qu'elle prend sa propre ligne */
+}
+
+.grid-item p {
+  font-size: 0.9rem;
+  flex-grow: 1; /* Pour que le contenu pousse le footer de la carte vers le bas */
+  margin-bottom: 0.5rem;
+}
+.grid-item p:last-of-type {
+    margin-bottom: 1rem; /* Espace avant les éventuels éléments en bas */
+}
+
+.grid-item small { /* Pour les dates, statuts etc. */
+    display: block;
+    margin-top: auto; /* Pousse en bas si flex */
+    padding-top: 0.5rem;
+    border-top: 1px dotted var(--bordure-crayon);
+    font-size: 0.8rem;
+    color: var(--encre-secondaire);
+    text-align: right;
+}
+
+/* --- Styles pour le bouton "Lire la suite" --- */
+.btn-read-more {
+  display: block; /* Prend sa propre ligne */
+  margin-top: 0.5rem; /* Espace après le paragraphe */
+  margin-bottom: 0.5rem; /* Espace avant la date (<small>) */
+  padding: 0.3rem 0.6rem;
+  font-family: var(--font-bouton, sans-serif); /* Utilise la police bouton ou fallback */
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: var(--accent-couleur-1); /* Couleur accent */
+  background-color: transparent;
+  border: 1px solid var(--bordure-crayon); /* Bordure discrète */
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  /* Optionnel : alignement à droite */
+  /* margin-left: auto; */
+  /* width: fit-content; */
+}
+
+.btn-read-more:hover {
+  background-color: var(--accent-couleur-1);
+  color: white;
+}
+
+/* Style optionnel pour le paragraphe tronqué (peut aider à visualiser) */
+/* .news-content:not(.expanded) { */
+  /* border-bottom: 1px dashed var(--bordure-crayon); */ /* Ligne pour montrer la coupure */
+/* } */
+
+/* Style pour le conteneur du lien dans les actus */
+.news-link-container {
+  margin-top: 0.75rem; /* Espace au-dessus du lien */
+  margin-bottom: 0.5rem; /* Espace sous le lien, avant la date */
+  text-align: left; /* Ou center, ou right selon votre préférence */
+}
+
+/* Style spécifique pour le lien lui-même (si nécessaire) */
+.news-link {
+  /* Hérite des styles généraux de 'a' définis dans votre CSS */
+  /* Vous pouvez surcharger ici si besoin, ex: */
+  /* font-family: var(--font-bouton, sans-serif); */
+  font-size: 0.9rem;
+}
+
+.news-link i {
+  margin-left: 4px; /* Petit espace avant l'icône */
+}
+/* --- Style pour les cartes Membres spécifiques (adaptation) --- */
+.member-card.grid-item { /* Hérite de .grid-item + spécificités */
+    text-align: center;
+    align-items: center;
+}
+.member-photo {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 15px;
+    border: 3px solid var(--bordure-crayon);
+    background-color: var(--papier-bg); /* Fond si image transparente */
+    box-shadow: var(--ombre-legere);
+    padding: 0; /* Override */
+}
+.member-placeholder { /* Placeholder si pas de photo */
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: #eee;
+    color: var(--encre-secondaire);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 3em;
+    margin-bottom: 15px;
+    border: 1px dashed var(--bordure-crayon);
+}
+.member-role {
+    font-size: 0.9em;
+    color: var(--accent-couleur-1);
+    font-weight: bold;
+    margin: 0.2rem 0 0.5rem 0;
+}
+.member-email, .member-operation {
+    font-size: 0.85em;
+    color: var(--encre-secondaire);
+    margin: 0;
+    word-break: break-all; /* Pour les emails longs */
+}
+
+/* --- Style pour les cartes Partenaires spécifiques (adaptation) --- */
+.partner-card.grid-item {
+    text-align: center;
+    align-items: center;
+}
+.partner-logo {
+    max-width: 90px; /* Un peu plus grand */
+    max-height: 70px;
+    object-fit: contain;
+    margin-bottom: 1rem;
+    border: none !important; /* Pas de bordure/padding/bg style image */
+    padding: 0 !important;
+    background: none !important;
+    box-shadow: none !important;
+}
+/* --- Style pour les cartes Partenaires spécifiques (adaptation) --- */
+/* ... autres styles ... */
+
+.partner-logo-placeholder,
+.partner-logo-placeholder-fallback { /* Appliquer aux deux */
+    width: 70px;
+    height: 70px;
+    border-radius: 4px;
+    background-color: #eee;
+    color: var(--encre-secondaire);
+    display: flex; /* Utiliser flex pour centrer */
+    justify-content: center;
+    align-items: center;
+    font-size: 2em;
+    margin: 0 auto 1rem auto; /* Centré horizontalement */
+    border: 1px dashed var(--bordure-crayon);
+}
+
+/* Optionnel: icône différente pour l'erreur */
+.partner-logo-placeholder-fallback i {
+    color: var(--danger-couleur); /* Rouge doux pour indiquer une erreur */
+}
+.partner-description {
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+    flex-grow: 1; /* Prend l'espace */
+}
+.partner-link {
+    margin-top: auto; /* Pousse vers le bas */
+    padding-top: 0.5rem;
+    border-top: 1px dotted var(--bordure-crayon);
+    width: 100%; /* Prend toute la largeur */
+    text-align: center;
+}
+.partner-link a {
+     font-family: var(--font-bouton);
+     font-size: 0.9rem;
+}
+
+/* --- BOUTONS (Style Atelier) --- */
+.btn {
+  padding: 0.6rem 1.5rem;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-family: var(--font-bouton);
+  font-size: 1rem;
+  font-weight: bold;
+  transition: all var(--transition-rapide);
+  box-shadow: var(--ombre-legere);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: inline-block; /* Comportement bouton */
+}
+
+.btn:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+  box-shadow: var(--ombre-moyenne);
+}
+.btn:active {
+    transform: translateY(0);
+    box-shadow: var(--ombre-legere);
+}
+
+.btn-primary { /* Utilisé pour submit formulaires */
+  background-color: var(--accent-couleur-1);
+  color: #fff;
+}
+.btn-primary:hover {
+  background-color: #5361a1;
+}
+
+.btn-secondary { /* Utilisé pour update button */
+  background-color: var(--masking-tape-jaune);
+  color: var(--encre-texte);
+  border: 1px solid rgba(0, 0, 0, 0.1); /* Simule un bord */
+}
+.btn-secondary:hover {
+  background-color: #fadf90;
+}
+
+/* --- FORMULAIRES (Style Souligné - Appliqué à .form-container) --- */
+.form-container {
+  background: #fff; /* Fond papier blanc */
+  padding: 2rem 2.5rem 2.5rem;
+  border-radius: 5px;
+  border: 1px solid var(--bordure-crayon);
+  max-width: 650px; /* Limite largeur */
+  margin: 0 auto; /* Centre */
+  box-shadow: var(--ombre-moyenne);
+  /* Effet Trombone Optionnel */
+  position: relative;
+}
+/*
+.form-container::before {
+    content: '\f0c6';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    top: -18px;
+    left: 35px;
+    font-size: 2rem;
+    color: #a0a0a0;
+    transform: rotate(-20deg);
+    z-index: 1;
+} */
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.6rem;
+  font-family: var(--font-titre-secondaire);
+  color: var(--encre-secondaire);
+  font-size: 1rem;
+}
+label.required:after { content: " *"; color: var(--danger-couleur); font-weight: normal; }
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="url"],
+.form-group input[type="date"],
+.form-group input[type="time"],
+.form-group input[type="number"],
+.form-group input[type="tel"],
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 0.6rem 0.1rem;
+  border: none;
+  border-bottom: 1px solid var(--bordure-crayon);
+  border-radius: 0;
+  font-size: 1rem;
+  font-family: var(--font-corps);
+  color: var(--encre-texte);
+  background-color: transparent;
+  transition: border-color var(--transition-rapide);
+  box-shadow: none !important;
+  box-sizing: border-box;
+}
+.form-group select {
+    appearance: none;
+    background: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%237a7a7a%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E') no-repeat right .5rem center/10px 10px;
+    padding-right: 1.5rem;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-bottom: 2px solid var(--accent-couleur-1);
+}
+
+.form-group textarea {
+  min-height: 80px;
+  resize: vertical;
+  line-height: 1.5;
+}
+/* === Input Téléphone (uniformiser l’affichage) === */
+input[type="tel"]::-webkit-inner-spin-button,
+input[type="tel"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;            /* retire les petites flèches iOS/macOS */
+}
+input[type="tel"] {
+  appearance: textfield;          /* retire les flèches Windows */
+  letter-spacing: 1px;            /* aère un peu le numéro */
+  font-family: var(--font-corps); /* garde la même police */
+}
+
+
+input:invalid,
+select:invalid {
+  box-shadow: none;        /* supprime la bordure rouge */
+}
+
+/* === Boîte de notification d’erreur === */
+.error-message {
+  display: none;           /* cachée par défaut */
+  animation: fadeIn 0.3s ease-out;   /* petit fade quand on l’affiche */
+}
+.error-message.show {      /* classe qu’on ajoutera en JS */
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+
+select::placeholder, input::placeholder, textarea::placeholder {
+  color: var(--color-text-muted); /* Ou var(--encre-secondaire) */
+  opacity: 0.7; /* Déjà un peu transparent */
+  font-size:0.8rem;
+}
+/* ======================================== */
+/*        CHECKBOXES STYLE ATELIER         */
+/* ======================================== */
+
+.checkbox-group {
+  margin-top: 5px;
+}
+
+/* Style du conteneur de chaque checkbox (label) */
+.checkbox-label {
+  display: block;
+  position: relative; /* <<< IMPORTANT pour positionner ::before et ::after */
+  padding-left: 30px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  font-family: var(--font-corps);
+  font-size: 1rem;
+  color: var(--encre-texte);
+  line-height: 1.4;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Cacher la checkbox HTML native */
+.checkbox-label input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* Créer la fausse boîte (::before sur la label) */
+.checkbox-label::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 2px; /* Ajuster si nécessaire pour alignement vertical parfait */
+  height: 18px;
+  width: 18px;
+  background-color: transparent;
+  border: 1px solid var(--bordure-crayon);
+  border-radius: 3px;
+  transition: background-color 0.2s ease, border-color 0.2s ease; /* Transition ajoutée */
+}
+
+/* Effet au survol */
+.checkbox-label:hover input[type="checkbox"] ~ ::before, /* Sélecteur moderne */
+.checkbox-label:hover::before { /* Sélecteur simple */
+    border-color: var(--accent-couleur-1);
+}
+
+
+/* --- LOGIQUE D'AFFICHAGE QUAND COCHÉ --- */
+
+/* 1. Style de la BOÎTE quand la checkbox interne est cochée */
+.checkbox-label input[type="checkbox"]:checked ~ ::before {
+    background-color: var(--accent-couleur-1);
+    border-color: var(--accent-couleur-1);
+}
+
+
+/* 2. Création de la COCHE (V) (::after sur la label) */
+.checkbox-label.is-checked::before {
+    /* Cible ::before de la label QUAND la label a la classe .is-checked */
+    background-color: var(--accent-couleur-1);
+    border-color: var(--accent-couleur-1);
+}
+
+/* 2. Création de la COCHE (V) (::after sur la label) - Reste identique */
+.checkbox-label::after {
+  content: "";
+  position: absolute;
+  opacity: 0; /* Cachée par défaut */
+  transition: opacity 0.2s ease;
+  left: 6px; top: 5px; width: 5px; height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+
+/* 3. Afficher la COCHE lorsque la LABEL a la classe .is-checked */
+.checkbox-label.is-checked::after {
+    /* Cible ::after de la label QUAND la label a la classe .is-checked */
+    opacity: 1; /* Rend la coche visible */
+}
+
+
+/* --- FIN LOGIQUE D'AFFICHAGE --- */
+
+/* Note dans les formulaires */
+.note {
+  font-size: 0.9em;
+  color: var(--encre-secondaire);
+  margin: -10px 0 15px 0; /* Ajuster position */
+  padding: 8px 12px;
+  background-color: #fdfdee; /* Jaune très pâle */
+  border-radius: 3px;
+  border-left: 3px solid var(--accent-couleur-2);
+}
+
+/* Bouton Submit dans formulaire */
+.form-container button[type="submit"] {
+  display: block;
+  width: auto;
+  margin: 1.5rem auto 0;
+  padding: 0.7rem 2rem;
+  /* Hérite du style .btn .btn-primary */
+}
+.form-container button[type="submit"]:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+    opacity: 0.7;
+}
+
+/* --- MESSAGES (Confirmation, Erreur, Chargement) --- */
+.confirmation, .form-status-sending, .error-message, .loading-message {
+  padding: 1rem;
+  border-radius: 4px;
+  margin: 1.5rem auto; /* Centré */
+  max-width: 600px;
+  font-weight: 500;
+  border: 1px solid transparent;
+  text-align: center;
+  font-family: var(--font-corps);
+}
+.confirmation {
+    background-color: #e8f5e9; color: #2e7d32; border-color: #a5d6a7;
+    display: none; /* Affiché par JS */
+}
+.form-status-sending {
+    background-color: #e3f2fd; color: #0d47a1; border-color: #90caf9;
+    display: none; /* Affiché par JS */
+}
+.error-message {
+    background-color: #ffebee; color: #c62828; border-color: #ef9a9a;
+    /* Affiché par JS si erreur */
+}
+.loading-message {
+    color: var(--encre-secondaire); font-style: italic; text-align: center; padding: 20px;
+    background: none; border: none;
+}
+
+/* --- PAGES TEXTUELLES (AccèsCE, Action Logement) --- */
+.content-page {
+    background: #fff;
+    padding: 2rem 2.5rem;
+    border-radius: 4px;
+    box-shadow: var(--ombre-legere);
+    border: 1px solid var(--bordure-crayon);
+    margin-bottom: 2rem;
+}
+.content-page h3 { /* Sous-titres dans ces pages */
+    border-bottom: 1px dashed var(--bordure-crayon);
+    padding-bottom: 0.3rem;
+    margin-bottom: 1.5rem;
+}
+.content-page ul, .content-page ol {
+    margin-left: 25px;
+    margin-bottom: 1.5rem;
+}
+.content-page li {
+    margin-bottom: 0.5rem;
+}
+/* Bouton spécifique Action Logement / AccèsCE */
+.action-button { /* Style hérité de .btn */
+     margin-top: 1rem;
+     margin-bottom: 0.5rem;
+}
+/* Bloc contact spécifique Action Logement / AccèsCE */
+.contact-commission {
+    margin-top: 2rem;
+    padding: 1rem 1.5rem;
+    background-color: #f9f9f9; /* Fond très léger */
+    border-left: 4px solid var(--accent-couleur-2);
+    border-radius: 3px;
+}
+.contact-commission p { font-size: 0.9rem; margin-bottom: 0.3rem; }
+.contact-commission strong { color: var(--encre-texte); }
+button.inline-link-button { /* Style formulaire inline */
+    background: none; border: none; padding: 0; margin: 0;
+    font: inherit; color: var(--accent-couleur-1);
+    text-decoration: underline; cursor: pointer; font-weight: bold;
+}
+button.inline-link-button:hover { color: var(--accent-couleur-2); }
+
+/* --- FOOTER --- */
+footer {
+  text-align: center;
+  padding: 1rem 1.5rem;
+  background: transparent; /* Pas de fond distinct */
+  color: var(--encre-secondaire);
+  font-size: 0.9em;
+  border-top: 1px solid var(--bordure-crayon);
+  margin-top: 3rem; /* Espace avant le footer */
+  position: relative; /* Ou fixed si besoin */
+  bottom: 0;
+  width: 100%;
+}
+
+.footer-content {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column; /* Empile les éléments */
+  align-items: center;
+  gap: 0.8rem;
+}
+
+#update-button { /* Style hérité de .btn .btn-secondary */
+    margin-top: 0.5rem;
+    padding: 0.5rem 1rem; /* Plus petit */
+    font-size: 0.9rem;
+}
+#update-button:hover {
+     transform: rotate(5deg); /* Légère rotation au survol */
+}
+#update-button i {
+    margin-right: 5px; /* Espace icône/texte */
+    transition: transform 0.3s ease;
+}
+#update-button:hover i {
+    transform: rotate(360deg); /* Icône tourne */
+}
+
+/* === Bloc remboursement Café === */
+.refund-box {
+  margin-top: 2.5rem;
+  padding: 1.5rem 2rem;
+  background: #e8f7ff;
+  border-left: 4px solid #677BC4;
+  border-radius: 4px;
+  box-shadow: var(--ombre-legere);
+  animation: fadeIn 0.4s ease-out;
+}
+.refund-box h3 {
+  font-family: var(--font-titre-secondaire);
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: var(--accent-couleur-1);
+  font-size: 1.2rem;
+}
+.refund-box ol {
+  margin: 0 0 1rem 1.2rem;
+  padding-left: 0.2rem;
+}
+.refund-qr {
+  width: 140px;
+  max-width: 60%;
+  height: auto;
+  display: block;
+  margin: 0.5rem auto 0.8rem;
+  box-shadow: var(--ombre-legere);
+}
+.refund-box .smallprint {
+  font-size: 0.8rem;
+  color: var(--encre-secondaire);
+  text-align: center;
+  margin: 0;
+}
+@media (max-width: 480px){
+  .refund-box { padding: 1.2rem; }
+  .refund-qr  { width: 110px; }
+}
+
+
+/* --- RESPONSIVE DESIGN --- */
+@media (max-width: 768px) {
+  body { padding-top: 60px; } /* Ajuste pour header plus petit */
+  header { height: 60px; padding: 0.8rem 1rem; }
+  header h1 { font-size: 1.8rem; }
+  #install-button { font-size: 0.8em; padding: 0.3rem 0.6rem; }
+  .menu { gap: 1rem; margin-bottom: 2rem; }
+  .menu-item { width: 80px; height: 80px; }
+  .menu-item i { font-size: 1.8rem; }
+  .tooltip { font-size: 0.7rem; }
+  main { padding: 1rem; }
+  h2 { font-size: 1.6rem; margin-bottom: 1.5rem; }
+  .grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.5rem; }
+  .grid-item { padding: 1rem; }
+  .form-container { padding: 1.5rem 1rem 2rem; }
+  .content-page { padding: 1.5rem 1rem; }
+  .btn { padding: 0.5rem 1.2rem; font-size: 0.9rem;}
+  .member-photo, .member-placeholder { width: 80px; height: 80px; }
+  .partner-logo { max-width: 70px; max-height: 50px; }
+  .partner-logo-placeholder { width: 50px; height: 50px; }
+}
+
+@media (max-width: 480px) {
+  /* --- Ajustements Généraux pour Mobile --- */
+  body {
+    padding-top: 50px; /* Correspond à la nouvelle hauteur du header */
   }
 
-  // Remonter en haut de page après chargement
-  window.scrollTo(0, 0);
+  h2 { /* Titres de section */
+    font-size: 1.4rem;
+  }
+
+  /* --- Header --- */
+  header {
+    height: 50px;
+    padding: 0.5rem 0.8rem;
+  }
+  header img.logo {
+    height: 28px; /* Logo plus petit */
+  }
+  header h1 {
+    font-size: 1.3rem; /* Titre principal plus petit */
+    /* Optionnel : le cacher si pas assez de place avec logo + bouton install */
+    /* display: none; */
+  }
+  /* Optionnel : Cacher bouton install si pas assez de place */
+  /*
+  #install-button.btn {
+    display: none;
+  }
+  */
+
+  /* --- Menu Post-it --- */
+  .menu {
+    gap: 0.8rem; /* Espacement réduit entre les post-its */
+    justify-content: space-around; /* Mieux répartir */
+    margin: 1rem 0 2rem 0; /* Ajuster marges */
+  }
+  .menu-item {
+    width: 70px; /* Taille réduite */
+    height: 70px; /* Taille réduite */
+  }
+  .menu-item i {
+    font-size: 1.6rem; /* Icônes réduites */
+  }
+  .tooltip {
+      font-size: 0.7rem; /* Texte sous icône réduit */
+  }
+
+
+  /* --- Grille Générale (2 Colonnes) --- */
+  .grid {
+    grid-template-columns: 1fr 1fr !important; /* <<< Passage à 2 colonnes */
+    gap: 0.8rem;                  /* <<< Espacement réduit */
+  }
+
+  /* --- Cartes Grid Item --- */
+  .grid-item {
+    /*transform: rotate(0) !important;  Annule la rotation sur mobile */
+    padding: 0.8rem;                 /* <<< Padding interne réduit */
+    min-height: 180px;               /* <<< Hauteur minimale */
+  }
+  .grid-item::before {
+    /*display: none;  Cache le scotch (masking tape) sur mobile */
+  }
+
+  /* --- Cartes Membres (Ajustements internes pour 2 colonnes) --- */
+  #members-container.grid { /* Ou juste #members-container si tu es sûr */
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+  }
+    .member-card.grid-item {
+     padding-bottom: 1rem; /* Espace en bas */
+     text-align: center; /* Assurer le centrage */
+  }
+  .member-photo,
+  .member-placeholder {
+    width: 60px;    /* Photo réduite */
+    height: 60px;   /* Photo réduite */
+    font-size: 1.8em; /* Icône placeholder */
+    margin-bottom: 10px;
+  }
+  .member-card h4 { /* Nom */
+    font-size: 0.9em;
+    line-height: 1.2;
+    -webkit-line-clamp: 2; /* Max 2 lignes */
+     margin-bottom: 3px;
+  }
+  .member-role {
+    font-size: 0.75em;
+    margin-bottom: 5px;
+  }
+  .member-operation {
+    font-size: 0.75em;
+     margin-bottom: 5px;
+  }
+  .member-email {
+    font-size: 0.7em;
+    word-break: break-all; /* Couper email si nécessaire */
+  }
+  /* Optionnel : Cacher l'email si trop serré */
+  /* .member-email { display: none; } */
+
+  /* --- Cartes Partenaires (Ajustements internes pour 2 colonnes) --- */
+  .partner-card.grid-item {
+     /* Styles hérités de .grid-item suffisent souvent */
+     text-align: center;
+  }
+  .partner-logo {
+    max-width: 50px;
+    max-height: 40px;
+    margin-bottom: 8px;
+  }
+  .partner-logo-placeholder {
+    width: 45px;
+    height: 45px;
+    font-size: 1.5em;
+    margin-bottom: 8px;
+  }
+  .partner-card h4 { /* Nom partenaire */
+    font-size: 0.85em;
+    min-height: auto; /* Plus besoin de min-height fixe si on clamp */
+    line-height: 1.2;
+    -webkit-line-clamp: 2; /* Max 2 lignes */
+     margin-bottom: 5px;
+  }
+  .partner-description {
+    font-size: 0.75em;
+    -webkit-line-clamp: 2; /* Max 2 lignes */
+    margin-bottom: 8px;
+  }
+   .partner-link a {
+    font-size: 0.8em;
+   }
+
+  /* --- Formulaires & Pages Texte --- */
+  main {
+      padding: 0.8rem; /* Réduire padding général du contenu */
+  }
+  .form-container,
+  .content-page {
+    padding: 1rem; /* Padding réduit pour formulaires/pages texte */
+    box-shadow: var(--ombre-legere); /* Ombre plus légère suffit */
+  }
+  .form-container::before {
+    display: none; /* Cache l'effet trombone */
+  }
+  .form-group {
+      margin-bottom: 1.2rem; /* Moins d'espace entre champs */
+  }
+  .form-container button[type="submit"] {
+       padding: 0.6rem 1.5rem; /* Bouton un peu plus petit */
+       font-size: 0.9rem;
+  }
+
+  /* --- Footer --- */
+  footer {
+    padding: 0.8rem 1rem;
+    margin-top: 2rem; /* Moins d'espace avant footer */
+  }
+  .footer-content p {
+    font-size: 0.8em; /* Texte copyright plus petit */
+  }
+  #update-button {
+    font-size: 0.8em; /* Bouton màj plus petit */
+    padding: 0.4rem 0.8rem;
+  }
 }
+@media (max-width: 400px) {
+  /* --- Ajustements Généraux pour Mobile --- */
+  body {
+    padding-top: 50px; /* Correspond à la nouvelle hauteur du header */
+  }
 
-// --- FONCTION UTILITAIRE POUR "LIRE LA SUITE" ---
-function applyReadMore(selector, maxHeight) {
-    const elements = document.querySelectorAll(selector);
+  h2 { /* Titres de section */
+    font-size: 1.4rem;
+  }
 
-    elements.forEach(element => {
-        // Vérifier si l'élément dépasse la hauteur max ET n'a pas déjà un bouton
-        if (element.scrollHeight > maxHeight && !element.nextElementSibling?.classList.contains('btn-read-more')) {
+  /* --- Header --- */
+  header {
+    height: 50px;
+    padding: 0.5rem 0.8rem;
+  }
+  header img.logo {
+    height: 28px; /* Logo plus petit */
+  }
+  header h1 {
+    font-size: 1.3rem; /* Titre principal plus petit */
+    /* Optionnel : le cacher si pas assez de place avec logo + bouton install */
+    /* display: none; */
+  }
+  /* Optionnel : Cacher bouton install si pas assez de place */
+  /*
+  #install-button.btn {
+    display: none;
+  }
+  */
 
-            // Stocker le contenu original (au cas où, mais pas utilisé ici pour le moment)
-            // const originalContent = element.innerHTML;
-
-            // Appliquer les styles pour tronquer
-            element.style.maxHeight = maxHeight + 'px';
-            element.style.overflow = 'hidden';
-            element.style.position = 'relative'; // Pour positionner le bouton si besoin plus tard
-            element.style.transition = 'max-height 0.3s ease-out'; // Animation douce
-
-            // Créer le bouton "Lire la suite"
-            const readMoreBtn = document.createElement('button');
-            readMoreBtn.textContent = 'Lire la suite...';
-            readMoreBtn.classList.add('btn-read-more'); // Classe pour styler
-            readMoreBtn.setAttribute('aria-expanded', 'false'); // Pour l'accessibilité
-
-            // Ajouter un écouteur d'événement au bouton
-            readMoreBtn.addEventListener('click', () => {
-                const isExpanded = element.classList.toggle('expanded');
-                readMoreBtn.setAttribute('aria-expanded', isExpanded.toString());
-
-                if (isExpanded) {
-                    // Étendre : enlever la limite de hauteur
-                    element.style.maxHeight = element.scrollHeight + 'px';
-                    readMoreBtn.textContent = 'Réduire';
-                } else {
-                    // Réduire : remettre la limite de hauteur
-                    element.style.maxHeight = maxHeight + 'px';
-                    readMoreBtn.textContent = 'Lire la suite...';
-                    // Optionnel: remonter un peu pour voir le début
-                    // element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                }
-            });
-
-            // Insérer le bouton APRES le paragraphe de contenu
-            element.parentNode.insertBefore(readMoreBtn, element.nextSibling);
-        }
-         // Si l'élément est plus court que maxHeight mais avait un bouton (cas de resize fenêtre?), on l'enlève
-         else if (element.scrollHeight <= maxHeight && element.nextElementSibling?.classList.contains('btn-read-more')) {
-            element.nextElementSibling.remove();
-            element.style.maxHeight = ''; // Enlever la contrainte
-            element.style.overflow = '';
-            element.classList.remove('expanded');
-         }
-    });
-}
+  /* --- Menu Post-it --- */
+  .menu {
+    gap: 0.8rem; /* Espacement réduit entre les post-its */
+    justify-content: space-around; /* Mieux répartir */
+    margin: 1rem 0 2rem 0; /* Ajuster marges */
+  }
+  .menu-item {
+    width: 70px; /* Taille réduite */
+    height: 70px; /* Taille réduite */
+  }
+  .menu-item i {
+    font-size: 1.6rem; /* Icônes réduites */
+  }
+  .tooltip {
+      font-size: 0.7rem; /* Texte sous icône réduit */
+  }
 
 
-// --- SECTION ACTUALITÉS (Style Atelier) ---
-function loadNewsPage() {
-  const mainContent = document.getElementById('main-content');
-  mainContent.innerHTML = `
-    <section id="actualites">
-      <h2>Les Dernières Notes</h2>
-      <div id="news-container" class="grid"></div>
-    </section>`;
+  /* --- Grille Générale (2 Colonnes) --- */
+  .grid {
+    grid-template-columns: 1fr 1fr !important; /* <<< Passage à 2 colonnes */
+    gap: 0.8rem;                  /* <<< Espacement réduit */
+  }
 
-  db.collection('news')
-  .where('status', '==', 'Publié')   // ⇦ filtre
-  .orderBy('date', 'desc')           // ⇦ tri
-  .onSnapshot(snapshot => {
-    const container = document.getElementById('news-container');
-    if (!container) return; // Sécurité si la page a changé entre temps
-    container.innerHTML = ''; // Vider avant de remplir
+  /* --- Cartes Grid Item --- */
+  .grid-item {
+    /*transform: rotate(0) !important;  Annule la rotation sur mobile */
+    padding: 0.8rem;                 /* <<< Padding interne réduit */
+    min-height: 180px;               /* <<< Hauteur minimale */
+  }
+  .grid-item::before {
+    /*display: none;  Cache le scotch (masking tape) sur mobile */
+  }
 
-    if (snapshot.empty) {
-      container.innerHTML = '<p>Aucune note d\'actualité pour le moment.</p>';
-    } else {
-      snapshot.forEach(doc => {
-        const news = doc.data();
-        news.id = doc.id; // Garder l'ID si besoin futur
-        const newsItem = document.createElement('div');
-        newsItem.classList.add('grid-item'); // Utilisation de la classe grid-item
-
-          // --- NOUVEAU : Préparer le HTML du lien conditionnellement ---
-        let linkHtml = ''; // Initialiser une chaîne vide
-        if (news.link && typeof news.link === 'string' && news.link.trim() !== '') {
-          // Si le champ 'link' existe, est une chaîne et n'est pas vide
-          linkHtml = `
-            <div class="news-link-container">
-              <a href="${news.link}" target="_blank" rel="noopener noreferrer" class="news-link">
-                Visiter le site <i class="fas fa-external-link-alt fa-xs"></i>
-              </a>
-            </div>
-          `;
-        }
-        // --- FIN NOUVEAU ---
-          
-          newsItem.innerHTML = `
-          ${news.image ? `<img src="${news.image}" alt="Illustration ${news.title}">` : ''}
-          <h3>${news.title}</h3>
-          <p class="news-content">${news.content}</p>
-          ${linkHtml}
-          <small>Noté le ${news.date} (${news.status || 'Publié'})</small>
-        `;
-        container.appendChild(newsItem);
-      });
-        
-      // Paramètres: sélecteur du paragraphe, hauteur max en pixels
-      applyReadMore('.news-content', 100); // Tronquer après 100px de hauteur
-      // Appliquer la rotation APRES avoir ajouté les éléments
-      applyRandomRotation('#actualites .grid-item');
-    }
-  }, error => {
-    console.error("Erreur chargement notes d'actus:", error);
-    if (document.getElementById('actualites')) { // Vérifier si on est toujours sur la page
-        mainContent.innerHTML = '<p class="error-message">Impossible de récupérer les notes d\'actualités.</p>';
-    }
-  });
-}
-
-// --- SECTION MEMBRES (Style Atelier) ---
-function loadMembersPage() {
-  const mainContent = document.getElementById('main-content');
-  mainContent.innerHTML = `
-    <section id="membres">
-      <h2>L'Équipe du CSE</h2>
-      <div id="members-container" class="grid"></div>
-    </section>`;
-
-  db.collection('membres').orderBy('Nom', 'asc').onSnapshot(snapshot => {
-    const container = document.getElementById('members-container');
-     if (!container) return;
-    container.innerHTML = ''; // Vider
-
-    if (snapshot.empty) {
-      container.innerHTML = '<p>L\'équipe n\'est pas encore affichée.</p>';
-    } else {
-      snapshot.forEach(doc => {
-        const member = doc.data();
-        member.id = doc.id;
-        const memberCard = document.createElement('div');
-        // Ajoute grid-item et la classe spécifique pour styles membres
-        memberCard.classList.add('grid-item', 'member-card');
-
-        const photoUrl = member.PhotoURL;
-        const placeholderHtml = '<div class="member-placeholder"><i class="fas fa-user"></i></div>';
-
-        memberCard.innerHTML = `
-          ${photoUrl ? `<img src="${photoUrl}" alt="Portrait de ${member.Prenom}" class="member-photo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"> ${placeholderHtml.replace('style.display=\'flex\'', 'style.display=\'none\'')}` /* Affiche placeholder si erreur */
-                     : placeholderHtml /* Affiche placeholder si pas d'URL */
-          }
-          <h4>${member.Prenom || ''} ${member.Nom || ''}</h4>
-          <p class="member-role">${member.Role || 'Membre'}</p>
-          <p class="member-operation">Op: ${member.Operation || '?'}</p>
-        `;
-        container.appendChild(memberCard);
-      });
-      // Appliquer la rotation APRES avoir ajouté les éléments
-      applyRandomRotation('#membres .grid-item');
-    }
-  }, error => {
-    console.error("Erreur chargement équipe:", error);
-     if (document.getElementById('membres')) {
-        mainContent.innerHTML = '<p class="error-message">Impossible d\'afficher l\'équipe.</p>';
-     }
-  });
-}
-
-// --- SECTION PARTENAIRES (Style Atelier) ---
-function loadPartnersPage() {
-  const mainContent = document.getElementById('main-content');
-  mainContent.innerHTML = `
-    <section id="partenaires">
-      <h2>Nos Partenaires & Bons Plans</h2>
-      <div id="partners-container"></div>
-    </section>`;
-
-  db.collection('partenaires') // <-- Vérifie que le nom 'partenaires' est EXACTEMENT celui dans Firestore
-    .orderBy('Categorie', 'asc')
-    .orderBy('Nom', 'asc')
-    .onSnapshot(snapshot => {
-      const container = document.getElementById('partners-container');
-      if (!container) {
-          console.error("ERREUR: Conteneur #partners-container introuvable !");
-          return; // Arrêter si le conteneur n'existe plus
-      }
-      console.log('[Partners] Snapshot reçu. Empty?', snapshot.empty, 'Size:', snapshot.size); // Debug log
-
-      container.innerHTML = ''; // Vider avant de remplir
-
-      if (snapshot.empty) {
-        console.log('[Partners] Aucun partenaire trouvé dans la collection.'); // Debug log
-        container.innerHTML = '<p>Aucun partenaire à afficher pour le moment.</p>';
-      } else {
-        const partnersByCategory = {};
-        snapshot.forEach(doc => {
-          const partner = doc.data();
-          partner.id = doc.id;
-          console.log('[Partners] Traitement partenaire:', partner.Nom, partner); // Debug log - Voir les données
-          const category = partner.Categorie || 'Divers'; // Catégorie par défaut si manquante
-          if (!partnersByCategory[category]) {
-            partnersByCategory[category] = [];
-          }
-          partnersByCategory[category].push(partner);
-        });
-        console.log('[Partners] Partenaires groupés:', partnersByCategory); // Debug log
-
-        // Afficher par catégorie
-        let hasItems = false; // Pour vérifier si on ajoute au moins un item
-        for (const category in partnersByCategory) {
-          // Création titre catégorie
-          const categoryTitle = document.createElement('h3');
-          categoryTitle.textContent = category;
-          container.appendChild(categoryTitle);
-
-          // Création grille pour cette catégorie
-          const gridContainer = document.createElement('div');
-          gridContainer.classList.add('grid');
-          container.appendChild(gridContainer);
-
-          partnersByCategory[category].forEach(partner => {
-            hasItems = true; // On a trouvé au moins un partenaire
-            const partnerCard = document.createElement('div');
-            partnerCard.classList.add('grid-item', 'partner-card');
-
-            // --- LOGIQUE LOGO/PLACEHOLDER CORRIGÉE ---
-            let logoElementHtml = '';
-            const logoUrl = partner.Logo; // Récupère la valeur (peut être undefined, null, ou une URL)
-            const placeholderHtml = `<div class="partner-logo-placeholder"><i class="fas fa-store"></i></div>`; // Placeholder par défaut
-
-            if (logoUrl) {
-              // Si une URL de logo est fournie, on crée la balise img
-              // On ajoute aussi un placeholder caché qui s'affichera si l'image ne charge pas (onerror)
-              logoElementHtml = `
-                <img src="${logoUrl}"
-                     alt="Logo ${partner.Nom || 'Partenaire'}"
-                     class="partner-logo"
-                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                <div class="partner-logo-placeholder partner-logo-placeholder-fallback" style="display: none;">
-                    <i class="fas fa-image-slash"></i>
-                </div>`;
-            } else {
-              // Si pas d'URL de logo, on affiche directement le placeholder par défaut
-              logoElementHtml = placeholderHtml;
-            }
-            // --- FIN LOGIQUE LOGO/PLACEHOLDER ---
-
-            partnerCard.innerHTML = `
-              ${logoElementHtml}
-              <h4>${partner.Nom || '?'}</h4>
-              <p class="partner-description">${partner.Description || 'Avantage ou réduction.'}</p>
-              ${partner.Lien ? `<div class="partner-link"><a href="${partner.Lien}" target="_blank" rel="noopener noreferrer">Visiter <i class="fas fa-external-link-alt fa-xs"></i></a></div>` : ''}
-            `;
-            gridContainer.appendChild(partnerCard);
-          }); // Fin forEach partner
-        } // Fin for category
-
-        // Appliquer la rotation SEULEMENT si des éléments ont été ajoutés
-        if (hasItems) {
-          console.log('[Partners] Application de la rotation aux grid-items.'); // Debug log
-          applyRandomRotation('#partenaires .grid-item');
-        } else {
-            console.log('[Partners] Aucun grid-item partenaire ajouté, pas de rotation appliquée.');
-        }
-
-      } // Fin else snapshot not empty
-    }, error => {
-      // Erreur Firebase
-      console.error("[Partners] Erreur Firestore:", error);
-      if (document.getElementById('partenaires')) { // Vérifier si on est toujours sur la bonne page
-          mainContent.innerHTML = '<p class="error-message">Oups ! Impossible de charger les partenaires pour le moment. Détails dans la console.</p>';
-      }
-    }); // Fin onSnapshot
-}
-
-// --- SECTION FORMULAIRE CAFÉ ---
-function loadCoffeeFormPage() {
-  const mainContent = document.getElementById('main-content');
-  mainContent.innerHTML = `
-    <section id="formulaire-cafe">
-      <h2><i class="fas fa-mug-hot"></i> Signaler un souci Café</h2>
-      <div class="form-container">
-        <form id="coffeeForm">
-          <p class="note">Un problème avec une machine ? Décrivez-le ici.</p>
-
-          <div class="form-group">
-            <label for="coffee-email" class="required">Votre Email</label>
-            <input type="email" id="coffee-email" required placeholder="nom.prenom@example.com">
-          </div>
-
-          <div class="form-group">
-            <label for="coffee-name" class="required">Votre Nom & Prénom</label>
-            <input type="text" id="coffee-name" required placeholder="Jean Dupont">
-          </div>
-
-          <div class="form-group">
-            <label for="coffee-phone">Téléphone</label>
-            <input type="tel" id="coffee-phone" placeholder="+33 6 12 34 56 78">
-          </div>
-
-          <div class="form-group">
-            <label for="coffee-operation" class="required">Votre Opération</label>
-            <select id="coffee-operation" required>
-              <option value="" disabled selected>Choisir…</option>
-          <option value="Support">Fonction support</option>
-          <option value="AG2R">AG2R</option>
-          <option value="CNAV">CNAV</option>
-          <option value="UCPA">UCPA</option>
-          <option value="IRP Auto">IRP Auto</option>
-          <option value="Abeille">Abeille</option>
-          <option value="EHS">EHS</option>
-          <option value="DCP">Engie DCP</option>
-          <option value="Enedis">Enedis</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="coffee-machine" class="required">Machine concernée</label>
-            <select id="coffee-machine" required>
-              <option value="" disabled selected>Identifier la machine…</option>
-          <option value="DEV125543 (E-1)">DEV125543 (E-1)</option>
-          <option value="BBRD0152 (E-1)">BBRD0152 (E-1)</option>
-          <option value="DEV16567 (E-1)">DEV16567 (E-1)</option>
-          <option value="BBRDL0196 (E-1)">BBRDL0196 (E-1)</option>
-          <option value="DBIC799 (E0)">DBIC799 (E0)</option>
-          <option value="B72ES1979 (E1)">B72ES1979 (E1)</option>
-          <option value="B72ES1903 (E2)">B72ES1903 (E2)</option>
-          <option value="DEV95042 (E2)">DEV95042 (E2)</option>
-          <option value="B72ES1977 (E3)">B72ES1977 (E3)</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="coffee-problem" class="required">Nature du problème</label>
-            <select id="coffee-problem" required>
-              <option value="" disabled selected>Décrire le souci…</option>
-          <option value="Pas de gobelet">Pas de gobelet</option>
-          <option value="Gobelet vide/Boisson non servie">Gobelet vide / Boisson non servie</option>
-          <option value="Produit non conforme">Produit non conforme</option>
-          <option value="Problème de paiement/rechargement">Problème de paiement / rechargement</option>
-          <option value="Machine bloquée/Hors service">Machine bloquée / Hors service</option>
-          <option value="Fuite/Propreté">Fuite / Propreté</option>
-          <option value="Autre">Autre</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="coffee-date">Date</label>
-            <input type="date" id="coffee-date">
-          </div>
-
-          <div class="form-group">
-            <label for="coffee-time">Heure approx.</label>
-            <input type="time" id="coffee-time">
-          </div>
-
-          <div class="form-group">
-            <label for="coffee-payment">Moyen de paiement</label>
-            <select id="coffee-payment">
-              <option value="" disabled selected>Choisir…</option>
-          <option value="Pluxee">Carte Pluxee</option>
-          <option value="Espece">Espèces</option>
-          <option value="Badge">Badge interne</option>
-          <option value="CB">Carte Bancaire</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="coffee-comment">Commentaire (optionnel)</label>
-            <textarea id="coffee-comment" placeholder="Ajoutez des détails si nécessaire…"></textarea>
-          </div>
-
-          <button type="submit" id="coffee-submit-btn" class="btn btn-primary">Envoyer le signalement</button>
-        </form>
-
-        <div id="coffee-status" class="form-status-sending"><i class="fas fa-paper-plane"></i> Envoi en cours…</div>
-        
-        <!-- Procédure de remboursement -->
-        <aside id="refund-procedure" class="refund-box">
-          <h3><i class="fas fa-euro-sign"></i> Procédure de remboursement</h3>
-        
-          <ol>
-            <li>Télécharge l’application&nbsp;
-                <a href="https://lydia-app.com/pro" target="_blank" rel="noopener">Lydia Pro</a>.</li>
-            <li>Remplis le formulaire en ligne</li>
-<li>Une fois par semaine, on envoie toutes les demandes au SAV de MaxiCoffee.</li>
-<li>Le SAV te contacte directement pour faire le remboursement uniquement via Lydia Pro.</li>
-           
-          </ol>
-        
-          <img src="img/InfogCoffee.png"
-               alt="Remboursement – CSE CRM59"
-               class="refund-qr">
-        
-          
-        </aside>
-        
-        <div id="coffee-confirmation" class="confirmation"><i class="fas fa-check-circle"></i> Merci ! Signalement transmis.</div>
-        <div id="coffee-error" class="error-message"></div>
-      </div>
-    </section>`;
-
-  /* === Soumission === */
-  const coffeeForm = document.getElementById('coffeeForm');
-  const submitBtn  = document.getElementById('coffee-submit-btn');
-  const statusDiv  = document.getElementById('coffee-status');
-  const confirmDiv = document.getElementById('coffee-confirmation');
-  const errorDiv   = document.getElementById('coffee-error');
-
-  coffeeForm.addEventListener('submit', e => {
-    e.preventDefault();
-    statusDiv.style.display = 'block';
-    confirmDiv.style.display = 'none';
-    errorDiv.style.display   = 'none';
-    submitBtn.disabled = true;
-
-    const data = {
-      email  : document.getElementById('coffee-email').value.trim(),
-      nom    : document.getElementById('coffee-name').value.trim(),
-      telephone: document.getElementById('coffee-phone').value.trim(),
-      operation: document.getElementById('coffee-operation').value,
-      machine  : document.getElementById('coffee-machine').value,
-      probleme : document.getElementById('coffee-problem').value,
-      dateEvenementRaw : document.getElementById('coffee-date').value || null,
-      heureEvenementRaw: document.getElementById('coffee-time').value || null,
-      paiement : document.getElementById('coffee-payment').value || null,
-      commentaire: document.getElementById('coffee-comment').value.trim(),
-      importTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
-      status: 'en cours'
-    };
-
-    /* 1️⃣ Enregistrer dans Firestore */
-    db.collection('coffee').add(data)
-      /* 2️⃣ Envoyer l’e-mail */
-      .then(() => {
-        return emailjs.send('Coffee_Id', 'template_Coffee', {
-          reply_to          : data.email,
-          nom               : data.nom,
-          telephone         : data.telephone || '—',
-          machine           : data.machine,
-          probleme          : data.probleme,
-          operation         : data.operation,
-          dateEvenementRaw  : data.dateEvenementRaw || '—',
-          heureEvenementRaw : data.heureEvenementRaw || '—',
-          paiement          : data.paiement || '—',
-          commentaire       : data.commentaire || '—'
-        });
-      })
-      /* 3️⃣ Success */
-      .then(() => {
-        statusDiv.style.display = 'none';
-        confirmDiv.style.display = 'block';
-        coffeeForm.reset();
-        submitBtn.disabled = false;
-      })
-      /* 🔴 Erreurs */
-      .catch(err => {
-        console.error('Erreur:', err.status || '', err.text || err);
-        statusDiv.style.display = 'none';
-        errorDiv.textContent = 'Erreur : ' + (err.text || 'envoi impossible, réessayez.');
-        errorDiv.style.display = 'block';
-        submitBtn.disabled = false;
-      });
-  });
-}
-
-
-// --- SECTION FORMULAIRE CONTACT (Adapté Style Atelier) ---
-// --- SECTION FORMULAIRE CONTACT (mise à jour) ---
-function loadContactFormPage() {
-  const mainContent = document.getElementById('main-content');
-  mainContent.innerHTML = `
-    <section id="formulaire-contact">
-      <h2><i class="fas fa-pencil-alt"></i> Écrire au CSE</h2>
-      <div class="form-container">
-        <form id="contactForm">
-          <p class="note">Besoin d'une clé café, d'une carte cadeau ou autre ? Laissez-nous un mot.</p>
-
-          <div class="form-group">
-            <label for="contact-name" class="required">Votre Nom & Prénom</label>
-            <input type="text" id="contact-name" required placeholder="Marie Durand" />
-          </div>
-
-          <div class="form-group">
-            <label for="contact-email" class="required">Votre Email</label>
-            <input type="email" id="contact-email" required placeholder="marie.durand@example.com" />
-          </div>
-
-          <div class="form-group">
-            <label for="contact-operation" class="required">Votre Opération</label>
-            <select id="contact-operation" required>
-              <option value="" disabled selected>Choisir…</option>
-              <option value="Support">Fonction support</option><option value="AG2R">AG2R</option>
-              <option value="CNAV">CNAV</option><option value="UCPA">UCPA</option>
-              <option value="IRP Auto">IRP Auto</option><option value="Abeille">Abeille</option>
-              <option value="EHS">EHS</option><option value="DCP">Engie DCP</option>
-              <option value="Enedis">Enedis</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label>Objet de la demande (cochez)</label>
-            <div class="checkbox-group">
-              <label class="checkbox-label"><input type="checkbox" name="demande" value="Clé café" /> Clé café (caution 7 €)</label>
-              <label class="checkbox-label"><input type="checkbox" name="demande" value="Carte AccèsCE" /> Carte AccèsCE</label>
-              <label class="checkbox-label"><input type="checkbox" name="demande" value="Carte cadeau naissance" /> Carte cadeau naissance</label>
-              <label class="checkbox-label"><input type="checkbox" name="demande" value="Carte cadeau mariage/pacs" /> Carte cadeau mariage / pacs</label>
-              <label class="checkbox-label"><input type="checkbox" name="demande" value="Carte cadeau retraite" /> Carte cadeau retraite</label>
-              <label class="checkbox-label"><input type="checkbox" name="demande" value="Autre" /> Autre (préciser ci-dessous)</label>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="contact-message">Votre Message / Précisions</label>
-            <textarea id="contact-message" rows="4" placeholder="Si « Autre » ou pour donner plus de détails…"></textarea>
-          </div>
-
-          <button type="submit" id="contact-submit-btn" class="btn btn-primary">Envoyer la note</button>
-        </form>
-
-        <div id="contact-status" class="form-status-sending"><i class="fas fa-paper-plane"></i> Transmission en cours…</div>
-        <div id="contact-confirmation" class="confirmation"><i class="fas fa-check-circle"></i> C'est noté ! Votre message a été envoyé.</div>
-        <div id="contact-error" class="error-message"></div>
-      </div>
-    </section>`;
-
-  /* === Soumission === */
-  const contactForm = document.getElementById('contactForm');
-  const submitBtn   = document.getElementById('contact-submit-btn');
-  const statusDiv   = document.getElementById('contact-status');
-  const confirmDiv  = document.getElementById('contact-confirmation');
-  const errorDiv    = document.getElementById('contact-error');
-
-    contactForm.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-  // état initial (utile si tu coches/décoches via auto-remplissage)
-  cb.parentNode.classList.toggle('is-checked', cb.checked);
-
-  cb.addEventListener('change', e => {
-    e.target.parentNode.classList.toggle('is-checked', e.target.checked);
-  });
-});
+  /* --- Cartes Membres (Ajustements internes pour 2 colonnes) --- */
+  .member-card.grid-item {
+     padding-bottom: 1rem; /* Espace en bas */
+     text-align: center; /* Assurer le centrage */
+  }
+#members-container.grid { /* Ou juste #members-container si tu es sûr */
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+  }
     
-  contactForm.addEventListener('submit', e => {
-    e.preventDefault();
+  .member-photo,
+  .member-placeholder {
+    width: 60px;    /* Photo réduite */
+    height: 60px;   /* Photo réduite */
+    font-size: 1.8em; /* Icône placeholder */
+    margin-bottom: 10px;
+  }
+  .member-card h4 { /* Nom */
+    font-size: 0.9em;
+    line-height: 1.2;
+    -webkit-line-clamp: 2; /* Max 2 lignes */
+     margin-bottom: 3px;
+  }
+  .member-role {
+    font-size: 0.75em;
+    margin-bottom: 5px;
+  }
+  .member-operation {
+    font-size: 0.75em;
+     margin-bottom: 5px;
+  }
+  .member-email {
+    font-size: 0.7em;
+    word-break: break-all; /* Couper email si nécessaire */
+  }
+  /* Optionnel : Cacher l'email si trop serré */
+  /* .member-email { display: none; } */
 
-    // Récupère les demandes cochées
-    const demandesCochees = [...contactForm.querySelectorAll('input[name=\"demande\"]:checked')]
-                            .map(el => el.value);
+  /* --- Cartes Partenaires (Ajustements internes pour 2 colonnes) --- */
+  .partner-card.grid-item {
+     /* Styles hérités de .grid-item suffisent souvent */
+     text-align: center;
+  }
+  .partner-logo {
+    max-width: 50px;
+    max-height: 40px;
+    margin-bottom: 8px;
+  }
+  .partner-logo-placeholder {
+    width: 45px;
+    height: 45px;
+    font-size: 1.5em;
+    margin-bottom: 8px;
+  }
+  .partner-card h4 { /* Nom partenaire */
+    font-size: 0.85em;
+    min-height: auto; /* Plus besoin de min-height fixe si on clamp */
+    line-height: 1.2;
+    -webkit-line-clamp: 2; /* Max 2 lignes */
+     margin-bottom: 5px;
+  }
+  .partner-description {
+    font-size: 0.75em;
+    -webkit-line-clamp: 2; /* Max 2 lignes */
+    margin-bottom: 8px;
+  }
+   .partner-link a {
+    font-size: 0.8em;
+   }
 
-    if (demandesCochees.length === 0) {
-      errorDiv.textContent = 'Veuillez cocher au moins un objet de demande.';
-      errorDiv.classList.add('show');
-      return;
-    }
+  /* --- Formulaires & Pages Texte --- */
+  main {
+      padding: 0.8rem; /* Réduire padding général du contenu */
+  }
+  .form-container,
+  .content-page {
+    padding: 1rem; /* Padding réduit pour formulaires/pages texte */
+    box-shadow: var(--ombre-legere); /* Ombre plus légère suffit */
+  }
+  .form-container::before {
+    display: none; /* Cache l'effet trombone */
+  }
+  .form-group {
+      margin-bottom: 1.2rem; /* Moins d'espace entre champs */
+  }
+  .form-container button[type="submit"] {
+       padding: 0.6rem 1.5rem; /* Bouton un peu plus petit */
+       font-size: 0.9rem;
+  }
 
-    statusDiv.style.display  = 'block';
-    confirmDiv.style.display = 'none';
-    errorDiv.classList.remove('show');
-    submitBtn.disabled = true;
-
-    const data = {
-      name      : document.getElementById('contact-name').value.trim(),
-      email     : document.getElementById('contact-email').value.trim(),
-      operation : document.getElementById('contact-operation').value,
-      demande   : demandesCochees,
-      message   : document.getElementById('contact-message').value.trim(),
-      timestamp : firebase.firestore.FieldValue.serverTimestamp(),
-      status    : 'en cours'
-    };
-
-    /* 1️⃣ Firestore */
-    db.collection('contact').add(data)
-      /* 2️⃣ EmailJS */
-      .then(() => {
-        return emailjs.send('Coffee_Id', 'template_contact', {
-          name      : data.name,
-          email     : data.email,
-          operation : data.operation,
-          demande   : data.demande.join(', '),
-          message   : data.message || '—'
-        });
-      })
-      /* 3️⃣ Succès */
-      .then(() => {
-        statusDiv.style.display = 'none';
-        confirmDiv.style.display = 'block';
-        contactForm.reset();
-        submitBtn.disabled = false;
-      })
-      /* 🔴 Erreurs */
-      .catch(err => {
-        console.error('Erreur:', err.status || '', err.text || err);
-        statusDiv.style.display = 'none';
-        errorDiv.textContent = 'Erreur : ' + (err.text || 'Envoi impossible.');
-        errorDiv.classList.add('show');
-        submitBtn.disabled = false;
-      });
-  });
+  /* --- Footer --- */
+  footer {
+    padding: 0.8rem 1rem;
+    margin-top: 2rem; /* Moins d'espace avant footer */
+  }
+  .footer-content p {
+    font-size: 0.8em; /* Texte copyright plus petit */
+  }
+  #update-button {
+    font-size: 0.8em; /* Bouton màj plus petit */
+    padding: 0.4rem 0.8rem;
+  }
 }
-
-
-// --- SECTION ACCÈSCE (Dynamique depuis Firestore) ---
-function loadAccescePage() {
-  const mainContent = document.getElementById('main-content');
-  // Structure de base de la page avec titre et conteneur
-  mainContent.innerHTML = `
-    <section id="accesce">
-      <h2><i class="fas fa-ticket-alt"></i> AccèsCE - Vos Avantages</h2>
-     
-      <div id="accesce-container" class="content-page">
-        <p class="loading-message"><i class="fas fa-spinner fa-spin"></i> Chargement des avantages...</p>
-      </div>
-    </section>`;
-
-  const container = document.getElementById('accesce-container');
-
-  // Récupération des données depuis Firestore
-  db.collection('accesce')
-    // Optionnel: Ajouter un .orderBy() si vous avez un champ pour l'ordre (ex: .orderBy('order', 'asc'))
-    .onSnapshot(snapshot => {
-      // Vérifier si le conteneur existe toujours (au cas où l'utilisateur navigue ailleurs rapidement)
-      if (!container) return;
-
-      container.innerHTML = ''; // Vider le message de chargement ou l'ancien contenu
-
-      if (snapshot.empty) {
-        console.log('[AccesCE] Aucun document trouvé dans la collection.');
-        container.innerHTML = '<p>Aucune information AccèsCE disponible pour le moment.</p>';
-      } else {
-        console.log(`[AccesCE] ${snapshot.size} document(s) trouvé(s).`);
-        // Parcourir chaque document trouvé
-        snapshot.forEach(doc => {
-          const data = doc.data();
-          const descriptionHtml = data.description; // Récupérer le champ 'description'
-
-          if (descriptionHtml && typeof descriptionHtml === 'string') {
-            // Ajouter directement le contenu HTML du champ 'description' au conteneur
-            // IMPORTANT: Assurez-vous que le HTML stocké dans Firestore est sûr !
-            container.innerHTML += descriptionHtml;
-          } else {
-            console.warn(`[AccesCE] Document ${doc.id} n'a pas de champ 'description' valide.`);
-            // Optionnel : afficher un message d'erreur ou ignorer ce document
-          }
-        });
-
-        // IMPORTANT: Si votre HTML contient des éléments interactifs (boutons avec onclick généré par JS),
-        // il faut ré-attacher les écouteurs d'événements ici.
-        rebindDynamicButtonsIfNeeded('#accesce-container');
-
-      }
-    }, error => {
-      // Gérer les erreurs Firestore
-      console.error("[AccesCE] Erreur Firestore:", error);
-      if (document.getElementById('accesce')) { // Vérifier si on est toujours sur la bonne page
-          container.innerHTML = '<p class="error-message">Oups ! Impossible de charger les informations AccèsCE. Réessayez plus tard.</p>';
-      }
-    });
-}
-
-// --- FONCTION UTILITAIRE POUR RÉ-ATTACHER LES ÉCOUTEURS (Exemple) ---
-// À appeler après avoir injecté du HTML dynamique qui contient des éléments cliquables
-function rebindDynamicButtonsIfNeeded(containerSelector) {
-    const container = document.querySelector(containerSelector);
-    if (!container) return;
-
-    // Exemple: si vous avez des boutons générés avec la classe 'inline-link-button' pour contacter
-    container.querySelectorAll('button.inline-link-button').forEach(button => {
-        // Vérifier si l'écouteur n'est pas déjà attaché pour éviter les doublons
-        if (!button.dataset.listenerAttached) {
-             // Vérifier quel onclick est prévu (peut être stocké dans data-action ou analysé)
-             if (button.getAttribute('onclick') && button.getAttribute('onclick').includes("loadPage('formulaire-contact')")) {
-                 button.addEventListener('click', (e) => {
-                     e.preventDefault(); // Bonne pratique
-                     loadPage('formulaire-contact');
-                 });
-                 button.dataset.listenerAttached = 'true'; // Marquer comme attaché
-                 console.log('[Rebind] Écouteur ajouté au bouton contact inline.');
-             }
-             // Ajouter d'autres conditions pour d'autres types de boutons dynamiques si nécessaire
-        }
-    });
-
-     // Exemple pour les liens d'action (si générés dynamiquement)
-     container.querySelectorAll('a.action-button').forEach(link => {
-        if (!link.dataset.listenerAttached && link.href) { // Vérifie qu'il a un href
-            // Pas forcément besoin d'ajouter un listener JS si c'est un lien externe standard
-            // Mais on pourrait vouloir tracker le clic ou autre
-             link.dataset.listenerAttached = 'true';
-        }
-     });
-}
-
-// --- SECTION ACTION LOGEMENT (Dynamique depuis Firestore) ---
-function loadActionLogementPage() {
-  const mainContent = document.getElementById('main-content');
-  // Structure de base de la page avec titre et conteneur
-  mainContent.innerHTML = `
-    <section id="action-logement">
-      <h2><i class="fas fa-house-user"></i> Action Logement</h2>
-      
-      <div id="action-logement-container" class="content-page">
-        <p class="loading-message"><i class="fas fa-spinner fa-spin"></i> Chargement des informations...</p>
-      </div>
-    </section>`;
-
-  const container = document.getElementById('action-logement-container');
-
-  // Récupération des données depuis Firestore
-  db.collection('actionLogement') // <-- Nom de la collection
-    // Optionnel: Ajouter un .orderBy() si besoin (ex: .orderBy('order', 'asc'))
-    .onSnapshot(snapshot => {
-      // Vérifier si le conteneur existe toujours
-      if (!container) return;
-
-      container.innerHTML = ''; // Vider le message de chargement ou l'ancien contenu
-
-      if (snapshot.empty) {
-        console.log('[ActionLogement] Aucun document trouvé.');
-        container.innerHTML = '<p>Aucune information Action Logement disponible pour le moment.</p>';
-      } else {
-        console.log(`[ActionLogement] ${snapshot.size} document(s) trouvé(s).`);
-        // Parcourir chaque document trouvé
-        snapshot.forEach(doc => {
-          const data = doc.data();
-          const contentHtml = data.content; // <-- Récupérer le champ 'content'
-
-          if (contentHtml && typeof contentHtml === 'string') {
-            // Ajouter directement le contenu HTML du champ 'content' au conteneur
-            // IMPORTANT: Assurez-vous que le HTML stocké dans Firestore est sûr !
-            container.innerHTML += contentHtml;
-          } else {
-            console.warn(`[ActionLogement] Document ${doc.id} n'a pas de champ 'content' valide.`);
-          }
-        });
-
-        // Ré-attacher les écouteurs si le contenu dynamique contient des boutons, etc.
-        rebindDynamicButtonsIfNeeded('#action-logement-container');
-
-      }
-    }, error => {
-      // Gérer les erreurs Firestore
-      console.error("[ActionLogement] Erreur Firestore:", error);
-      if (document.getElementById('action-logement')) { // Vérifier si on est toujours sur la bonne page
-          container.innerHTML = '<p class="error-message">Oups ! Impossible de charger les informations Action Logement. Réessayez plus tard.</p>';
-      }
-    });
-}
-
-// --- N'OUBLIEZ PAS LA FONCTION rebindDynamicButtonsIfNeeded SI NÉCESSAIRE ---
-// (Elle est identique à celle fournie précédemment pour AccesCE)
-function rebindDynamicButtonsIfNeeded(containerSelector) {
-    const container = document.querySelector(containerSelector);
-    if (!container) return;
-
-    container.querySelectorAll('button.inline-link-button').forEach(button => {
-        if (!button.dataset.listenerAttached) {
-             if (button.getAttribute('onclick') && button.getAttribute('onclick').includes("loadPage('formulaire-contact')")) {
-                 button.addEventListener('click', (e) => {
-                     e.preventDefault();
-                     loadPage('formulaire-contact');
-                 });
-                 button.dataset.listenerAttached = 'true';
-                 console.log('[Rebind] Écouteur ajouté au bouton contact inline.');
-             }
-             // ... autres boutons dynamiques ...
-        }
-    });
-
-     container.querySelectorAll('a.action-button').forEach(link => {
-        if (!link.dataset.listenerAttached && link.href) {
-             link.dataset.listenerAttached = 'true';
-        }
-     });
-}
-
-// --- GESTION PWA INSTALL PROMPT ---
-let deferredPrompt;
-const installButton = document.getElementById('install-button');
-
-window.addEventListener('beforeinstallprompt', (e) => {
-  console.log('beforeinstallprompt déclenché');
-  // Empêcher Chrome 67 et versions antérieures d'afficher automatiquement la demande
-  e.preventDefault();
-  // Mémoriser l'événement pour pouvoir le déclencher plus tard.
-  deferredPrompt = e;
-  // Afficher notre bouton d'installation personnalisé
-  if(installButton) installButton.style.display = 'inline-block'; // Afficher le bouton
-});
-
-if(installButton) {
-    installButton.addEventListener('click', async () => {
-      // Cacher notre bouton, l'utilisateur ne peut pas l'utiliser deux fois.
-      installButton.style.display = 'none';
-      if (deferredPrompt) {
-        // Afficher la demande d'installation
-        deferredPrompt.prompt();
-        // Attendre la réponse de l'utilisateur
-        const { outcome } = await deferredPrompt.userChoice;
-        console.log(`Résultat installation PWA: ${outcome}`);
-        // Réinitialiser deferredPrompt, car prompt() ne peut être appelé qu'une fois.
-        deferredPrompt = null;
-      } else {
-         console.log("deferredPrompt est null, impossible d'afficher la demande.");
-      }
-    });
-}
-
-window.addEventListener('appinstalled', () => {
-  console.log('PWA installée');
-     incrementAnalyticsCounter('totalInstalls');
-  // Cacher le bouton d'installation si l'application est installée
-  if(installButton) installButton.style.display = 'none';
-  deferredPrompt = null;
-});
-
-// --- GESTION BOUTON MISE À JOUR (via SW) ---
-const updateButton = document.getElementById('update-button');
-if (updateButton) {
-    updateButton.addEventListener('click', () => {
-  navigator.serviceWorker.getRegistration().then(reg => {
-    if (!reg) return location.reload();
-
-    reg.update().then(() => {
-      if (reg.waiting) {
-        reg.waiting.postMessage({type:'SKIP_WAITING'});
-      } else if (reg.installing) {
-        reg.installing.addEventListener('statechange', e => {
-          if (e.target.state === 'installed' && reg.waiting) {
-            reg.waiting.postMessage({type:'SKIP_WAITING'});
-          }
-        });
-      }
-    });
-  });
-});
-}
-
-
-// --- CHARGEMENT INITIAL & ROTATION MENU ---
-window.addEventListener('DOMContentLoaded', () => {
-  console.log("DOM Atelier prêt.");
-  incrementAnalyticsCounter('totalViews');
-    loadPage('actualites'); // Charger la page d'accueil par défaut
-  applyRandomRotation('.menu-item'); // Appliquer la rotation initiale au menu
-});
