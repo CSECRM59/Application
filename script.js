@@ -930,3 +930,16 @@ window.addEventListener('DOMContentLoaded', () => {
     loadPage('actualites'); // Charger la page d'accueil par défaut
   applyRandomRotation('.menu-item'); // Appliquer la rotation initiale au menu
 });
+
+/* === Scroll-to-Top === */
+const scrollBtn = document.getElementById('scrollTop');
+
+// Affiche / masque le bouton
+window.addEventListener('scroll', () => {
+  scrollBtn.style.display = window.scrollY > 300 ? 'block' : 'none';
+});
+
+// Remonte en douceur
+scrollBtn.addEventListener('click', () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
