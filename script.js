@@ -513,7 +513,7 @@ function loadCoffeeFormPage() {
       paiement : document.getElementById('coffee-payment').value || null,
       commentaire: document.getElementById('coffee-comment').value.trim(),
       importTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
-      status: 'en cours'
+      status: 'envoyé au SAV'
     };
 
     /* 1️⃣ Enregistrer dans Firestore */
