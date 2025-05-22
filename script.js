@@ -1,5 +1,3 @@
-
-
 // --- INITIALISATION DE FIREBASE ---
 const firebaseConfig = {
   // Remplacez par votre configuration Firebase réelle
@@ -15,7 +13,7 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 /* === EmailJS (public key) === */
-emailjs.init('ua6LDZ5bj0OHjyVr-'); 
+emailjs.init('ua6LDZ5bj0OHjyVr-');
 
 // --- RÉFÉRENCE AU DOCUMENT ANALYTICS ---
 const analyticsRef = db.collection('analytics').doc('globalCounts');
@@ -73,6 +71,7 @@ function loadPage(pageId) {
     case 'actualites': loadNewsPage(); break;
     case 'membres': loadMembersPage(); break;
     case 'partenaires': loadPartnersPage(); break;
+    case 'infos-utiles': loadInfosUtilesPage(); break; // <<< NOUVELLE PAGE
     case 'formulaire-cafe': loadCoffeeFormPage(); break;
     case 'formulaire-contact': loadContactFormPage(); break;
     case 'accesce': loadAccescePage(); break;
@@ -146,110 +145,121 @@ function loadNewsPage() {
   const mainContent = document.getElementById('main-content');
   mainContent.innerHTML = `
     <section id="actualites">
-      <h2>Les Dernières Notes</h2>
-      <div id="news-container" class="grid"></div>
+      <div id="prochaines-actualites">
+        <h2>Prochaines Notes & Événements</h2>
+        <div id="prochaines-news-container" class="grid"></div>
+      </div>
+      <div id="anciennes-actualites" style="margin-top: 3rem;">
+        <h2>Notes Archivées</h2>
+        <div id="anciennes-news-container" class="grid"></div>
+      </div>
     </section>`;
 
   db.collection('news')
-  .where('status', '==', 'Publié')   // ⇦ filtre
-  .orderBy('date', 'desc')           // ⇦ tri
-  .onSnapshot(snapshot => {
-    const container = document.getElementById('news-container');
-    if (!container) return; // Sécurité si la page a changé entre temps
-    container.innerHTML = ''; // Vider avant de remplir
+    .where('status', '==', 'Publié')
+    .orderBy('date', 'desc') // Toujours trier par date pour l'affichage cohérent
+    .onSnapshot(snapshot => {
+      const prochainesContainer = document.getElementById('prochaines-news-container');
+      const anciennesContainer = document.getElementById('anciennes-news-container');
 
-    if (snapshot.empty) {
-      container.innerHTML = '<p>Aucune note d\'actualité pour le moment.</p>';
-    } else {
-      snapshot.forEach(doc => {
-        const news = doc.data();
-        news.id = doc.id; // Garder l'ID si besoin futur
-        const newsItem = document.createElement('div');
-        newsItem.classList.add('grid-item'); // Utilisation de la classe grid-item
+      const prochainesSection = document.getElementById('prochaines-actualites'); // Pour cacher si vide
+      const anciennesSection = document.getElementById('anciennes-actualites'); // Pour cacher si vide
 
-          // --- NOUVEAU : Préparer le HTML du lien conditionnellement ---
-        let linkHtml = ''; // Initialiser une chaîne vide
-        if (news.link && typeof news.link === 'string' && news.link.trim() !== '') {
-          // Si le champ 'link' existe, est une chaîne et n'est pas vide
-          linkHtml = `
-            <div class="news-link-container">
-              <a href="${news.link}" target="_blank" rel="noopener noreferrer" class="news-link">
-                Visiter le site <i class="fas fa-external-link-alt fa-xs"></i>
-              </a>
-            </div>
-          `;
-        }
-        // --- FIN NOUVEAU ---
-          
-          newsItem.innerHTML = `
-          ${news.image ? `<img src="${news.image}" alt="Illustration ${news.title}">` : ''}
-          <h3>${news.title}</h3>
-          <p class="news-content">${news.content}</p>
-          ${linkHtml}
-          <small>Noté le ${news.date} (${news.status || 'Publié'})</small>
-        `;
-        container.appendChild(newsItem);
-      });
-        
-      // Paramètres: sélecteur du paragraphe, hauteur max en pixels
-      applyReadMore('.news-content', 100); // Tronquer après 100px de hauteur
-      // Appliquer la rotation APRES avoir ajouté les éléments
-      applyRandomRotation('#actualites .grid-item');
-    }
-  }, error => {
-    console.error("Erreur chargement notes d'actus:", error);
-    if (document.getElementById('actualites')) { // Vérifier si on est toujours sur la page
-        mainContent.innerHTML = '<p class="error-message">Impossible de récupérer les notes d\'actualités.</p>';
-    }
-  });
-}
 
-// --- SECTION MEMBRES (Style Atelier) ---
-function loadMembersPage() {
-  const mainContent = document.getElementById('main-content');
-  mainContent.innerHTML = `
-    <section id="membres">
-      <h2>L'Équipe du CSE</h2>
-      <div id="members-container" class="grid"></div>
-    </section>`;
+      if (!prochainesContainer || !anciennesContainer) return;
 
-  db.collection('membres').orderBy('Nom', 'asc').onSnapshot(snapshot => {
-    const container = document.getElementById('members-container');
-     if (!container) return;
-    container.innerHTML = ''; // Vider
+      prochainesContainer.innerHTML = '';
+      anciennesContainer.innerHTML = '';
 
-    if (snapshot.empty) {
-      container.innerHTML = '<p>L\'équipe n\'est pas encore affichée.</p>';
-    } else {
-      snapshot.forEach(doc => {
-        const member = doc.data();
-        member.id = doc.id;
-        const memberCard = document.createElement('div');
-        // Ajoute grid-item et la classe spécifique pour styles membres
-        memberCard.classList.add('grid-item', 'member-card');
+      let hasProchaines = false;
+      let hasAnciennes = false;
 
-        const photoUrl = member.PhotoURL;
-        const placeholderHtml = '<div class="member-placeholder"><i class="fas fa-user"></i></div>';
+      if (snapshot.empty) {
+        prochainesContainer.innerHTML = '<p>Aucune note d\'actualité pour le moment.</p>';
+        anciennesContainer.innerHTML = '<p>Aucune note archivée.</p>'; // Ou masquer la section
+        if(prochainesSection) prochainesSection.style.display = 'block'; // Afficher au moins "prochaines"
+        if(anciennesSection) anciennesSection.style.display = 'none';
+      } else {
+        const aujourdhui = new Date();
+        aujourdhui.setHours(0, 0, 0, 0); // Mettre à minuit pour comparer les dates seulement
 
-        memberCard.innerHTML = `
-          ${photoUrl ? `<img src="${photoUrl}" alt="Portrait de ${member.Prenom}" class="member-photo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"> ${placeholderHtml.replace('style.display=\'flex\'', 'style.display=\'none\'')}` /* Affiche placeholder si erreur */
-                     : placeholderHtml /* Affiche placeholder si pas d'URL */
+        snapshot.forEach(doc => {
+          const news = doc.data();
+          news.id = doc.id;
+          const newsItem = document.createElement('div');
+          newsItem.classList.add('grid-item');
+
+          let linkHtml = '';
+          if (news.link && typeof news.link === 'string' && news.link.trim() !== '') {
+            linkHtml = `
+              <div class="news-link-container">
+                <a href="${news.link}" target="_blank" rel="noopener noreferrer" class="news-link">
+                  Visiter le site <i class="fas fa-external-link-alt fa-xs"></i>
+                </a>
+              </div>
+            `;
           }
-          <h4>${member.Prenom || ''} ${member.Nom || ''}</h4>
-          <p class="member-role">${member.Role || 'Membre'}</p>
-          <p class="member-operation">Op: ${member.Operation || '?'}</p>
-        `;
-        container.appendChild(memberCard);
-      });
-      // Appliquer la rotation APRES avoir ajouté les éléments
-      applyRandomRotation('#membres .grid-item');
-    }
-  }, error => {
-    console.error("Erreur chargement équipe:", error);
-     if (document.getElementById('membres')) {
-        mainContent.innerHTML = '<p class="error-message">Impossible d\'afficher l\'équipe.</p>';
-     }
-  });
+
+          newsItem.innerHTML = `
+            ${news.image ? `<img src="${news.image}" alt="Illustration ${news.title}">` : ''}
+            <h3>${news.title}</h3>
+            <p class="news-content">${news.content}</p>
+            ${linkHtml}
+            <small>Noté le ${news.date} (${news.status || 'Publié'})</small>
+          `;
+
+          // Logique de répartition
+          // Supposons que news.date est au format YYYY-MM-DD
+          // Tu pourrais avoir besoin d'ajuster cette logique si ton champ date est un Timestamp Firestore
+          let dateActu;
+          if (news.date && typeof news.date.toDate === 'function') { // Si c'est un Timestamp Firestore
+            dateActu = news.date.toDate();
+          } else if (typeof news.date === 'string' && news.date.match(/^\d{4}-\d{2}-\d{2}$/)) { // Format YYYY-MM-DD
+            dateActu = new Date(news.date + "T00:00:00"); // Assurer l'interprétation en local time
+          } else {
+            // Si le format de date n'est pas géré, on met dans anciennes par défaut ou on log une erreur
+            console.warn(`Format de date non reconnu pour l'actualité "${news.title}": ${news.date}`);
+            anciennesContainer.appendChild(newsItem);
+            hasAnciennes = true;
+            return; // Passe à l'itération suivante
+          }
+          dateActu.setHours(0,0,0,0);
+
+
+          // Définir un seuil, par exemple, les actus des 7 derniers jours ou futures sont "prochaines"
+          const seuilProchaines = new Date(aujourdhui);
+          seuilProchaines.setDate(aujourdhui.getDate() - 7); // Actus de la semaine passée
+
+          if (dateActu >= seuilProchaines) { // Ou si c'est un événement futur: dateActu >= aujourdhui
+            prochainesContainer.appendChild(newsItem);
+            hasProchaines = true;
+          } else {
+            anciennesContainer.appendChild(newsItem);
+            hasAnciennes = true;
+          }
+        });
+
+        if (!hasProchaines && prochainesContainer) {
+          prochainesContainer.innerHTML = '<p>Aucune note récente ou à venir.</p>';
+        }
+         if (!hasAnciennes && anciennesContainer) {
+          anciennesContainer.innerHTML = '<p>Pas encore de notes archivées.</p>';
+        }
+
+        // Cacher les sections si elles sont vides
+        if(prochainesSection) prochainesSection.style.display = hasProchaines || snapshot.empty ? 'block' : 'none';
+        if(anciennesSection) anciennesSection.style.display = hasAnciennes ? 'block' : 'none';
+
+
+        applyReadMore('.news-content', 100);
+        applyRandomRotation('#actualites .grid-item'); // Appliquer aux deux conteneurs
+      }
+    }, error => {
+      console.error("Erreur chargement notes d'actus:", error);
+      if (document.getElementById('actualites')) {
+          mainContent.innerHTML = '<p class="error-message">Impossible de récupérer les notes d\'actualités.</p>';
+      }
+    });
 }
 
 // --- SECTION PARTENAIRES (Style Atelier) ---
@@ -270,26 +280,26 @@ function loadPartnersPage() {
           console.error("ERREUR: Conteneur #partners-container introuvable !");
           return; // Arrêter si le conteneur n'existe plus
       }
-      console.log('[Partners] Snapshot reçu. Empty?', snapshot.empty, 'Size:', snapshot.size); // Debug log
+      // console.log('[Partners] Snapshot reçu. Empty?', snapshot.empty, 'Size:', snapshot.size); // Debug log
 
       container.innerHTML = ''; // Vider avant de remplir
 
       if (snapshot.empty) {
-        console.log('[Partners] Aucun partenaire trouvé dans la collection.'); // Debug log
+        // console.log('[Partners] Aucun partenaire trouvé dans la collection.'); // Debug log
         container.innerHTML = '<p>Aucun partenaire à afficher pour le moment.</p>';
       } else {
         const partnersByCategory = {};
         snapshot.forEach(doc => {
           const partner = doc.data();
           partner.id = doc.id;
-          console.log('[Partners] Traitement partenaire:', partner.Nom, partner); // Debug log - Voir les données
+          // console.log('[Partners] Traitement partenaire:', partner.Nom, partner); // Debug log - Voir les données
           const category = partner.Categorie || 'Divers'; // Catégorie par défaut si manquante
           if (!partnersByCategory[category]) {
             partnersByCategory[category] = [];
           }
           partnersByCategory[category].push(partner);
         });
-        console.log('[Partners] Partenaires groupés:', partnersByCategory); // Debug log
+        // console.log('[Partners] Partenaires groupés:', partnersByCategory); // Debug log
 
         // Afficher par catégorie
         let hasItems = false; // Pour vérifier si on ajoute au moins un item
@@ -343,10 +353,10 @@ function loadPartnersPage() {
 
         // Appliquer la rotation SEULEMENT si des éléments ont été ajoutés
         if (hasItems) {
-          console.log('[Partners] Application de la rotation aux grid-items.'); // Debug log
+          // console.log('[Partners] Application de la rotation aux grid-items.'); // Debug log
           applyRandomRotation('#partenaires .grid-item');
         } else {
-            console.log('[Partners] Aucun grid-item partenaire ajouté, pas de rotation appliquée.');
+            // console.log('[Partners] Aucun grid-item partenaire ajouté, pas de rotation appliquée.');
         }
 
       } // Fin else snapshot not empty
@@ -357,6 +367,79 @@ function loadPartnersPage() {
           mainContent.innerHTML = '<p class="error-message">Oups ! Impossible de charger les partenaires pour le moment. Détails dans la console.</p>';
       }
     }); // Fin onSnapshot
+}
+
+
+// --- SECTION INFOS UTILES (Style Atelier) ---
+function loadInfosUtilesPage() {
+  const mainContent = document.getElementById('main-content');
+  mainContent.innerHTML = `
+    <section id="infos-utiles">
+      <h2><i class="fas fa-info-circle"></i> Infos Utiles du CSE</h2>
+      <div id="infos-utiles-container" class="grid"></div>
+    </section>`;
+
+  db.collection('infos_utiles')
+    .orderBy('createdAt', 'desc') // Tri par date de création, la plus récente en premier
+    .onSnapshot(snapshot => {
+      const container = document.getElementById('infos-utiles-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      if (snapshot.empty) {
+        container.innerHTML = '<p>Aucune information utile disponible pour le moment.</p>';
+      } else {
+        snapshot.forEach(doc => {
+          const info = doc.data();
+          info.id = doc.id;
+          const infoItem = document.createElement('div');
+          infoItem.classList.add('grid-item');
+
+          let linkHtml = '';
+          if (info.link && typeof info.link === 'string' && info.link.trim() !== '') {
+            linkHtml = `
+              <div class="news-link-container">
+                <a href="${info.link}" target="_blank" rel="noopener noreferrer" class="news-link">
+                  Consulter <i class="fas fa-external-link-alt fa-xs"></i>
+                </a>
+              </div>
+            `;
+          }
+
+          let dateDisplay = 'Date non spécifiée';
+          if (info.createdAt && typeof info.createdAt.toDate === 'function') {
+            dateDisplay = info.createdAt.toDate().toLocaleDateString('fr-FR', {
+              year: 'numeric', month: 'long', day: 'numeric'
+            });
+          } else if (info.date) {
+            dateDisplay = info.date;
+          }
+
+          let categorieHtml = '';
+          if (info.categorie) {
+            categorieHtml = `<p class="info-category"><em>Catégorie : ${info.categorie}</em></p>`;
+          }
+
+          infoItem.innerHTML = `
+            ${info.image ? `<img src="${info.image}" alt="Illustration ${info.title || ''}">` : ''}
+            <h3>${info.title || 'Information'}</h3>
+            ${categorieHtml}
+            <p class="info-content">${info.description || 'Aucune description.'}</p>
+            ${linkHtml}
+            <small>Ajouté le ${dateDisplay}</small>
+          `;
+          container.appendChild(infoItem);
+        });
+
+        applyReadMore('.info-content', 100);
+        applyRandomRotation('#infos-utiles .grid-item');
+      }
+    }, error => {
+      console.error("Erreur chargement infos utiles:", error);
+      if (document.getElementById('infos-utiles')) {
+          mainContent.innerHTML = '<p class="error-message">Impossible de récupérer les informations utiles.</p>';
+      }
+    });
 }
 
 // --- SECTION FORMULAIRE CAFÉ ---
@@ -460,29 +543,26 @@ function loadCoffeeFormPage() {
         </form>
 
         <div id="coffee-status" class="form-status-sending"><i class="fas fa-paper-plane"></i> Envoi en cours…</div>
-        
-        
-        
         <div id="coffee-confirmation" class="confirmation"><i class="fas fa-check-circle"></i> Merci ! Signalement transmis.</div>
         <div id="coffee-error" class="error-message"></div>
       <!-- Procédure de remboursement -->
         <aside id="refund-procedure" class="refund-box">
           <h3><i class="fas fa-euro-sign"></i> Procédure de remboursement</h3>
-        
+
           <ol>
-            <li>Télécharge l’application&nbsp;
+            <li>Télécharge l’application 
                 <a href="https://lydia-app.com/pro" target="_blank" rel="noopener">Lydia Pro</a>.</li>
             <li>Remplis le formulaire en ligne</li>
 <li>Une fois par semaine, on envoie toutes les demandes au SAV de MaxiCoffee.</li>
 <li>Le SAV te contacte directement pour faire le remboursement uniquement via Lydia Pro.</li>
-           
+
           </ol>
-        
+
           <img src="img/InfogCoffee.png"
                alt="Remboursement – CSE CRM59"
                class="refund-qr">
-        
-          
+
+
         </aside>
       </div>
     </section>`;
@@ -626,7 +706,7 @@ function loadContactFormPage() {
     e.target.parentNode.classList.toggle('is-checked', e.target.checked);
   });
 });
-    
+
   contactForm.addEventListener('submit', e => {
     e.preventDefault();
 
@@ -636,13 +716,15 @@ function loadContactFormPage() {
 
     if (demandesCochees.length === 0) {
       errorDiv.textContent = 'Veuillez cocher au moins un objet de demande.';
-      errorDiv.classList.add('show');
+      errorDiv.classList.add('show'); // Utilise la classe 'show' pour l'animation
+      errorDiv.style.display = 'block'; // Assure la visibilité
       return;
     }
 
     statusDiv.style.display  = 'block';
     confirmDiv.style.display = 'none';
     errorDiv.classList.remove('show');
+    errorDiv.style.display = 'none'; // Cache le message d'erreur précédent
     submitBtn.disabled = true;
 
     const data = {
@@ -672,6 +754,10 @@ function loadContactFormPage() {
         statusDiv.style.display = 'none';
         confirmDiv.style.display = 'block';
         contactForm.reset();
+        // Réinitialiser l'état visuel des checkboxes personnalisées
+        contactForm.querySelectorAll('.checkbox-label.is-checked').forEach(label => {
+            label.classList.remove('is-checked');
+        });
         submitBtn.disabled = false;
       })
       /* 🔴 Erreurs */
@@ -680,6 +766,7 @@ function loadContactFormPage() {
         statusDiv.style.display = 'none';
         errorDiv.textContent = 'Erreur : ' + (err.text || 'Envoi impossible.');
         errorDiv.classList.add('show');
+        errorDiv.style.display = 'block'; // Assure la visibilité
         submitBtn.disabled = false;
       });
   });
@@ -693,7 +780,7 @@ function loadAccescePage() {
   mainContent.innerHTML = `
     <section id="accesce">
       <h2><i class="fas fa-ticket-alt"></i> AccèsCE - Vos Avantages</h2>
-     
+
       <div id="accesce-container" class="content-page">
         <p class="loading-message"><i class="fas fa-spinner fa-spin"></i> Chargement des avantages...</p>
       </div>
@@ -714,7 +801,7 @@ function loadAccescePage() {
         console.log('[AccesCE] Aucun document trouvé dans la collection.');
         container.innerHTML = '<p>Aucune information AccèsCE disponible pour le moment.</p>';
       } else {
-        console.log(`[AccesCE] ${snapshot.size} document(s) trouvé(s).`);
+        // console.log(`[AccesCE] ${snapshot.size} document(s) trouvé(s).`);
         // Parcourir chaque document trouvé
         snapshot.forEach(doc => {
           const data = doc.data();
@@ -761,7 +848,7 @@ function rebindDynamicButtonsIfNeeded(containerSelector) {
                      loadPage('formulaire-contact');
                  });
                  button.dataset.listenerAttached = 'true'; // Marquer comme attaché
-                 console.log('[Rebind] Écouteur ajouté au bouton contact inline.');
+                 // console.log('[Rebind] Écouteur ajouté au bouton contact inline.');
              }
              // Ajouter d'autres conditions pour d'autres types de boutons dynamiques si nécessaire
         }
@@ -784,7 +871,7 @@ function loadActionLogementPage() {
   mainContent.innerHTML = `
     <section id="action-logement">
       <h2><i class="fas fa-house-user"></i> Action Logement</h2>
-      
+
       <div id="action-logement-container" class="content-page">
         <p class="loading-message"><i class="fas fa-spinner fa-spin"></i> Chargement des informations...</p>
       </div>
@@ -805,7 +892,7 @@ function loadActionLogementPage() {
         console.log('[ActionLogement] Aucun document trouvé.');
         container.innerHTML = '<p>Aucune information Action Logement disponible pour le moment.</p>';
       } else {
-        console.log(`[ActionLogement] ${snapshot.size} document(s) trouvé(s).`);
+        // console.log(`[ActionLogement] ${snapshot.size} document(s) trouvé(s).`);
         // Parcourir chaque document trouvé
         snapshot.forEach(doc => {
           const data = doc.data();
@@ -832,34 +919,91 @@ function loadActionLogementPage() {
       }
     });
 }
+// --- SECTION MEMBRES (Style Atelier) ---
+function loadMembersPage() {
+  const mainContent = document.getElementById('main-content');
+  mainContent.innerHTML = `
+    <section id="membres">
+      <h2>L'Équipe du CSE</h2>
+      <div id="members-container" class="grid"></div>
+    </section>`;
 
-// --- N'OUBLIEZ PAS LA FONCTION rebindDynamicButtonsIfNeeded SI NÉCESSAIRE ---
-// (Elle est identique à celle fournie précédemment pour AccesCE)
-function rebindDynamicButtonsIfNeeded(containerSelector) {
-    const container = document.querySelector(containerSelector);
-    if (!container) return;
+  db.collection('membres').orderBy('Nom', 'asc').onSnapshot(snapshot => {
+    const container = document.getElementById('members-container');
+     if (!container) return; // Sécurité si la page a changé
+    container.innerHTML = ''; // Vider avant de remplir
 
-    container.querySelectorAll('button.inline-link-button').forEach(button => {
-        if (!button.dataset.listenerAttached) {
-             if (button.getAttribute('onclick') && button.getAttribute('onclick').includes("loadPage('formulaire-contact')")) {
-                 button.addEventListener('click', (e) => {
-                     e.preventDefault();
-                     loadPage('formulaire-contact');
-                 });
-                 button.dataset.listenerAttached = 'true';
-                 console.log('[Rebind] Écouteur ajouté au bouton contact inline.');
-             }
-             // ... autres boutons dynamiques ...
+    if (snapshot.empty) {
+      container.innerHTML = '<p>L\'équipe n\'est pas encore affichée.</p>';
+    } else {
+      snapshot.forEach(doc => {
+        const member = doc.data();
+        member.id = doc.id;
+        const memberCard = document.createElement('div');
+        // Ajoute grid-item et la classe spécifique pour styles membres
+        memberCard.classList.add('grid-item', 'member-card');
+
+        const photoUrl = member.PhotoURL;
+        // Placeholder si pas de photo ou si la photo ne charge pas
+        const placeholderHtml = '<div class="member-placeholder"><i class="fas fa-user"></i></div>';
+        let imageElement;
+
+        if (photoUrl) {
+          // Crée l'élément image
+          imageElement = document.createElement('img');
+          imageElement.src = photoUrl;
+          imageElement.alt = `Portrait de ${member.Prenom || ''} ${member.Nom || ''}`;
+          imageElement.classList.add('member-photo');
+
+          // Crée un placeholder caché qui s'affichera si l'image ne charge pas
+          const hiddenPlaceholder = document.createElement('div');
+          hiddenPlaceholder.classList.add('member-placeholder');
+          hiddenPlaceholder.innerHTML = '<i class="fas fa-user"></i>';
+          hiddenPlaceholder.style.display = 'none'; // Caché par défaut
+
+          imageElement.onerror = function() {
+            this.style.display = 'none'; // Cache l'image cassée
+            hiddenPlaceholder.style.display = 'flex'; // Affiche le placeholder
+          };
+          // Pour l'affichage initial, on ajoute l'image et le placeholder caché
+           memberCard.appendChild(imageElement);
+           memberCard.appendChild(hiddenPlaceholder);
+        } else {
+          // Si pas d'URL de photo, on affiche directement le placeholder
+          memberCard.innerHTML = placeholderHtml; // Attention, ceci écrase ce qui précède si on utilise innerHTML
+                                               // Il vaut mieux utiliser appendChild aussi pour le placeholder seul
         }
-    });
+        
+        // Pour éviter d'écraser les images avec innerHTML par la suite, on construit le reste séparément
+        const memberInfoDiv = document.createElement('div');
+        memberInfoDiv.innerHTML = `
+          <h4>${member.Prenom || ''} ${member.Nom || ''}</h4>
+          <p class="member-role">${member.Role || 'Membre'}</p>
+          <p class="member-operation">Op: ${member.Operation || '?'}</p>
+        `;
 
-     container.querySelectorAll('a.action-button').forEach(link => {
-        if (!link.dataset.listenerAttached && link.href) {
-             link.dataset.listenerAttached = 'true';
+        // Si on n'a pas de photoUrl, on nettoie la carte avant d'ajouter le placeholder et les infos
+        if (!photoUrl) {
+            memberCard.innerHTML = ''; // Nettoyer la carte
+            const defaultPlaceholder = document.createElement('div');
+            defaultPlaceholder.classList.add('member-placeholder');
+            defaultPlaceholder.innerHTML = '<i class="fas fa-user"></i>';
+            memberCard.appendChild(defaultPlaceholder);
         }
-     });
+        
+        memberCard.appendChild(memberInfoDiv); // Ajoute les infos textuelles
+        container.appendChild(memberCard);
+      });
+      // Appliquer la rotation APRES avoir ajouté les éléments
+      applyRandomRotation('#membres .grid-item');
+    }
+  }, error => {
+    console.error("Erreur chargement équipe:", error);
+     if (document.getElementById('membres')) { // Vérifier si on est toujours sur la page
+        mainContent.innerHTML = '<p class="error-message">Impossible d\'afficher l\'équipe.</p>';
+     }
+  });
 }
-
 // --- GESTION PWA INSTALL PROMPT ---
 let deferredPrompt;
 const installButton = document.getElementById('install-button');
@@ -885,6 +1029,9 @@ if(installButton) {
         const { outcome } = await deferredPrompt.userChoice;
         console.log(`Résultat installation PWA: ${outcome}`);
         // Réinitialiser deferredPrompt, car prompt() ne peut être appelé qu'une fois.
+        if (outcome === 'accepted') {
+            incrementAnalyticsCounter('totalInstalls');
+        }
         deferredPrompt = null;
       } else {
          console.log("deferredPrompt est null, impossible d'afficher la demande.");
@@ -894,9 +1041,11 @@ if(installButton) {
 
 window.addEventListener('appinstalled', () => {
   console.log('PWA installée');
-     incrementAnalyticsCounter('totalInstalls');
   // Cacher le bouton d'installation si l'application est installée
   if(installButton) installButton.style.display = 'none';
+  // Note: l'incrémentation de 'totalInstalls' est mieux gérée dans le 'userChoice' ci-dessus
+  // car 'appinstalled' peut ne pas se déclencher de manière fiable sur tous les navigateurs/plateformes
+  // ou si l'installation se fait via d'autres moyens que le prompt.
   deferredPrompt = null;
 });
 
@@ -904,22 +1053,35 @@ window.addEventListener('appinstalled', () => {
 const updateButton = document.getElementById('update-button');
 if (updateButton) {
     updateButton.addEventListener('click', () => {
-  navigator.serviceWorker.getRegistration().then(reg => {
-    if (!reg) return location.reload();
-
-    reg.update().then(() => {
-      if (reg.waiting) {
-        reg.waiting.postMessage({type:'SKIP_WAITING'});
-      } else if (reg.installing) {
-        reg.installing.addEventListener('statechange', e => {
-          if (e.target.state === 'installed' && reg.waiting) {
-            reg.waiting.postMessage({type:'SKIP_WAITING'});
-          }
+        navigator.serviceWorker.getRegistration().then(reg => {
+            if (reg && reg.waiting) { // Si un nouveau SW est en attente
+                reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+                // Recharger la page une fois que le nouveau SW a pris le contrôle
+                // peut nécessiter un léger délai ou écouter l'événement 'controllerchange'
+                navigator.serviceWorker.addEventListener('controllerchange', () => {
+                    window.location.reload();
+                });
+            } else if (reg) { // S'il n'y a pas de SW en attente, on vérifie les mises à jour
+                reg.update().then(() => {
+                    if (reg.waiting) { // Si la mise à jour a trouvé un nouveau SW
+                        reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+                        navigator.serviceWorker.addEventListener('controllerchange', () => {
+                            window.location.reload();
+                        });
+                    } else {
+                         // Optionnel: informer l'utilisateur qu'il est déjà à jour
+                        // alert("Vous êtes déjà à la dernière version.");
+                        location.reload(); // Ou simplement recharger pour être sûr
+                    }
+                }).catch(error => {
+                    console.error("Erreur lors de la tentative de mise à jour du SW:", error);
+                    location.reload(); // Recharger en cas d'erreur de vérification
+                });
+            } else { // Si aucun SW n'est enregistré (ne devrait pas arriver si le SW s'est bien enregistré au chargement)
+                location.reload();
+            }
         });
-      }
     });
-  });
-});
 }
 
 
@@ -927,19 +1089,21 @@ if (updateButton) {
 window.addEventListener('DOMContentLoaded', () => {
   console.log("DOM Atelier prêt.");
   incrementAnalyticsCounter('totalViews');
-    loadPage('actualites'); // Charger la page d'accueil par défaut
+  loadPage('actualites'); // Charger la page d'accueil par défaut
   applyRandomRotation('.menu-item'); // Appliquer la rotation initiale au menu
 });
 
 /* === Scroll-to-Top === */
 const scrollBtn = document.getElementById('scrollTop');
 
-// Affiche / masque le bouton
-window.addEventListener('scroll', () => {
-  scrollBtn.style.display = window.scrollY > 300 ? 'block' : 'none';
-});
+if (scrollBtn) { // S'assurer que le bouton existe
+    // Affiche / masque le bouton
+    window.addEventListener('scroll', () => {
+      scrollBtn.style.display = window.scrollY > 300 ? 'block' : 'none';
+    });
 
-// Remonte en douceur
-scrollBtn.addEventListener('click', () => {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-});
+    // Remonte en douceur
+    scrollBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+}
