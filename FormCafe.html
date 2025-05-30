@@ -34,16 +34,54 @@
     .form-group{margin-bottom:1.5rem;}
     .form-group label{display:block;margin-bottom:.6rem;font-family:var(--font-titre-secondaire);color:var(--encre-secondaire);}
     label.required:after{content:' *';color:var(--danger-couleur);}
-    .form-group input,.form-group select,.form-group textarea{width:100%;padding:.6rem .1rem;border:none;border-bottom:1px solid var(--bordure-crayon);background:transparent;box-sizing:border-box;transition:border-color var(--transition-rapide);}
+    .form-group input,.form-group select,.form-group textarea{width:100%;padding:.6rem .1rem;border:none;border-bottom:1px solid var(--bordure-crayon);background:transparent;box-sizing:border-box;transition:border-color var(--transition-rapide);font-size: 1rem; /* Ajout pour lisibilité */}
     .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-bottom:2px solid var(--accent-couleur-1);}
+    .form-group textarea{min-height: 80px; resize: vertical;}
+    select::placeholder, input::placeholder, textarea::placeholder {color: var(--encre-secondaire);opacity: 0.7;font-size:0.9rem;}
     .note{font-size:.9em;color:var(--encre-secondaire);background:#fdfdee;padding:8px 12px;border-left:3px solid var(--accent-couleur-2);margin:-10px 0 15px;border-radius:3px;}
     .btn{padding:.6rem 1.5rem;font-family:var(--font-bouton);text-transform:uppercase;letter-spacing:1px;border:none;border-radius:3px;cursor:pointer;box-shadow:var(--ombre-legere);transition:opacity var(--transition-rapide),transform var(--transition-rapide);}
     .btn-primary{background:var(--accent-couleur-1);color:#fff;}
     .btn-primary:hover{opacity:.9;transform:translateY(-2px);}
+    .btn-primary:disabled{background-color: #ccc; cursor: not-allowed; box-shadow: none; transform: none; opacity: 0.7;}
     .confirmation,.form-status-sending,.error-message{display:none;padding:1rem;border-radius:4px;margin:1.5rem auto 0;max-width:600px;text-align:center;font-family:var(--font-corps);}
     .confirmation{background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;}
     .form-status-sending{background:#e3f2fd;color:#0d47a1;border:1px solid #90caf9;}
     .error-message{background:#ffebee;color:#c62828;border:1px solid #ef9a9a;}
+    /* === Bloc remboursement Café === */
+.refund-box {
+  margin-top: 2.5rem;
+  padding: 1.5rem 2rem;
+  background: #e8f7ff;
+  border-left: 4px solid #677BC4;
+  border-radius: 4px;
+  box-shadow: var(--ombre-legere);
+  animation: fadeIn 0.4s ease-out;
+}
+.refund-box h3 {
+  font-family: var(--font-titre-secondaire);
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: var(--accent-couleur-1);
+  font-size: 1.2rem;
+}
+.refund-box ol {
+  margin: 0 0 1rem 1.2rem;
+  padding-left: 0.2rem;
+}
+.refund-qr {
+  /*width: 140px;*/
+  max-width: 90%;
+  height: auto;
+  display: block;
+  margin: 0.5rem auto 0.8rem;
+  box-shadow: var(--ombre-legere);
+}
+.refund-box .smallprint {
+  font-size: 0.8rem;
+  color: var(--encre-secondaire);
+  text-align: center;
+  margin: 0;
+}
   </style>
 </head>
 <body>
@@ -122,11 +160,11 @@
 
       <!-- Date & Heure -->
       <div class="form-group">
-        <label for="coffee-date">Date</label>
+        <label for="coffee-date">Date de l'incident</label>
         <input type="date" id="coffee-date" />
       </div>
       <div class="form-group">
-        <label for="coffee-time">Heure approx.</label>
+        <label for="coffee-time">Heure approx. de l'incident</label>
         <input type="time" id="coffee-time" />
       </div>
 
@@ -139,8 +177,16 @@
           <option value="Espece">Espèces</option>
           <option value="Badge">Badge interne</option>
           <option value="CB">Carte Bancaire</option>
+          <option value="Non applicable">Non applicable / Pas de paiement</option>
         </select>
       </div>
+
+      <!-- MONTANT PERDU (NOUVEAU CHAMP) -->
+      <div class="form-group">
+        <label for="coffee-amount">Montant perdu (si applicable, en €)</label>
+        <input type="number" id="coffee-amount" placeholder="Ex: 0.50" step="0.01" min="0">
+      </div>
+      <!-- FIN MONTANT PERDU -->
 
       <!-- Commentaire -->
       <div class="form-group">
@@ -154,6 +200,19 @@
     <div id="coffee-status" class="form-status-sending"><i class="fas fa-paper-plane"></i> Envoi en cours…</div>
     <div id="coffee-confirmation" class="confirmation"><i class="fas fa-check-circle"></i> Merci ! Votre signalement a bien été transmis au CSE.</div>
     <div id="coffee-error" class="error-message">Erreur lors de l'envoi. Veuillez réessayer.</div>
+  <!-- Procédure de remboursement -->
+        <aside id="refund-procedure" class="refund-box">
+          <h3><i class="fas fa-euro-sign"></i> Procédure de remboursement</h3>
+
+          <ol>
+            
+            <li>Remplis le formulaire en ligne</li>
+            <li>Ta demande est transmise au SAV de MaxiCoffee.</li>
+            <li>Le SAV te contacte directement par SMS pour faire le remboursement uniquement via Lydia Pro.</li>
+          </ol>
+
+          
+        </aside>
   </div>
 
   <footer><p style="text-align:center;font-size:0.8em;color:var(--encre-secondaire);margin-top:2rem;">© 2025 CSE CRM59</p></footer>
@@ -164,7 +223,7 @@
       apiKey: "AIzaSyCzlrRY437eu0tUCqK99OXtOeyOdYSUYsw",
       authDomain: "appli-cse-56b03.firebaseapp.com",
       projectId: "appli-cse-56b03",
-      storageBucket: "appli-cse-56b03.appspot.com",
+      storageBucket: "appli-cse-56b03.appspot.com", // Correction: .appspot.com et non firebasestorage.app
       messagingSenderId: "892776841086",
       appId: "1:892776841086:web:2a1a7c60be011fda0afd2f"
     };
@@ -172,7 +231,7 @@
     const db = firebase.firestore();
 
     // === Init EmailJS (REMPLACE PUBLIC_KEY) ===
-    emailjs.init("ua6LDZ5bj0OHjyVr-");
+    emailjs.init("ua6LDZ5bj0OHjyVr-"); // Votre clé publique EmailJS
 
     document.addEventListener('DOMContentLoaded', () => {
       const coffeeForm = document.getElementById('coffeeForm');
@@ -181,6 +240,16 @@
       const confirmDiv = document.getElementById('coffee-confirmation');
       const errorDiv = document.getElementById('coffee-error');
 
+      // Optionnel : pré-remplir la date
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
+      const dd = String(today.getDate()).padStart(2, '0');
+      if(document.getElementById('coffee-date')) {
+        document.getElementById('coffee-date').value = `${yyyy}-${mm}-${dd}`;
+      }
+
+
       coffeeForm.addEventListener('submit', e => {
         e.preventDefault();
 
@@ -188,6 +257,8 @@
         confirmDiv.style.display = 'none';
         errorDiv.style.display = 'none';
         submitBtn.disabled = true;
+
+        const amountValue = document.getElementById('coffee-amount').value.trim();
 
         const data = {
           email: document.getElementById('coffee-email').value.trim(),
@@ -199,24 +270,28 @@
           dateEvenementRaw: document.getElementById('coffee-date').value || null,
           heureEvenementRaw: document.getElementById('coffee-time').value || null,
           paiement: document.getElementById('coffee-payment').value || null,
+          montant: amountValue ? parseFloat(amountValue) : null, // Ajout pour Firestore
           commentaire: document.getElementById('coffee-comment').value.trim(),
           importTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
-          status: 'en cours'
+          status: 'envoyé au SAV' // Statut mis à jour
         };
 
         // --- Ajout Firestore ---
         db.collection('coffee').add(data)
           .then(() => {
             // --- Email Notification (REMPLACE service_ID & template_ID) ---
-            return emailjs.send('Coffee_Id', 'template_Coffee', {
-              reply_to : data.email,
-              nom      : data.nom,
+            // Assurez-vous que votre template EmailJS contient {{telephone}} et {{montant}}
+            return emailjs.send('Coffee_Id', 'template_Coffee', { // Vos IDs EmailJS
+              reply_to : data.email,        // Email de l'utilisateur
+              nom      : data.nom,          // Nom de l'utilisateur
+              telephone: data.telephone || '—', // Téléphone, avec fallback
               machine  : data.machine,
               probleme : data.probleme,
               operation: data.operation,
               dateEvenementRaw  : data.dateEvenementRaw || '—',
               heureEvenementRaw : data.heureEvenementRaw || '—',
               paiement : data.paiement || '—',
+              montant  : data.montant !== null ? `${data.montant.toFixed(2)} €` : 'Non spécifié', // Montant formaté
               commentaire : data.commentaire || '—'
             });
           })
@@ -224,6 +299,10 @@
             statusDiv.style.display = 'none';
             confirmDiv.style.display = 'block';
             coffeeForm.reset();
+            // Pré-remplir la date à nouveau après reset si souhaité
+             if(document.getElementById('coffee-date')) {
+                document.getElementById('coffee-date').value = `${yyyy}-${mm}-${dd}`;
+            }
             submitBtn.disabled = false;
             confirmDiv.scrollIntoView({behavior:'smooth'});
             console.log('Mail envoyé 🎉');
